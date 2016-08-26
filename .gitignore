@@ -4,6 +4,7 @@
 .mtj.tmp/
 
 # Package Files #
+*.jar
 *.war
 *.ear
 
@@ -14,4 +15,5 @@ dev/
 .classpath
 .project
 .settings/
+lwjgl/
 /bin/
