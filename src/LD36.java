@@ -13,7 +13,7 @@ public class LD36
 	Window win;
 	public LD36()
 	{
-		win = new Window("Vox3D", 720, 720 * 9 / 16, true);
+		win = new Window("LD36", 720, 720 * 9 / 16, true);
 		win.create();
 		win.sync(false);
 	}
