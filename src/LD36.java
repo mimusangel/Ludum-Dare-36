@@ -2,7 +2,6 @@ import java.io.File;
 
 import fr.mimus.jbasicgl.Window;
 import fr.mimus.jbasicgl.graphics.Shaders;
-import fr.mimus.jbasicgl.utils.MemoryClass;
 
 public class LD36
 {
