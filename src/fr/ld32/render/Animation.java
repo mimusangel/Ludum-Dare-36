@@ -19,8 +19,7 @@ public class Animation {
 	boolean isPaused = false, 
 			isFlipped = false,
 			isReversed = false,
-			isLooping = false,
-			isEnded = false;
+			isLooping = false;
 	int frame;
 	float delay;
 	
@@ -28,6 +27,10 @@ public class Animation {
 	
 	public Animation(int c, int w, Texture texture, float secDelay){
 		this(c, 1, w, w, texture, 0, c-1, secDelay, false);
+	}
+	
+	public Animation(int c, int w, int h, Texture texture, float secDelay){
+		this(c, 1, w, h, texture, 0, c-1, secDelay, false);
 	}
 	
 	public Animation(int c, int w, Texture texture, float secDelay, boolean loop){
@@ -89,12 +92,10 @@ public class Animation {
 				if(isLooping)
 				{
 					frame = start;
-					isEnded = false;
 				}
 				else
 				{
 					isPaused = true;
-					isEnded = true;
 					frame = end;
 				}
 			}
@@ -102,17 +103,13 @@ public class Animation {
 				if(isLooping)
 				{
 					frame = end;
-					isEnded = false;
 				}
 				else
 				{
 					isPaused = true;
-					isEnded = true;
 					frame = start;
 				}
 			}
-		}else{
-			isEnded = true;
 		}
 	}
 	
@@ -125,11 +122,33 @@ public class Animation {
 	}
 	
 	public void toggleReverse() {
-		isReversed = !isReversed;
+		setReverse(!isReversed);
 	}
 	
 	public void toggleLoop() {
 		isLooping = !isLooping;
+	}
+	
+	public void restart()
+	{
+		if(isReversed) frame = end;
+		else frame = start;
+		setPause(false);
+	}
+	
+	public void start()
+	{
+		if(isReversed) 
+		{
+			if (frame != end)
+				this.toggleReverse();
+		}
+		else
+		{
+			if (frame != start)
+				this.toggleReverse();
+		}
+		setPause(false);
 	}
 	
 	public void setPause(boolean bool) {
@@ -157,8 +176,14 @@ public class Animation {
 	public int getFrame(){
 		return frame;
 	}
-	
+
 	public boolean isEnded(){
-		return isEnded;
+		if (isLooping)
+			return (false);
+		if(isPaused)
+			return (true);
+		if(isReversed)
+			return (frame == start);
+		return (frame == end);
 	}
 }

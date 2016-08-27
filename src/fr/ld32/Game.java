@@ -4,6 +4,8 @@ import java.util.ArrayList;
 
 import fr.ld32.entities.Entity;
 import fr.ld32.entities.EntityPlayer;
+import fr.ld32.entities.IActivable;
+import fr.ld32.entities.IBlock;
 import fr.ld32.entities.IMovable;
 import fr.ld32.entities.IWalkable;
 import fr.ld32.map.Map;
@@ -16,8 +18,8 @@ public class Game
 {
 	Mat4 ortho;
 	Shaders main;
-	Map maptest;
-	EntityPlayer player;
+	Map map;
+	public EntityPlayer player;
 	ArrayList<Entity> entities;
 	Vec2 offset;
 	
@@ -25,11 +27,12 @@ public class Game
 	{
 		Res.autoLoadRsc();
 		ortho = Mat4.orthographic(0, 720 * 9 / 16, 720, 0, -1f, 1f);
-		main = new Shaders("shaders/main.vert", "shaders/main.frag");
+		main = new Shaders("rsc/shaders/main.vert", "rsc/shaders/main.frag");
 		entities = new ArrayList<Entity>();
 		entities.add(player = new EntityPlayer(new Vec2(48, 80)));
-		maptest = new Map(this);
-		maptest.createMap();
+		map = new Map(this, "rsc/maps/map0.txt");
+		map.createMap();
+		player.pos = map.spawn.copy();
 		offset = new Vec2();
 	}
 	
@@ -37,7 +40,7 @@ public class Game
 	{
 		main.bind();
 		main.setUniformMat4f("m_proj", ortho);
-		maptest.render(elapse, main, offset);
+		map.render(elapse, main, offset);
 		
 		int i = 0;
 		while (i < entities.size())
@@ -49,7 +52,7 @@ public class Game
 	
 	public void update(int tick, double elapse)
 	{
-		maptest.update(tick, elapse);
+		map.update(tick, elapse);
 		int i = 0;
 		while (i < entities.size())
 		{
@@ -63,27 +66,46 @@ public class Game
 				 */
 				if (e instanceof EntityPlayer)
 				{
-					if (maptest.checkCollid(new AABB((int)last.x + 4, (int)e.pos.y + 16, 24, 48)))
+					if (map.checkCollid(new AABB((int)last.x + 4, (int)e.pos.y + 16, 24, 48)))
 					{
 						e.pos.y = last.y;
 						e.gravity = 0;
 					}
-					if (maptest.checkCollid(new AABB((int)e.pos.x + 4, (int)last.y + 16, 24, 48)))
+					if (map.checkCollid(new AABB((int)e.pos.x + 4, (int)last.y + 16, 24, 48)))
 					{
 						e.pos.x = last.x;
 					}
+					if (entityCollid(e, new AABB((int)last.x + 4, (int)e.pos.y + 16, 24, 48)))
+					{
+						e.pos.y = last.y;
+						e.gravity = 0;
+					}
+					if (entityCollid(e, new AABB((int)e.pos.x + 4, (int)last.y + 16, 24, 48)))
+					{
+						e.pos.x = last.x;
+					}
+					
 				}
 				else
 				{
 					AABB aabb = e.getBox();
 					if (aabb != null)
 					{
-						if (maptest.checkCollid(new AABB((int)last.x, (int)e.pos.y, aabb.w, aabb.h)))
+						if (map.checkCollid(new AABB((int)last.x, (int)e.pos.y, aabb.w, aabb.h)))
 						{
 							e.pos.y = last.y;
 							e.gravity = 0;
 						}
-						if (maptest.checkCollid(new AABB((int)e.pos.x, (int)last.y, aabb.w, aabb.h)))
+						if (map.checkCollid(new AABB((int)e.pos.x, (int)last.y, aabb.w, aabb.h)))
+						{
+							e.pos.x = last.x;
+						}
+						if (entityCollid(e, new AABB((int)last.x, (int)e.pos.y, aabb.w, aabb.h)))
+						{
+							e.pos.y = last.y;
+							e.gravity = 0;
+						}
+						if (entityCollid(e, new AABB((int)e.pos.x, (int)last.y, aabb.w, aabb.h)))
 						{
 							e.pos.x = last.x;
 						}
@@ -91,7 +113,7 @@ public class Game
 				}
 				AABB box = e.getBox();
 				if (box != null)
-					e.inFloor = maptest.floorDetect(box);
+					e.inFloor = map.floorDetect(box) || entityFloor(e, new AABB(box.x + 8, box.y + box.h - 16, 16, 17));
 				i++;
 			}
 			else
@@ -180,4 +202,73 @@ public class Game
 		}
 		return (null);
 	}
+	
+	public boolean entityCollid(Entity entity, AABB aabb)
+	{
+		int i = 0;
+		while (i < entities.size())
+		{
+			Entity e = entities.get(i);
+			if (e == entity || !(e instanceof IBlock))
+			{
+				i++;
+				continue;
+			}
+			AABB e1box = e.getBox();
+			if (e1box != null)
+			{
+				Vec2 collid = aabb.collided(e1box);
+				if (collid != null)
+					return (true);
+			}
+			i++;
+		}
+		return (false);
+	}
+	
+	public boolean entityFloor(Entity entity, AABB aabb)
+	{
+		int i = 0;
+		while (i < entities.size())
+		{
+			Entity e = entities.get(i);
+			if (e == entity || !(e instanceof IBlock))
+			{
+				i++;
+				continue;
+			}
+			AABB e1box = e.getBox();
+			if (e1box != null)
+			{
+				Vec2 collid = aabb.collided(e1box);
+				if (collid != null)
+					return (true);
+			}
+			i++;
+		}
+		return (false);
+	}
+	
+	public void action(Entity entity) {
+		int i = 0;
+		AABB e0box = entity.getBox();
+		while (i < entities.size())
+		{
+			Entity e = entities.get(i);
+			if (e == entity || !(e instanceof IActivable))
+			{
+				i++;
+				continue;
+			}
+			AABB e1box = e.getBox();
+			Vec2 collid = e0box.collided(e1box);
+			if (collid != null)
+			{
+				((IActivable)e).action(entity);
+			}
+			
+			i++;
+		}
+	}
+	
 }

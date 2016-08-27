@@ -1,5 +1,15 @@
 package fr.ld32.map;
 
+import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Random;
+
+import javax.imageio.ImageIO;
+
 import org.lwjgl.opengl.GL11;
 
 import fr.ld32.AABB;
@@ -19,43 +29,135 @@ public class Map
 	Mesh mesh;
 	int data[][];
 	Texture texture;
-	
-	public Map(Game game)
+	public Vec2 spawn;
+
+	public Map(Game game, String mapPath)
 	{
 		this.game = game;
+		reader(mapPath);
+	}
+	
+	private boolean loadmap(String path)
+	{
+		try {
+			BufferedImage image = ImageIO.read(new FileInputStream(path));
+			data = new int[image.getHeight()][image.getWidth()];
+			for (int y = 0; y < data.length; y++)
+			{
+				for (int x = 0; x < data[0].length; x++)
+				{
+					int color = image.getRGB(x, y) & 0xffffff;
+					data[y][x] = (color > 0 ? 0 : 1);
+				}
+			}
+		} catch (IOException e) {
+			return (false);
+		}
+		return (true);
+	}
+	
+	private boolean reader(String path)
+	{
+		try {
+			BufferedReader reader = new BufferedReader(new FileReader(path));
+			String line = "";
+			ArrayList<Entity> entities = new ArrayList<Entity>();
+			while ((line = reader.readLine()) != null)
+			{
+				line = line.toLowerCase();
+				String data[];
+				data = line.split(" ");
+				if (data[0].equalsIgnoreCase("set"))
+				{
+					loadmap(data[1]);
+				}
+				else if (data[0].equalsIgnoreCase("spawn"))
+				{
+					spawn = new Vec2(Float.parseFloat(data[1]), Float.parseFloat(data[2]));
+				}
+				else if (data[0].equalsIgnoreCase("ladder"))
+				{
+					if (data[1].equalsIgnoreCase("right"))
+					{
+						makeLadder(Integer.parseInt(data[2]), Integer.parseInt(data[3]), 2);
+					}
+					else
+					{
+						makeLadder(Integer.parseInt(data[2]), Integer.parseInt(data[3]), 3);
+					}
+				}
+				else if (data[0].equalsIgnoreCase("spawnBox"))
+				{
+					entities.add(new EntityBox(new Vec2(Float.parseFloat(data[1]), Float.parseFloat(data[2]))));
+				}
+				else if (data[0].equalsIgnoreCase("spawnDoor"))
+				{
+					entities.add(new EntityDoor(new Vec2(Float.parseFloat(data[1]), Float.parseFloat(data[2])), Integer.parseInt(data[3])));
+				}
+				else if (data[0].equalsIgnoreCase("spawnTrap"))
+				{
+					entities.add(new EntityTrap(new Vec2(Float.parseFloat(data[1]), Float.parseFloat(data[2])), Integer.parseInt(data[3])));
+				}
+				else if (data[0].equalsIgnoreCase("spawnLever"))
+				{
+					Entity e = null;
+					int id;
+					if (data[3].equalsIgnoreCase("last") || data[3].equalsIgnoreCase("last0"))
+						id = entities.size() - 1;
+					else if (data[3].equalsIgnoreCase("last1"))
+						id = entities.size() - 2;
+					else if (data[3].equalsIgnoreCase("last2"))
+						id = entities.size() - 3;
+					else if (data[3].equalsIgnoreCase("last3"))
+						id = entities.size() - 4;
+					else if (data[3].equalsIgnoreCase("last4"))
+						id = entities.size() - 5;
+					else if (data[3].equalsIgnoreCase("last5"))
+						id = entities.size() - 6;
+					else
+						id = Integer.parseInt(data[3]);
+					if (id >= 0 && id < entities.size())
+					{
+						if (entities.get(id) instanceof IActivableLink)
+						{
+							e = entities.get(id);
+							entities.add(new EntityLever(new Vec2(Float.parseFloat(data[1]), Float.parseFloat(data[2])), (IActivableLink) e));
+						}
+					}
+					if (e == null)
+						entities.add(new EntityLever(new Vec2(Float.parseFloat(data[1]), Float.parseFloat(data[2])), null));
+				}
+			}
+			reader.close();
+			for (Entity e : entities)
+			{
+				if (e.spawnFront())
+					game.addEntity(e);
+				else
+					game.addFirstEntity(e);
+					
+			}
+		} catch (IOException e) {
+			return (false);
+		}
+		return (true);
+	}
+	
+	private void makeLadder(int x, int y, int id)
+	{
+		if (x < 0 || x >= data[0].length || y < 0 || y >= data.length)
+			return;
+		if (data[y][x] == 0)
+		{
+			data[y][x] = id;
+			makeLadder(x, y + 1, id);
+		}
 	}
 	
 	public void createMap()
 	{
-		data = new int[][] {
-			new int[] {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-			new int[] {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-			new int[] {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-			new int[] {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-			new int[] {1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-			new int[] {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-			new int[] {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-			new int[] {1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-			new int[] {1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-			new int[] {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-			new int[] {1, 0, 0, 1, 1, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-			new int[] {1, 0, 5, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-			new int[] {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 2, 0, 1},
-			new int[] {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1},
-			new int[] {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 1},
-			new int[] {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 1},
-			new int[] {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 1},
-			new int[] {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 1},
-			new int[] {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 1, 1},
-			new int[] {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 1},
-			new int[] {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 1},
-			new int[] {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 1},
-			new int[] {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 1},
-			new int[] {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 1},
-			new int[] {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1},
-			new int[] {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1},
-			new int[] {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
-		};
+		Random rand = new Random();
+		long seed = System.nanoTime();
 		mesh = new Mesh(data.length * data[0].length * 4 * 2);
 		Vec2 addUVx = new Vec2(1f / 3f, 0);
 		Vec2 addUVy = new Vec2(0, 1f / 3f);
@@ -87,18 +189,19 @@ public class Map
 					color = Color4f.WHITE;
 					uv = new Vec2(addUV.x * 2, addUV.y * 2);
 				}
-				else if (data[y][x] == 4) // Box
-				{
-					game.addEntity(new EntityBox(new Vec2(x * 32, y * 32)));
-					color = Color4f.GRAY;
-				}
-				else if (data[y][x] == 5) // Lever
-				{
-					game.addFirstEntity(new EntityLever(new Vec2(x * 32, y * 32)));
-					color = Color4f.GRAY;
-				}
 				else if (data[y][x] == 0)
+				{
+					rand.setSeed(seed + y << 32 + x);
+					if (rand.nextFloat() < 0.05f)
+						uv.add(addUVx);
 					color = Color4f.GRAY;
+				}
+				else
+				{
+					rand.setSeed(seed + y << 32 + x);
+					if (rand.nextFloat() < 0.025f)
+						uv.add(addUVx);
+				}
 				mesh.addVertices(pos).addColor(color).addTexCoord2f(uv);
 				mesh.addVertices(pos.copy().add(32, 0)).addColor(color).addTexCoord2f(uv.copy().add(addUVx));
 				mesh.addVertices(pos.copy().add(32, 32)).addColor(color).addTexCoord2f(uv.copy().add(addUV));

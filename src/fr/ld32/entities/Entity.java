@@ -71,4 +71,9 @@ public abstract class Entity
 		if (texture != null)
 			texture.dispose();
 	}
+	
+	public boolean spawnFront()
+	{
+		return (true);
+	}
 }

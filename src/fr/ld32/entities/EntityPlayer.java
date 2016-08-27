@@ -20,8 +20,9 @@ public class EntityPlayer extends Entity {
 	float dir;
 	Mesh hand;
 	Texture texHand;
-	
+
 	long repeatSpaceTime;
+	long repeatActionTime;
 	Entity grab;
 	
 	public EntityPlayer(Vec2 pos)
@@ -47,6 +48,7 @@ public class EntityPlayer extends Entity {
 		texHand = Res.images.get("playerHand");
 		time = System.currentTimeMillis();
 		repeatSpaceTime = System.currentTimeMillis();
+		repeatActionTime = System.currentTimeMillis();
 		anim = new Vec2();
 		dir = 1;
 		grab = null;
@@ -93,6 +95,11 @@ public class EntityPlayer extends Entity {
 				grab = null;
 			}
 		}
+		if (keyboard.isDown(Keyboard.KEY_E) && grab == null && System.currentTimeMillis() - repeatActionTime > 150)
+		{
+			repeatActionTime = System.currentTimeMillis();
+			game.action(this);
+		}
 		if (this.inFloor && moving)
 		{
 			if (System.currentTimeMillis() - time < 800)
@@ -107,7 +114,7 @@ public class EntityPlayer extends Entity {
 		super.update(game, tick, elapse);
 		if (grab != null)
 		{
-			Vec2 v = pos.copy().sub(grab.pos).add(0, 16f- (int)(anim.x * 8) % 2);
+			Vec2 v = pos.copy().sub(grab.pos).add(0, 16f - (int)(anim.x * 8) % 2);
 			if (v.length() > 20)
 				grab = null;
 			else

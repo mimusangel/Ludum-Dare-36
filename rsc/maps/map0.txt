@@ -1,0 +1,15 @@
+set rsc/maps/map0.png
+spawn 32 448
+ladder right 30 25
+ladder right 23 32
+ladder right 62 22
+spawnBox 832 704
+spawnBox 768 480
+spawnBox 1664 896
+spawnBox 1728 896
+spawnDoor 0 480 128
+spawnDoor 1008 384 2
+spawnLever 256 192 last
+spawnLever 928 384 last1
+spawnTrap 704 992 1
+spawnLever 1440 704 last
