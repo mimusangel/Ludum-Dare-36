@@ -1,4 +1,4 @@
-package utils;
+package fr.ld32.utils;
 
 import java.io.File;
 import java.util.Arrays;

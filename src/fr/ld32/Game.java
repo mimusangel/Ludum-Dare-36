@@ -5,10 +5,10 @@ import java.util.ArrayList;
 import fr.ld32.entities.Entity;
 import fr.ld32.entities.EntityPlayer;
 import fr.ld32.map.Map;
+import fr.ld32.utils.Res;
 import fr.mimus.jbasicgl.graphics.Shaders;
 import fr.mimus.jbasicgl.maths.Mat4;
 import fr.mimus.jbasicgl.maths.Vec2;
-import utils.Res;
 
 public class Game
 {
