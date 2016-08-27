@@ -11,6 +11,7 @@ import fr.mimus.jbasicgl.graphics.Mesh;
 import fr.mimus.jbasicgl.graphics.Shaders;
 import fr.mimus.jbasicgl.graphics.Texture;
 import fr.mimus.jbasicgl.input.Keyboard;
+import fr.mimus.jbasicgl.input.Mouse;
 import fr.mimus.jbasicgl.maths.Mat4;
 import fr.mimus.jbasicgl.maths.Vec2;
 
@@ -20,14 +21,18 @@ public class EntityPlayer extends Entity {
 	float dir;
 	Mesh hand;
 	Texture texHand;
+	Mesh test;
 
 	long repeatSpaceTime;
 	long repeatActionTime;
 	Entity grab;
 	
+	boolean debugMode;
+	
 	public EntityPlayer(Vec2 pos)
 	{
 		super(pos);
+		debugMode = false;
 	}
 
 	public void createEntity()
@@ -52,6 +57,11 @@ public class EntityPlayer extends Entity {
 		anim = new Vec2();
 		dir = 1;
 		grab = null;
+		test = new Mesh(2);
+		test.addVertices(0, 0).addColor(Color4f.RED).addTexCoord2f(0, 0);
+		test.addVertices(32, 0).addColor(Color4f.RED).addTexCoord2f(1f, 0);
+		test.buffering();
+		
 	}
 
 	public boolean entityAlive()
@@ -100,6 +110,10 @@ public class EntityPlayer extends Entity {
 			repeatActionTime = System.currentTimeMillis();
 			game.action(this);
 		}
+		if (keyboard.isPress(Keyboard.KEY_F3))
+		{
+			debugMode = !debugMode;
+		}
 		if (this.inFloor && moving)
 		{
 			if (System.currentTimeMillis() - time < 800)
@@ -116,7 +130,10 @@ public class EntityPlayer extends Entity {
 		{
 			Vec2 v = pos.copy().sub(grab.pos).add(0, 16f - (int)(anim.x * 8) % 2);
 			if (v.length() > 20)
+			{
+				((IMovable)grab).move(new Vec2(4 * dir, -16));
 				grab = null;
+			}
 			else
 			{
 				((IMovable)grab).move(v);
@@ -140,12 +157,34 @@ public class EntityPlayer extends Entity {
 			mesh.render(GL11.GL_QUADS);
 			texHand.bind();
 			if (dir < 0)
-				matPos.add(-5, 16 - (int)(anim.x * 8) % 2);
+				matPos.add(-15, 28 - (int)(anim.x * 8) % 2);
 			else
-				matPos.add(5, 16 - (int)(anim.x * 8) % 2);
-			shader.setUniformMat4f("m_view", Mat4.multiply(Mat4.translate(matPos), Mat4.scale(dir, 1, 1)));
+				matPos.add(15, 28 - (int)(anim.x * 8) % 2);
+			Mouse mouse = LD36.getInstance().win.getMouse();
+			float rad;
+			if (dir < 0)
+				rad = (float) Math.atan2(matPos.y - mouse.getY(), matPos.x - mouse.getX());
+			else
+				rad = (float) Math.atan2(matPos.y - mouse.getY(), mouse.getX() - matPos.x);
+			if (rad < -0.8f)
+				rad = -0.8f;
+			if (rad > 1.4f)
+				rad = 1.4f;
+			Mat4 m0 = Mat4.multiply(Mat4.rotateZf(rad), Mat4.translate(new Vec2(-10, -12)));
+			Mat4 m1 = Mat4.multiply(Mat4.translate(matPos), Mat4.scale(dir, 1, 1));
+			shader.setUniformMat4f("m_view", Mat4.multiply(m1, m0));
 			shader.setUniform2f("anim", new Vec2());
 			hand.render(GL11.GL_QUADS);
+			if (debugMode)
+			{
+				m0 = Mat4.multiply(Mat4.rotateZf(rad), Mat4.translate(new Vec2(15, 7.5f)));
+				shader.setUniformMat4f("m_view", Mat4.multiply(m1, m0));
+				shader.setUniform1i("disableTexture", 1);
+				GL11.glLineWidth(3f);
+				test.render(GL11.GL_LINES);
+				GL11.glLineWidth(1f);
+				shader.setUniform1i("disableTexture", 0);
+			}
 		}
 		else
 		{

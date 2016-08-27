@@ -8,10 +8,17 @@ in vec2 v_tex;
 
 uniform sampler2D u_texture0;
 uniform vec2 anim;
-
+uniform int disableTexture;
 void main()
 {
-	vec2 tex = v_tex + anim;
-	vec4 texColor0 = texture2D(u_texture0, tex);
-	out_color = v_color * texColor0;
+	if (disableTexture > 0)
+	{
+		out_color = v_color;
+	}
+	else
+	{
+		vec2 tex = v_tex + anim;
+		vec4 texColor0 = texture2D(u_texture0, tex);
+		out_color = v_color * texColor0;
+	}
 }
