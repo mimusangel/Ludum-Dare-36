@@ -72,10 +72,10 @@ public class EntityPlayer extends Entity {
 		}
 		if (keyboard.isDown(Keyboard.KEY_W) && this.inFloor)
 		{
-			gravity = -16;
+			gravity = -12;
 			this.inFloor = false;
 		}
-		if (this.inFloor && moving)
+		if (moving)
 		{
 			if (System.currentTimeMillis() - time < 800)
 				anim = (float) Math.floor((float)(System.currentTimeMillis() - time) / 100);

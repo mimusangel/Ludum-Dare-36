@@ -129,7 +129,7 @@ public class Map
 		int minX = (int) (aabb.x + 8) / 32;
 		int maxX = (int) (aabb.x + aabb.w - 8) / 32;
 		int minY = (int) (aabb.y + aabb.h - 16) / 32;
-		int maxY = (int) (aabb.y + aabb.h + 16) / 32;
+		int maxY = (int) (aabb.y + aabb.h + 1) / 32;
 		for (int y = minY; y <= maxY; y++)
 		{
 			for (int x = minX; x <= maxX; x++)

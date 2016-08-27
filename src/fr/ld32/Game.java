@@ -54,30 +54,16 @@ public class Game
 			{
 				Vec2 last = e.pos.copy();
 				e.update(tick, elapse);
-				if (maptest.checkCollid(e.getBox()))
+				if (maptest.checkCollid(new AABB((int)last.x, (int)e.pos.y + 16, 32, 48)))
 				{
-					AABB aabbx = e.getBox();
-					AABB aabby = e.getBox();
-					aabbx.x = (int) last.x;
-					if (!maptest.checkCollid(aabbx))
-					{
-						e.pos.x = last.x;
-					}
-					aabby.y = (int) last.y;
-					if (!maptest.checkCollid(aabby))
-					{
-						e.pos.y = last.y;
-						e.gravity = 0;
-					}
-					if (maptest.checkCollid(e.getBox()))
-					{
-						e.pos.x = last.x;
-						e.pos.y = last.y;
-					}
+					e.pos.y = last.y;
+					e.gravity = 0;
+				}
+				if (maptest.checkCollid(new AABB((int)e.pos.x, (int)last.y + 16, 32, 48)))
+				{
+					e.pos.x = last.x;
 				}
 				e.inFloor = maptest.floorDetect(e.getBox());
-				if (e.inFloor)
-					e.gravity = 0;
 				i++;
 			}
 			else
