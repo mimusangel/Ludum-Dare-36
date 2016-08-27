@@ -1,4 +1,4 @@
-package fr.ld32.utils;
+package fr.ld36.utils;
 
 import java.io.File;
 import java.util.ArrayList;

@@ -1,15 +1,10 @@
-package fr.ld32;
+package fr.ld36;
 
 import java.util.ArrayList;
 
-import fr.ld32.entities.Entity;
-import fr.ld32.entities.EntityPlayer;
-import fr.ld32.entities.IActivable;
-import fr.ld32.entities.IBlock;
-import fr.ld32.entities.IMovable;
-import fr.ld32.entities.IWalkable;
-import fr.ld32.map.Map;
-import fr.ld32.utils.Res;
+import fr.ld36.entities.*;
+import fr.ld36.map.Map;
+import fr.ld36.utils.Res;
 import fr.mimus.jbasicgl.graphics.Shaders;
 import fr.mimus.jbasicgl.maths.Mat4;
 import fr.mimus.jbasicgl.maths.Vec2;

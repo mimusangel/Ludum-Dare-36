@@ -1,9 +1,9 @@
-package fr.ld32.entities;
+package fr.ld36.entities;
 
 import org.lwjgl.opengl.GL11;
 
-import fr.ld32.AABB;
-import fr.ld32.Game;
+import fr.ld36.AABB;
+import fr.ld36.Game;
 import fr.mimus.jbasicgl.graphics.Mesh;
 import fr.mimus.jbasicgl.graphics.Shaders;
 import fr.mimus.jbasicgl.graphics.Texture;

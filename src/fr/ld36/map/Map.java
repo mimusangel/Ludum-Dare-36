@@ -1,4 +1,4 @@
-package fr.ld32.map;
+package fr.ld36.map;
 
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
@@ -11,10 +11,10 @@ import javax.imageio.ImageIO;
 
 import org.lwjgl.opengl.GL11;
 
-import fr.ld32.AABB;
-import fr.ld32.Game;
-import fr.ld32.entities.*;
-import fr.ld32.utils.Res;
+import fr.ld36.AABB;
+import fr.ld36.Game;
+import fr.ld36.entities.*;
+import fr.ld36.utils.Res;
 import fr.mimus.jbasicgl.graphics.Color4f;
 import fr.mimus.jbasicgl.graphics.Mesh;
 import fr.mimus.jbasicgl.graphics.Shaders;

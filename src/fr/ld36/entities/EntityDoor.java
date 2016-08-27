@@ -1,12 +1,12 @@
-package fr.ld32.entities;
+package fr.ld36.entities;
 
 import org.lwjgl.opengl.GL11;
 
-import fr.ld32.AABB;
-import fr.ld32.Game;
-import fr.ld32.LD36;
-import fr.ld32.render.Animation;
-import fr.ld32.utils.Res;
+import fr.ld36.AABB;
+import fr.ld36.Game;
+import fr.ld36.LD36;
+import fr.ld36.render.Animation;
+import fr.ld36.utils.Res;
 import fr.mimus.jbasicgl.graphics.Color4f;
 import fr.mimus.jbasicgl.graphics.Mesh;
 import fr.mimus.jbasicgl.graphics.Shaders;
@@ -14,13 +14,13 @@ import fr.mimus.jbasicgl.graphics.Texture;
 import fr.mimus.jbasicgl.maths.Mat4;
 import fr.mimus.jbasicgl.maths.Vec2;
 
-public class EntityTrap extends Entity implements IBlock, IActivableLink {
+public class EntityDoor extends Entity implements IBlock, IActivableLink {
 
 	Animation anim;
 	int unlock;
 	int nbLock;
 	boolean lastStat;
-	public EntityTrap(Vec2 pos, int nbLock)
+	public EntityDoor(Vec2 pos, int nbLock)
 	{
 		super(pos);
 		this.nbLock = nbLock;
@@ -35,6 +35,7 @@ public class EntityTrap extends Entity implements IBlock, IActivableLink {
 		else
 			unlock--;
 		boolean islock = (unlock == nbLock);
+		System.out.println(unlock + " : " + nbLock + " = " + islock);
 		if (lastStat != islock)
 		{
 			lastStat = islock;
@@ -52,7 +53,7 @@ public class EntityTrap extends Entity implements IBlock, IActivableLink {
 
 	public void createEntity()
 	{
-		anim = new Animation(14, 64, Res.images.get("trapdoor"), 0.05f);
+		anim = new Animation(24, 32, 64, Res.images.get("vDoor"), 0.05f);
 		anim.setPause(true);
 		mesh = new Mesh(4);
 		mesh.addVertices(0, 0).addColor(Color4f.WHITE).addTexCoord2f(0, 0);
@@ -86,7 +87,7 @@ public class EntityTrap extends Entity implements IBlock, IActivableLink {
 			{
 				Texture tex = Res.images.get("lock");
 				float w = nbLock * 18f - 2f;
-				v.add(32f, 2.5f).sub(w / 2f, 8f);
+				v.add(16f, 32f).sub(w / 2f, 8f);
 				tex.bind();
 				for (int i = 0; i < nbLock; i++)
 				{
@@ -108,8 +109,9 @@ public class EntityTrap extends Entity implements IBlock, IActivableLink {
 
 	public AABB getBox()
 	{
-		if (anim != null && anim.getFrame() == 13)
-			return (null);
-		return new AABB((int)pos.x, (int)pos.y, 64, 5);
+		if (anim != null)
+			return new AABB((int)pos.x + 12, (int)pos.y, 8, 64 - (anim.getFrame() * 59 / 24));
+		return new AABB((int)pos.x + 12, (int)pos.y, 8, 64);
 	}
+
 }

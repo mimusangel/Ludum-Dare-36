@@ -1,9 +1,9 @@
-package fr.ld32.entities;
+package fr.ld36.entities;
 
-import fr.ld32.AABB;
-import fr.ld32.Game;
-import fr.ld32.render.Animation;
-import fr.ld32.utils.Res;
+import fr.ld36.AABB;
+import fr.ld36.Game;
+import fr.ld36.render.Animation;
+import fr.ld36.utils.Res;
 import fr.mimus.jbasicgl.graphics.Shaders;
 import fr.mimus.jbasicgl.maths.Vec2;
 

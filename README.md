@@ -11,5 +11,5 @@
 * Graphic: photoshop (SpriteSheet generator script: https://github.com/bogdanrybak/spritesheet-generator)
 
 ## Link
-* JBasicGL: https://github.com/mimusangel/Ludum-Dare-36.git
+* JBasicGL: https://github.com/mimusangel/JBasicGL
 * LWJGL: https://www.lwjgl.org/

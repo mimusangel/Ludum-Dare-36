@@ -1,4 +1,4 @@
-package fr.ld32;
+package fr.ld36;
 
 import fr.mimus.jbasicgl.maths.Vec2;
 

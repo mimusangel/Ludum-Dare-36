@@ -1,4 +1,4 @@
-package fr.ld32.render;
+package fr.ld36.render;
 
 import org.lwjgl.opengl.GL11;
 
