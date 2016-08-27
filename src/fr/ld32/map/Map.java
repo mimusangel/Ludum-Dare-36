@@ -6,7 +6,6 @@ import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Random;
 
 import javax.imageio.ImageIO;
 
@@ -47,7 +46,13 @@ public class Map
 				for (int x = 0; x < data[0].length; x++)
 				{
 					int color = image.getRGB(x, y) & 0xffffff;
-					data[y][x] = (color > 0 ? 0 : 1);
+					data[y][x] = 0;
+					if (color == 0)
+						data[y][x] = 1;
+					if (color == 0xff0000)
+						data[y][x] = 4;
+					if (color == 0x00ff00)
+						data[y][x] = 5;
 				}
 			}
 		} catch (IOException e) {
@@ -156,12 +161,13 @@ public class Map
 	
 	public void createMap()
 	{
-		Random rand = new Random();
-		long seed = System.nanoTime();
+		texture = Res.images.get("tiles");
 		mesh = new Mesh(data.length * data[0].length * 4 * 2);
-		Vec2 addUVx = new Vec2(1f / 3f, 0);
-		Vec2 addUVy = new Vec2(0, 1f / 3f);
-		Vec2 addUV = new Vec2(1f / 3f, 1f / 3f);
+		float vx = 32f / (float)texture.getWidth();
+		float vy = 32f / (float)texture.getHeight();
+		Vec2 addUVx = new Vec2(vx, 0);
+		Vec2 addUVy = new Vec2(0, vy);
+		Vec2 addUV = new Vec2(vx, vy);
 		for (int y = 0; y < data.length; y++)
 		{
 			for (int x = 0; x < data[0].length; x++)
@@ -169,7 +175,7 @@ public class Map
 				Vec2 pos = new Vec2(x * 32, y * 32);
 				Color4f color = Color4f.WHITE;
 				Vec2 uv = new Vec2();
-				if (data[y][x] == 2) // ladder right
+				if (data[y][x] >= 2) // ladder right
 				{
 					color = Color4f.GRAY;
 					mesh.addVertices(pos).addColor(color).addTexCoord2f(uv);
@@ -177,30 +183,16 @@ public class Map
 					mesh.addVertices(pos.copy().add(32, 32)).addColor(color).addTexCoord2f(uv.copy().add(addUV));
 					mesh.addVertices(pos.copy().add(0, 32)).addColor(color).addTexCoord2f(uv.copy().add(addUVy));
 					color = Color4f.WHITE;
-					uv = new Vec2(addUV.x * 2, addUV.y);
-				}
-				else if (data[y][x] == 3) // ladder left
-				{
-					color = Color4f.GRAY;
-					mesh.addVertices(pos).addColor(color).addTexCoord2f(uv);
-					mesh.addVertices(pos.copy().add(32, 0)).addColor(color).addTexCoord2f(uv.copy().add(addUVx));
-					mesh.addVertices(pos.copy().add(32, 32)).addColor(color).addTexCoord2f(uv.copy().add(addUV));
-					mesh.addVertices(pos.copy().add(0, 32)).addColor(color).addTexCoord2f(uv.copy().add(addUVy));
-					color = Color4f.WHITE;
-					uv = new Vec2(addUV.x * 2, addUV.y * 2);
+					if (data[y][x] == 2)
+						uv = new Vec2(addUV.x * 2, addUV.y);
+					if (data[y][x] == 3)
+						uv = new Vec2(addUV.x * 2, addUV.y * 2);
+					if (data[y][x] == 4)
+						uv = new Vec2(addUV.x * 1, 0);
 				}
 				else if (data[y][x] == 0)
 				{
-					rand.setSeed(seed + y << 32 + x);
-					if (rand.nextFloat() < 0.05f)
-						uv.add(addUVx);
 					color = Color4f.GRAY;
-				}
-				else
-				{
-					rand.setSeed(seed + y << 32 + x);
-					if (rand.nextFloat() < 0.025f)
-						uv.add(addUVx);
 				}
 				mesh.addVertices(pos).addColor(color).addTexCoord2f(uv);
 				mesh.addVertices(pos.copy().add(32, 0)).addColor(color).addTexCoord2f(uv.copy().add(addUVx));
@@ -209,7 +201,6 @@ public class Map
 			}
 		}
 		mesh.buffering();
-		texture = Res.images.get("tiles");
 	}
 	
 	public void render(double elapse, Shaders shader, Vec2 offset)

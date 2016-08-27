@@ -23,7 +23,7 @@ public class LD36
 	
 	public LD36()
 	{
-		win = new Window("LD36", 720, 720 * 9 / 16, true);
+		win = new Window("LD36 - Ancient Technology", 720, 720 * 9 / 16, true);
 		win.create();
 		win.sync(false);
 		init();

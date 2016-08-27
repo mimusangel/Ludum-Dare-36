@@ -100,14 +100,17 @@ public class Game
 						{
 							e.pos.x = last.x;
 						}
-						if (entityCollid(e, new AABB((int)last.x, (int)e.pos.y, aabb.w, aabb.h)))
+						if (!e.spawnFront())
 						{
-							e.pos.y = last.y;
-							e.gravity = 0;
-						}
-						if (entityCollid(e, new AABB((int)e.pos.x, (int)last.y, aabb.w, aabb.h)))
-						{
-							e.pos.x = last.x;
+							if (entityCollid(e, new AABB((int)last.x, (int)e.pos.y, aabb.w, aabb.h)))
+							{
+								e.pos.y = last.y;
+								e.gravity = 0;
+							}
+							if (entityCollid(e, new AABB((int)e.pos.x, (int)last.y, aabb.w, aabb.h)))
+							{
+								e.pos.x = last.x;
+							}
 						}
 					}
 				}
@@ -127,7 +130,7 @@ public class Game
 		{
 			Entity e0 = entities.get(i);
 			AABB e0box = e0.getBox();
-			if (e0box == null)
+			if (e0box == null || !e0.spawnFront())
 			{
 				i++;
 				continue;
@@ -142,7 +145,7 @@ public class Game
 				}
 				Entity e1 = entities.get(j);
 				AABB e1box = e1.getBox();
-				if (e1box == null)
+				if (e1box == null || !e1.spawnFront())
 				{
 					j++;
 					continue;
