@@ -88,7 +88,10 @@ public class EntityPlayer extends Entity {
 			if (grab == null)
 				grab = game.checkGrab(this);
 			else
+			{
+				((IMovable)grab).move(new Vec2(8 * dir, -8));
 				grab = null;
+			}
 		}
 		if (this.inFloor && moving)
 		{
@@ -104,8 +107,14 @@ public class EntityPlayer extends Entity {
 		super.update(game, tick, elapse);
 		if (grab != null)
 		{
-			((IMovable)grab).move(pos.copy().sub(grab.pos).add(0, 16f- (int)(anim.x * 8) % 2));
-			grab.gravity = 0;
+			Vec2 v = pos.copy().sub(grab.pos).add(0, 16f- (int)(anim.x * 8) % 2);
+			if (v.length() > 20)
+				grab = null;
+			else
+			{
+				((IMovable)grab).move(v);
+				grab.gravity = 0;
+			}
 		}
 	}
 	

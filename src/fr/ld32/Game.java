@@ -76,17 +76,22 @@ public class Game
 				else
 				{
 					AABB aabb = e.getBox();
-					if (maptest.checkCollid(new AABB((int)last.x, (int)e.pos.y, aabb.w, aabb.h)))
+					if (aabb != null)
 					{
-						e.pos.y = last.y;
-						e.gravity = 0;
-					}
-					if (maptest.checkCollid(new AABB((int)e.pos.x, (int)last.y, aabb.w, aabb.h)))
-					{
-						e.pos.x = last.x;
+						if (maptest.checkCollid(new AABB((int)last.x, (int)e.pos.y, aabb.w, aabb.h)))
+						{
+							e.pos.y = last.y;
+							e.gravity = 0;
+						}
+						if (maptest.checkCollid(new AABB((int)e.pos.x, (int)last.y, aabb.w, aabb.h)))
+						{
+							e.pos.x = last.x;
+						}
 					}
 				}
-				e.inFloor = maptest.floorDetect(e.getBox());
+				AABB box = e.getBox();
+				if (box != null)
+					e.inFloor = maptest.floorDetect(box);
 				i++;
 			}
 			else
@@ -95,13 +100,16 @@ public class Game
 				entities.remove(i);
 			}
 		}
-		/*
-		 *  Entity COLLID
-		 */
 		i = 0;
 		while (i < entities.size())
 		{
 			Entity e0 = entities.get(i);
+			AABB e0box = e0.getBox();
+			if (e0box == null)
+			{
+				i++;
+				continue;
+			}
 			int j = 0;
 			while (j < entities.size())
 			{
@@ -111,12 +119,16 @@ public class Game
 					continue;
 				}
 				Entity e1 = entities.get(j);
-				AABB e0box = e0.getBox();
 				AABB e1box = e1.getBox();
+				if (e1box == null)
+				{
+					j++;
+					continue;
+				}
 				Vec2 collid = e0box.collided(e1box);
 				if (collid != null)
 				{
-					if (e0box.y + e0box.h <= e1box.y + e1box.h / 2 && e1 instanceof IWalkable)
+					if (e0.gravity >= 0 && e0box.y + e0box.h <= e1box.y + e1box.h / 2 && e1 instanceof IWalkable)
 					{
 						if (e0 instanceof EntityPlayer)
 							e0.pos.y = e1box.y - 64;
@@ -138,6 +150,11 @@ public class Game
 		entity.inFloor = false;
 		entities.add(entity);
 	}
+	public void addFirstEntity(Entity entity)
+	{
+		entity.inFloor = false;
+		entities.add(0, entity);
+	}
 
 	public Entity checkGrab(Entity entity) {
 		int i = 0;
@@ -153,7 +170,12 @@ public class Game
 			AABB e1box = e.getBox();
 			Vec2 collid = e0box.collided(e1box);
 			if (collid != null)
-				return (e);
+			{
+				Vec2 v = entity.pos.copy().sub(e.pos).add(0, 16f);
+				if (v.length() <= 20)
+					return (e);
+			}
+			
 			i++;
 		}
 		return (null);

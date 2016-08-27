@@ -2,6 +2,7 @@ package fr.ld32.render;
 
 import org.lwjgl.opengl.GL11;
 
+import fr.mimus.jbasicgl.graphics.Color4f;
 import fr.mimus.jbasicgl.graphics.Mesh;
 import fr.mimus.jbasicgl.graphics.Shaders;
 import fr.mimus.jbasicgl.graphics.Texture;
@@ -16,7 +17,7 @@ public class Animation {
 	
 	Mesh m;
 	boolean isPaused = false, 
-			isFlipped = true,
+			isFlipped = false,
 			isReversed = false;
 	int frame;
 	float delay;
@@ -44,10 +45,10 @@ public class Animation {
 		delay = secDelay;
 		
 		m = new Mesh(4);
-		m.addVertices(0,0).addTexCoord2f(0, 0);
-		m.addVertices(width,0).addTexCoord2f(1f / columns, 0);
-		m.addVertices(width,height).addTexCoord2f(1f / columns, 1f / lines);
-		m.addVertices(0,height).addTexCoord2f(0, 1f / lines);
+		m.addVertices(0,0).addTexCoord2f(0, 0).addColor(Color4f.WHITE);
+		m.addVertices(width,0).addTexCoord2f(1f / columns, 0).addColor(Color4f.WHITE);
+		m.addVertices(width,height).addTexCoord2f(1f / columns, 1f / lines).addColor(Color4f.WHITE);
+		m.addVertices(0,height).addTexCoord2f(0, 1f / lines).addColor(Color4f.WHITE);
 		
 		m.buffering();
 	}
@@ -55,7 +56,7 @@ public class Animation {
 	public void render(Shaders shader, Vec2 pos){
 		if(isFlipped) pos.add(new Vec2((float)width,0f));
 		shader.setUniformMat4f("m_view", Mat4.multiply(Mat4.translate(pos), Mat4.scale(isFlipped?-1:1, 1, 1)));
-		shader.setUniform1f("anim", (float) frame / columns);
+		shader.setUniform2f("anim", new Vec2((float) frame / columns, 0));
 		
 		if(tex != null){
 			tex.bind();
