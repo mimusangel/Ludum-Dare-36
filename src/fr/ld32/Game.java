@@ -8,6 +8,7 @@ import fr.ld32.map.Map;
 import fr.mimus.jbasicgl.graphics.Shaders;
 import fr.mimus.jbasicgl.maths.Mat4;
 import fr.mimus.jbasicgl.maths.Vec2;
+import utils.Res;
 
 public class Game
 {
@@ -20,6 +21,8 @@ public class Game
 	
 	public Game()
 	{
+		Res.autoLoadRsc();
+		
 		ortho = Mat4.orthographic(0, 720 * 9 / 16, 720, 0, -1f, 1f);
 		main = new Shaders("shaders/main.vert", "shaders/main.frag");
 		maptest = new Map(this);
