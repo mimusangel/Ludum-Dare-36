@@ -1,3 +1,10 @@
+package fr.ld32;
+import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
+import static org.lwjgl.opengl.GL11.GL_ONE_MINUS_SRC_ALPHA;
+import static org.lwjgl.opengl.GL11.GL_SRC_ALPHA;
+import static org.lwjgl.opengl.GL11.glBlendFunc;
+import static org.lwjgl.opengl.GL11.glClear;
+
 import java.io.File;
 
 import fr.mimus.jbasicgl.Window;
@@ -10,40 +17,52 @@ public class LD36
 	public static final double	NS_PER_TICK = NS_PER_SECOND / 60.0f;
 	
 	Window win;
+	Game game;
+	
 	public LD36()
 	{
 		win = new Window("LD36", 720, 720 * 9 / 16, true);
 		win.create();
 		win.sync(false);
+		init();
+	}
+	
+	private void init()
+	{
+		game = new Game();
 	}
 	
 	private void loop()
 	{
 		long time = System.nanoTime();
 		long timer = System.currentTimeMillis();
+		long lastRenderTime = System.nanoTime();
 		int tick = 0;
 		int frame = 0;
 		while(win != null && !win.isClose())
 		{
 			long now = System.nanoTime();
-			long elaspse = now - time;
-			if (elaspse >= NS_PER_TICK)
+			long elapse = now - time;
+			if (elapse >= NS_PER_TICK)
 			{
 				time += NS_PER_TICK;
-				update(tick);
+				game.update(tick, (double)elapse / NS_PER_SECOND);
 				tick++;
 			}
 			else
 			{
-				render();
+				glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+				glClear(GL_COLOR_BUFFER_BIT);
+				game.render((double)(now - lastRenderTime) / NS_PER_SECOND);
 				Shaders.unbind();
 				frame++;
+				lastRenderTime = System.nanoTime();
 			}
 			win.update();
 			
 			now = System.currentTimeMillis();
-			elaspse = now - timer;
-			if (elaspse >= 1000)
+			elapse = now - timer;
+			if (elapse >= 1000)
 			{
 				timer += 1000;
 				System.out.println("FPS: " + frame + ", UPS: " + tick);
@@ -52,16 +71,6 @@ public class LD36
 			}
 		}
 		win.destroy();
-	}
-	
-	private void render()
-	{
-		
-	}
-	
-	private void update(int tick)
-	{
-		
 	}
 	
 	private static LD36 instance;
