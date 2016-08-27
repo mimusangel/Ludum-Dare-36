@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import fr.ld32.entities.Entity;
 import fr.ld32.entities.EntityPlayer;
+import fr.ld32.entities.IMovable;
 import fr.ld32.entities.IWalkable;
 import fr.ld32.map.Map;
 import fr.ld32.utils.Res;
@@ -144,7 +145,7 @@ public class Game
 		while (i < entities.size())
 		{
 			Entity e = entities.get(i);
-			if (e == entity)
+			if (e == entity || !(e instanceof IMovable))
 			{
 				i++;
 				continue;

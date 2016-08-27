@@ -104,10 +104,7 @@ public class EntityPlayer extends Entity {
 		super.update(game, tick, elapse);
 		if (grab != null)
 		{
-			AABB box = getBox();
-			AABB grabBox = grab.getBox();
-			grab.pos.y = (box.y + box.h) - grabBox.h;
-			grab.pos.x = (box.x + box.w / 2) - (grabBox.w / 2);
+			((IMovable)grab).move(pos.copy().sub(grab.pos).add(0, 16f- (int)(anim.x * 8) % 2));
 			grab.gravity = 0;
 		}
 	}

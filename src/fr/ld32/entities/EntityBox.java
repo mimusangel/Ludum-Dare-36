@@ -1,6 +1,7 @@
 package fr.ld32.entities;
 
 import fr.ld32.AABB;
+import fr.ld32.Game;
 import fr.ld32.utils.Res;
 import fr.mimus.jbasicgl.graphics.Color4f;
 import fr.mimus.jbasicgl.graphics.Mesh;
@@ -26,6 +27,17 @@ public class EntityBox extends Entity implements IMovable, IWalkable
 		texture = Res.images.get("box");
 	}
 
+	public void update(Game game, int tick, double elapse)
+	{
+		pos.add(velocity);
+		velocity.mul(0.75f);
+		if (Math.abs(velocity.x) < 0.1f)
+			velocity.x = 0;
+		if (Math.abs(velocity.y) < 0.1f)
+			velocity.y = 0;
+		super.update(game, tick, elapse);
+	}
+	
 	public boolean entityAlive()
 	{
 		return true;
@@ -38,8 +50,8 @@ public class EntityBox extends Entity implements IMovable, IWalkable
 
 	public void move(Vec2 vec)
 	{
-		pos.x = vec.x;
-		pos.y = vec.y;
+		velocity.x = vec.x;
+		velocity.y = vec.y;
 	}
 
 }
