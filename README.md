@@ -8,7 +8,7 @@
 ## Soft
 * IDE: Eclipse, Intell IJ
 * Sound effect: bfxr, sfxr
-* Graphic: photoshop, Pickle
+* Graphic: photoshop (SpriteSheet generator script: https://github.com/bogdanrybak/spritesheet-generator)
 
 ## Link
 * JBasicGL: https://github.com/mimusangel/Ludum-Dare-36.git
