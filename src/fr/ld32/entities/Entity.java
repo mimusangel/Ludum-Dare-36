@@ -3,6 +3,7 @@ package fr.ld32.entities;
 import org.lwjgl.opengl.GL11;
 
 import fr.ld32.AABB;
+import fr.ld32.Game;
 import fr.mimus.jbasicgl.graphics.Mesh;
 import fr.mimus.jbasicgl.graphics.Shaders;
 import fr.mimus.jbasicgl.graphics.Texture;
@@ -20,7 +21,6 @@ public abstract class Entity
 	public Entity(Vec2 pos)
 	{
 		this.pos = pos;
-		createEntity();
 	}
 	
 	public abstract void createEntity();
@@ -37,14 +37,19 @@ public abstract class Entity
 			matPos.x = (float) Math.floor(matPos.x);
 			matPos.y = (float) Math.floor(matPos.y);
 			shader.setUniformMat4f("m_view", Mat4.translate(matPos));
+			shader.setUniform2f("anim", new Vec2());
 			mesh.render(GL11.GL_QUADS);
 		}
 		else
+		{
 			shader.setUniformMat4f("m_view", Mat4.identity());
+			shader.setUniform2f("anim", new Vec2());
+			createEntity();
+		}
 		Texture.unbind();
 	}
 	
-	public void update(int tick, double elapse)
+	public void update(Game game, int tick, double elapse)
 	{
 		if (gravity == 0)
 			gravity = 0.9f;

@@ -1,5 +1,7 @@
 package fr.ld32;
 
+import fr.mimus.jbasicgl.maths.Vec2;
+
 public class AABB
 {
 	public int x;
@@ -14,9 +16,25 @@ public class AABB
 		this.h = h;
 	}
 	
-	public boolean collided(AABB other)
+	public Vec2 collided(AABB other)
 	{
-		return (collided(other.x, other.y, other.w, other.h));
+		Vec2 vec = new Vec2();
+		if (x > other.x + other.w || y > other.y + other.h || x + w <= other.x || y + h <= other.y)
+			return (null);
+
+		int x0 = x + (w / 2);
+		int x1 = other.x + (other.w / 2);
+		int y0 = y + (h / 2);
+		int y1 = other.y + (other.h / 2);
+		if (x0 < x1)
+			vec.x = (x + w) - other.x;
+		else if (x0 > x1)
+			vec.x = x - (other.x + other.w);
+		if (y0 < y1)
+			vec.y = (y + h) - other.y;
+		else if (y0 > y1)
+			vec.y = y - (other.y + other.h);
+		return (vec);
 	}
 	
 	public boolean collided(int ox, int oy, int ow, int oh)

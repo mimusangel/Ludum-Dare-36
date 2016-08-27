@@ -3,6 +3,7 @@ package fr.ld32.utils;
 import java.io.File;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Map.Entry;
 
 import fr.mimus.jbasicgl.graphics.Texture;
 
@@ -16,6 +17,10 @@ public class Res {
 		sortFiles(FileUtils.getRecursiveFiles(imgDir), "tex", "png", "jpg");
 		
 		System.out.println(images.size() + " images loaded");
+		for (Entry<String, Texture> entry : images.entrySet())
+		{
+			System.out.println(" - " + entry.getKey());
+		}
 	}
 		
 	private static void sortFiles(File[] files, String type, String... args){
@@ -26,7 +31,9 @@ public class Res {
 					File url = file;
 					switch(type){
 						case "tex": 
-							if(url != null)images.put(split[0], Texture.FileTexture(url.getAbsolutePath(), true)); break;
+							if(url != null)
+								images.put(split[0], Texture.FileTexture(url.getAbsolutePath(), true));
+							break;
 					}
 				}
 			}

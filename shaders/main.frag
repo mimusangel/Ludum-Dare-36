@@ -7,12 +7,11 @@ in vec3 v_normal;
 in vec2 v_tex;
 
 uniform sampler2D u_texture0;
-uniform float anim;
+uniform vec2 anim;
 
 void main()
 {
-	vec2 tex = v_tex;
-	tex.x += anim;
+	vec2 tex = v_tex + anim;
 	vec4 texColor0 = texture2D(u_texture0, tex);
 	out_color = v_color * texColor0;
 }
