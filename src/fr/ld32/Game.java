@@ -60,11 +60,14 @@ public class Game
 					AABB aabby = e.getBox();
 					aabbx.x = (int) last.x;
 					if (!maptest.checkCollid(aabbx))
+					{
 						e.pos.x = last.x;
+					}
 					aabby.y = (int) last.y;
 					if (!maptest.checkCollid(aabby))
 					{
 						e.pos.y = last.y;
+						e.gravity = 0;
 					}
 					if (maptest.checkCollid(e.getBox()))
 					{

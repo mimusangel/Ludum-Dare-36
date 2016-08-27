@@ -16,6 +16,9 @@ public class EntityPlayer extends Entity {
 	long time;
 	float anim;
 	float dir;
+	Mesh hand;
+	Texture texHand;
+	
 	public EntityPlayer(Vec2 pos)
 	{
 		super(pos);
@@ -23,13 +26,20 @@ public class EntityPlayer extends Entity {
 
 	public void createEntity()
 	{
-		mesh = new Mesh(6);
+		mesh = new Mesh(4);
 		mesh.addVertices(0, 0).addColor(Color4f.WHITE).addTexCoord2f(0, 0);
-		mesh.addVertices(32, 0).addColor(Color4f.WHITE).addTexCoord2f(0.1f, 0);
-		mesh.addVertices(32, 64).addColor(Color4f.WHITE).addTexCoord2f(0.1f, 1);
+		mesh.addVertices(32, 0).addColor(Color4f.WHITE).addTexCoord2f(1f / 8f, 0);
+		mesh.addVertices(32, 64).addColor(Color4f.WHITE).addTexCoord2f(1f / 8f, 1);
 		mesh.addVertices(0, 64).addColor(Color4f.WHITE).addTexCoord2f(0, 1);
 		mesh.buffering();
+		hand = new Mesh(4);
+		hand.addVertices(0, 0).addColor(Color4f.WHITE).addTexCoord2f(0, 0);
+		hand.addVertices(32, 0).addColor(Color4f.WHITE).addTexCoord2f(1f, 0);
+		hand.addVertices(32, 32).addColor(Color4f.WHITE).addTexCoord2f(1f, 1);
+		hand.addVertices(0, 32).addColor(Color4f.WHITE).addTexCoord2f(0, 1);
+		hand.buffering();
 		texture = Texture.FileTexture("rsc/images/playerWalk.png", false);
+		texHand = Texture.FileTexture("rsc/images/playerHand.png", false);
 		time = System.currentTimeMillis();
 		anim = 0;
 		dir = 1;
@@ -47,7 +57,7 @@ public class EntityPlayer extends Entity {
 		if (keyboard.isDown(Keyboard.KEY_A))
 		{
 			pos.x -= 2;
-			if (System.currentTimeMillis() - time >= 1000)
+			if (System.currentTimeMillis() - time >= 800)
 				time = System.currentTimeMillis();
 			moving = true;
 			dir = -1;
@@ -55,7 +65,7 @@ public class EntityPlayer extends Entity {
 		if (keyboard.isDown(Keyboard.KEY_D))
 		{
 			pos.x += 2;
-			if (System.currentTimeMillis() - time >= 1000)
+			if (System.currentTimeMillis() - time >= 800)
 				time = System.currentTimeMillis();
 			moving = true;
 			dir = 1;
@@ -67,13 +77,13 @@ public class EntityPlayer extends Entity {
 		}
 		if (this.inFloor && moving)
 		{
-			if (System.currentTimeMillis() - time < 1000)
+			if (System.currentTimeMillis() - time < 800)
 				anim = (float) Math.floor((float)(System.currentTimeMillis() - time) / 100);
 			else
 				anim = 0;
 		}
 		else if (moving)
-			anim = 3;
+			anim = 2;
 		else
 			anim = 0;
 		super.update(tick, elapse);
@@ -81,8 +91,6 @@ public class EntityPlayer extends Entity {
 	
 	public void render(Shaders shader, Vec2 offset)
 	{
-		if (texture != null)
-			texture.bind();
 		if (mesh != null)
 		{
 			Vec2 matPos = pos.copy().add(offset);
@@ -91,8 +99,17 @@ public class EntityPlayer extends Entity {
 			if (dir < 0)
 				matPos.x += 32f;
 			shader.setUniformMat4f("m_view", Mat4.multiply(Mat4.translate(matPos), Mat4.scale(dir, 1, 1)));
-			shader.setUniform1f("anim", anim / 10.0f);
+			shader.setUniform1f("anim", anim / 8.0f);
+			texture.bind();
 			mesh.render(GL11.GL_QUADS);
+			texHand.bind();
+			if (dir < 0)
+				matPos.add(-5, 16 - anim % 2);
+			else
+				matPos.add(5, 16 - anim % 2);
+			shader.setUniformMat4f("m_view", Mat4.multiply(Mat4.translate(matPos), Mat4.scale(dir, 1, 1)));
+			shader.setUniform1f("anim", 0f);
+			hand.render(GL11.GL_QUADS);
 		}
 		else
 			shader.setUniformMat4f("m_view", Mat4.identity());
