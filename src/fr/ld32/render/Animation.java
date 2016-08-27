@@ -16,7 +16,7 @@ public class Animation {
 	
 	Mesh m;
 	boolean isPaused = false, 
-			isFlipped = false,
+			isFlipped = true,
 			isReversed = false;
 	int frame;
 	float delay;
@@ -53,6 +53,7 @@ public class Animation {
 	}
 	
 	public void render(Shaders shader, Vec2 pos){
+		if(isFlipped) pos.add(new Vec2((float)width,0f));
 		shader.setUniformMat4f("m_view", Mat4.multiply(Mat4.translate(pos), Mat4.scale(isFlipped?-1:1, 1, 1)));
 		shader.setUniform1f("anim", (float) frame / columns);
 		
