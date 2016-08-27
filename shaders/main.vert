@@ -10,10 +10,12 @@ uniform mat4 m_view;
 
 out vec4 v_color;
 out vec3 v_normal;
+out vec2 v_tex;
 
 void main()
 {
 	gl_Position = m_proj * m_view * vec4(in_position, 1.0);
 	v_color = in_color;
 	v_normal = in_normal;
+	v_tex = in_texCoord;
 }

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import fr.ld32.entities.Entity;
 import fr.ld32.entities.EntityPlayer;
+import fr.ld32.map.Map;
 import fr.mimus.jbasicgl.graphics.Shaders;
 import fr.mimus.jbasicgl.maths.Mat4;
 import fr.mimus.jbasicgl.maths.Vec2;
@@ -51,20 +52,29 @@ public class Game
 			Entity e = entities.get(i);
 			if (e.entityAlive())
 			{
+				Vec2 last = e.pos.copy();
 				e.update(tick, elapse);
-				Vec2 collid = maptest.checkCollid(e);
-				if (collid != null)
+				if (maptest.checkCollid(e.getBox()))
 				{
-					e.pos.add(collid);
-					if (collid.y != 0)
+					AABB aabbx = e.getBox();
+					AABB aabby = e.getBox();
+					aabbx.x = (int) last.x;
+					if (!maptest.checkCollid(aabbx))
+						e.pos.x = last.x;
+					aabby.y = (int) last.y;
+					if (!maptest.checkCollid(aabby))
 					{
-						e.gravity = 0;
-						e.pos.y = (float) Math.floor(e.pos.y);
-						e.inFloor = true;
+						e.pos.y = last.y;
+					}
+					if (maptest.checkCollid(e.getBox()))
+					{
+						e.pos.x = last.x;
+						e.pos.y = last.y;
 					}
 				}
-				else
-					e.inFloor = false;
+				e.inFloor = maptest.floorDetect(e.getBox());
+				if (e.inFloor)
+					e.gravity = 0;
 				i++;
 			}
 			else

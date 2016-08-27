@@ -1,9 +1,11 @@
 package fr.ld32;
+import static org.lwjgl.opengl.GL11.GL_BLEND;
 import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.GL_ONE_MINUS_SRC_ALPHA;
 import static org.lwjgl.opengl.GL11.GL_SRC_ALPHA;
 import static org.lwjgl.opengl.GL11.glBlendFunc;
 import static org.lwjgl.opengl.GL11.glClear;
+import static org.lwjgl.opengl.GL11.glEnable;
 
 import java.io.File;
 
@@ -16,8 +18,8 @@ public class LD36
 	public static final double	NS_PER_SECOND = 1000000000.0f;
 	public static final double	NS_PER_TICK = NS_PER_SECOND / 60.0f;
 	
-	Window win;
-	Game game;
+	public Window win;
+	public Game game;
 	
 	public LD36()
 	{
@@ -51,6 +53,7 @@ public class LD36
 			}
 			else
 			{
+				glEnable(GL_BLEND);
 				glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 				glClear(GL_COLOR_BUFFER_BIT);
 				game.render((double)(now - lastRenderTime) / NS_PER_SECOND);

@@ -5,6 +5,7 @@ import org.lwjgl.opengl.GL11;
 import fr.ld32.AABB;
 import fr.mimus.jbasicgl.graphics.Mesh;
 import fr.mimus.jbasicgl.graphics.Shaders;
+import fr.mimus.jbasicgl.graphics.Texture;
 import fr.mimus.jbasicgl.maths.Mat4;
 import fr.mimus.jbasicgl.maths.Vec2;
 
@@ -12,6 +13,7 @@ public abstract class Entity
 {
 	public Vec2 pos;
 	protected Mesh mesh;
+	protected Texture texture;
 	public float gravity = 0;
 	public boolean inFloor = false;
 	
@@ -27,16 +29,19 @@ public abstract class Entity
 	
 	public void render(Shaders shader, Vec2 offset)
 	{
+		if (texture != null)
+			texture.bind();
 		if (mesh != null)
 		{
 			Vec2 matPos = pos.copy().add(offset);
 			matPos.x = (float) Math.floor(matPos.x);
 			matPos.y = (float) Math.floor(matPos.y);
 			shader.setUniformMat4f("m_view", Mat4.translate(matPos));
-			mesh.render(GL11.GL_TRIANGLES);
+			mesh.render(GL11.GL_QUADS);
 		}
 		else
 			shader.setUniformMat4f("m_view", Mat4.identity());
+		Texture.unbind();
 	}
 	
 	public void update(int tick, double elapse)
@@ -44,11 +49,13 @@ public abstract class Entity
 		if (gravity == 0)
 			gravity = 0.9f;
 		if (gravity > 0)
-			gravity *= 1.3f;
+			gravity *= 1.15f;
 		if (gravity < 0)
-			gravity *= 0.7f;
+			gravity *= 0.85f;
 		if (gravity > 16)
 			gravity = 16;
+		if (gravity < 0.1f && gravity > -0.1f)
+			gravity = 0;
 		pos.y += gravity;
 	}
 		
@@ -56,5 +63,7 @@ public abstract class Entity
 	{
 		if (mesh != null)
 			mesh.dispose();
+		if (texture != null)
+			texture.dispose();
 	}
 }
