@@ -197,7 +197,7 @@ public class Game
 			if (collid != null)
 			{
 				Vec2 v = entity.pos.copy().sub(e.pos).add(0, 16f);
-				if (v.length() <= 20)
+				if (v.length() <= 30)
 					return (e);
 			}
 			

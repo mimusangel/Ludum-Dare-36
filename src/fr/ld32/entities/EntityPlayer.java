@@ -129,7 +129,7 @@ public class EntityPlayer extends Entity {
 		if (grab != null)
 		{
 			Vec2 v = pos.copy().sub(grab.pos).add(0, 16f - (int)(anim.x * 8) % 2);
-			if (v.length() > 20)
+			if (v.length() > 30)
 			{
 				((IMovable)grab).move(new Vec2(4 * dir, -16));
 				grab = null;

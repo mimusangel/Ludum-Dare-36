@@ -7,7 +7,7 @@ spawnBox 832 704
 spawnBox 768 480
 spawnBox 1664 896
 spawnBox 1728 896
-spawnDoor 0 480 128
+spawnDoor 0 480 0
 spawnDoor 1008 384 2
 spawnLever 256 192 last
 spawnLever 928 384 last1
