@@ -18,21 +18,31 @@ public class Animation {
 	Mesh m;
 	boolean isPaused = false, 
 			isFlipped = false,
-			isReversed = false;
+			isReversed = false,
+			isLooping = false,
+			isEnded = false;
 	int frame;
 	float delay;
 	
 	long lastFrame;
 	
 	public Animation(int c, int w, Texture texture, float secDelay){
-		this(c, 1, w, w, texture, 0, c-1, secDelay);
+		this(c, 1, w, w, texture, 0, c-1, secDelay, false);
+	}
+	
+	public Animation(int c, int w, Texture texture, float secDelay, boolean loop){
+		this(c, 1, w, w, texture, 0, c-1, secDelay, loop);
 	}
 	
 	public Animation(int c, int w, Texture texture, int s, int e, float secDelay){
-		this(c, 1, w, w, texture, s, e, secDelay);
+		this(c, 1, w, w, texture, s, e, secDelay, false);
 	}
 	
-	public Animation(int c, int l, int w, int h, Texture texture, int s, int e, float secDelay){
+	public Animation(int c, int w, Texture texture, int s, int e, float secDelay, boolean loop){
+		this(c, 1, w, w, texture, s, e, secDelay, loop);
+	}
+	
+	public Animation(int c, int l, int w, int h, Texture texture, int s, int e, float secDelay, boolean loop){
 		columns = c;
 		lines = l;
 		width = w;
@@ -43,6 +53,8 @@ public class Animation {
 		tex = texture;
 		
 		delay = secDelay;
+		
+		isLooping = loop;
 		
 		m = new Mesh(4);
 		m.addVertices(0,0).addTexCoord2f(0, 0).addColor(Color4f.WHITE);
@@ -66,12 +78,41 @@ public class Animation {
 	}
 	
 	public void update(){
-		if(frame > end) frame = start;
-		if(frame < start) frame = end;
-		if(System.currentTimeMillis() - lastFrame > delay * 1000)
+		if(!isPaused)
 		{
-			frame += isReversed?-1:1;
-			lastFrame = System.currentTimeMillis();
+			if(System.currentTimeMillis() - lastFrame > delay * 1000)
+			{
+				frame += isReversed?-1:1;
+				lastFrame = System.currentTimeMillis();
+			}
+			if(frame > end){
+				if(isLooping)
+				{
+					frame = start;
+					isEnded = false;
+				}
+				else
+				{
+					isPaused = true;
+					isEnded = true;
+					frame = end;
+				}
+			}
+			if(frame < start){
+				if(isLooping)
+				{
+					frame = end;
+					isEnded = false;
+				}
+				else
+				{
+					isPaused = true;
+					isEnded = true;
+					frame = start;
+				}
+			}
+		}else{
+			isEnded = true;
 		}
 	}
 	
@@ -87,6 +128,10 @@ public class Animation {
 		isReversed = !isReversed;
 	}
 	
+	public void toggleLoop() {
+		isLooping = !isLooping;
+	}
+	
 	public void setPause(boolean bool) {
 		isPaused = bool;
 	}
@@ -97,6 +142,12 @@ public class Animation {
 	
 	public void setReverse(boolean bool) {
 		isReversed = bool;
+		if(isReversed) frame = end;
+		else frame = start;
+	}
+	
+	public void setLoop(boolean bool) {
+		isLooping = bool;
 	}
 	
 	public void setDelay(float d){
@@ -105,5 +156,9 @@ public class Animation {
 	
 	public int getFrame(){
 		return frame;
+	}
+	
+	public boolean isEnded(){
+		return isEnded;
 	}
 }
