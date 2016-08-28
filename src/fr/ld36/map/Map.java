@@ -128,6 +128,10 @@ public class Map
 				{
 					entities.add(new EntityBox(new Vec2(Float.parseFloat(data[1]), Float.parseFloat(data[2]))));
 				}
+				else if (data[0].equalsIgnoreCase("spawnBones"))
+				{
+					entities.add(new EntityBones(new Vec2(Float.parseFloat(data[1]), Float.parseFloat(data[2]))));
+				}
 				else if (data[0].equalsIgnoreCase("spawnDoor"))
 				{
 					entities.add(new EntityDoor(new Vec2(Float.parseFloat(data[1]), Float.parseFloat(data[2])), Integer.parseInt(data[3])));
