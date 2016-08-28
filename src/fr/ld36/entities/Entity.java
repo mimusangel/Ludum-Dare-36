@@ -94,4 +94,8 @@ public abstract class Entity
 	{
 		return (life);
 	}
+	
+	public int distance(Entity e){
+		return (int) e.pos.copy().sub(this.pos).length();
+	}
 }

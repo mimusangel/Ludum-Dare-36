@@ -1,15 +1,18 @@
 package fr.ld36.entities;
 
+import java.util.ArrayList;
+
 import fr.ld36.AABB;
 import fr.ld36.Game;
 import fr.ld36.entities.spe.IActivable;
 import fr.ld36.entities.spe.IActivableLink;
+import fr.ld36.entities.spe.IWalkable;
 import fr.ld36.render.Animation;
 import fr.ld36.utils.Res;
 import fr.mimus.jbasicgl.graphics.Shaders;
 import fr.mimus.jbasicgl.maths.Vec2;
 
-public class EntityPlate extends Entity implements IActivable{
+public class EntityPlate extends Entity implements IActivable, IWalkable{
 
 	Animation anim;
 	IActivableLink link;
@@ -36,11 +39,26 @@ public class EntityPlate extends Entity implements IActivable{
 		else
 			createEntity();
 		
-		if(getBox().collided(game.player.getBox()) != null  && anim.isReversed()){
+		//Colision avec le joueur
+		boolean colide = getBox().collided(game.player.getBox()) != null;
+		//Colision avec les entités se trouvant à - de 32px
+		if(!colide){
+			ArrayList<Entity> entities = game.entities;
+			for(int i = 0; i < entities.size(); i++){
+				if(entities.get(i).getBox() != null && entities.get(i) != this){
+					if(this.distance(entities.get(i))<=32){
+						colide = getBox().collided(entities.get(i).getBox()) != null;
+						if(colide) break;
+					}
+				}
+			}
+		}
+		
+		if(colide  && anim.isReversed()){
 			anim.setReverse(false);
 			anim.setPause(false);
 		}
-		else if(getBox().collided(game.player.getBox()) == null && anim.isEnded() && !anim.isReversed()){
+		else if(!colide && anim.isEnded() && !anim.isReversed()){
 			anim.setPause(false);
 			anim.setReverse(true);
 		}
@@ -83,7 +101,7 @@ public class EntityPlate extends Entity implements IActivable{
 
 	@Override
 	public AABB getBox() {
-		return new AABB((int) pos.x + 4, (int) pos.y + 28, 24, 4);
+		return new AABB((int) pos.x + 4, (int) pos.y + 28 + anim.getFrame(), 24, 4 - anim.getFrame());
 	}
 
 }

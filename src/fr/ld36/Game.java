@@ -26,7 +26,7 @@ public class Game
 	public Shaders hud;
 	public Map map;
 	public EntityPlayer player;
-	ArrayList<Entity> entities;
+	public ArrayList<Entity> entities;
 	ArrayList<Entity> entitiesView;
 	Vec2 offset;
 	
