@@ -324,7 +324,7 @@ public class EntityPlayer extends Entity {
 		lifeTime = System.currentTimeMillis();
 		if (life <= 0)
 		{
-			LD36.getInstance().gameOver();
+			LD36.getInstance().gameOver(0);
 		}
 		else
 		{

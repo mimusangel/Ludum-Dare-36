@@ -12,7 +12,10 @@ import java.io.File;
 import fr.ld36.render.Renderer;
 import fr.ld36.utils.Res;
 import fr.mimus.jbasicgl.Window;
+import fr.mimus.jbasicgl.graphics.Color4f;
 import fr.mimus.jbasicgl.graphics.Shaders;
+import fr.mimus.jbasicgl.maths.Mat4;
+import fr.mimus.jbasicgl.maths.Vec2;
 import fr.mimus.jbasicgl.utils.MemoryClass;
 
 public class LD36
@@ -23,7 +26,7 @@ public class LD36
 	
 	public Window win;
 	public Game game;
-	
+	Shaders hud;
 	public LD36()
 	{
 		win = new Window("LD36 - Ancient Technology", WINDOW_WIDTH, WINDOW_WIDTH * 9 / 16, true);
@@ -37,6 +40,7 @@ public class LD36
 		Res.autoLoadRsc();
 		Renderer.load();
 		game = new Game();
+		hud = new Shaders("rsc/shaders/main.vert", "rsc/shaders/hud.frag");
 	}
 	
 	private void loop()
@@ -64,6 +68,8 @@ public class LD36
 				glClear(GL_COLOR_BUFFER_BIT);
 				if (game != null)
 					game.render((double)(now - lastRenderTime) / NS_PER_SECOND);
+				else
+					renderGameOver();
 				Shaders.unbind();
 				frame++;
 				lastRenderTime = System.nanoTime();
@@ -101,12 +107,6 @@ public class LD36
 		instance.loop();
 	}
 	
-	public void gameOver()
-	{
-		game.dispose();
-		game = null;
-	}
-	
 	public float getScaleX()
 	{
 		return (win.getWidth() / (float) WINDOW_WIDTH);
@@ -117,5 +117,27 @@ public class LD36
 		float height = WINDOW_WIDTH * 9f / 16f;
 		return (win.getHeight() / height);
 	}
+	
+	int score;
+	public void gameOver(int score)
+	{
+		this.score = score;
+		game.dispose();
+		game = null;
+	}
 
+	public void renderGameOver()
+	{
+		hud.bind();
+		hud.setUniformMat4f("m_proj", Mat4.orthographic(0, 720 * 9 / 16, 720, 0, -1f, 1f));
+		hud.setUniformMat4f("m_offset", Mat4.identity());
+		hud.setUniform4f("color", Color4f.WHITE.toVector4());
+		hud.setUniform2f("mulTexture", new Vec2(1, 1));
+		hud.setUniform2f("offsetTexture", new Vec2());
+		hud.setUniformMat4f("m_view", Mat4.identity());
+		Vec2 size = Renderer.metricString("Score: " + score);
+		Renderer.drawString(hud, "Score: " + score, new Vec2(360, 182).sub(size.div(2)), Color4f.WHITE);
+		size = Renderer.metricString("Press Enter for Retry");
+		Renderer.drawString(hud, "Press Enter for Retry", new Vec2(360, 232).sub(size.div(2)), Color4f.WHITE);
+	}
 }
