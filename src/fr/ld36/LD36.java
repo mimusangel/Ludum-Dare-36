@@ -9,6 +9,8 @@ import static org.lwjgl.opengl.GL11.glEnable;
 
 import java.io.File;
 
+import fr.ld36.render.Renderer;
+import fr.ld36.utils.Res;
 import fr.mimus.jbasicgl.Window;
 import fr.mimus.jbasicgl.graphics.Shaders;
 import fr.mimus.jbasicgl.utils.MemoryClass;
@@ -32,6 +34,8 @@ public class LD36
 	
 	private void init()
 	{
+		Res.autoLoadRsc();
+		Renderer.load();
 		game = new Game();
 	}
 	

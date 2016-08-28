@@ -11,17 +11,18 @@ uniform sampler2D u_texture0;
 uniform int disableTexture;
 uniform vec2 offsetTexture;
 uniform vec2 mulTexture;
+uniform vec4 color;
 void main()
 {	
 
 	if (disableTexture > 0)
 	{
-		out_color = v_color;
+		out_color = v_color * color;
 	}
 	else
 	{
 		vec2 tex = v_tex * mulTexture + offsetTexture;
 		vec4 texColor0 = texture2D(u_texture0, tex);
-		out_color = v_color * texColor0;
+		out_color = v_color * texColor0 * color;
 	}
 }

@@ -10,6 +10,7 @@ import fr.ld36.entities.spe.IBlock;
 import fr.ld36.entities.spe.IMovable;
 import fr.ld36.entities.spe.IWalkable;
 import fr.ld36.map.Map;
+import fr.ld36.render.Renderer;
 import fr.ld36.utils.Res;
 import fr.mimus.jbasicgl.graphics.Color4f;
 import fr.mimus.jbasicgl.graphics.Mesh;
@@ -21,8 +22,8 @@ import fr.mimus.jbasicgl.maths.Vec2;
 public class Game
 {
 	Mat4 ortho;
-	Shaders main;
-	Shaders hud;
+	public Shaders main;
+	public Shaders hud;
 	public Map map;
 	public EntityPlayer player;
 	ArrayList<Entity> entities;
@@ -35,7 +36,6 @@ public class Game
 	
 	public Game()
 	{
-		Res.autoLoadRsc();
 		ortho = Mat4.orthographic(0, 720 * 9 / 16, 720, 0, -1f, 1f);
 		main = new Shaders("rsc/shaders/main.vert", "rsc/shaders/main.frag");
 		hud = new Shaders("rsc/shaders/main.vert", "rsc/shaders/hud.frag");
@@ -61,7 +61,7 @@ public class Game
 		meshStamina.buffering();
 	}
 	
-	public void render(double elapse)
+	public void initRender()
 	{
 		main.bind();
 		main.setUniformMat4f("m_proj", ortho);
@@ -76,6 +76,12 @@ public class Game
 			main.setUniform1f("ligthDist", 320f);
 			main.setUniform2f("ligthPos", player.getLightPos());
 		}
+		main.setUniformMat4f("m_view", Mat4.identity());
+	}
+	
+	public void render(double elapse)
+	{
+		initRender();
 		map.render(elapse, main);
 		
 		int i = 0;
@@ -88,20 +94,26 @@ public class Game
 		renderHUD(elapse);
 	}
 	
-	public void renderHUD(double elapse)
+	public void initRenderHUD()
 	{
-		Texture.unbind();
 		hud.bind();
 		hud.setUniformMat4f("m_proj", ortho);
 		hud.setUniformMat4f("m_offset", Mat4.identity());
+		hud.setUniform4f("color", Color4f.WHITE.toVector4());
 		hud.setUniform2f("mulTexture", new Vec2(1, 1));
 		hud.setUniform2f("offsetTexture", new Vec2());
+		hud.setUniformMat4f("m_view", Mat4.identity());
+	}
+	public void renderHUD(double elapse)
+	{
+		Texture.unbind();
+		initRenderHUD();
 		hudHeart.bind();
 		for (int i = 0; i < player.getLife(); i++)
 		{
 			hud.setUniformMat4f("m_view", Mat4.multiply(Mat4.scale(0.75f), Mat4.translate(5 + i * 32, 5)));
 			meshHeart.render(GL11.GL_QUADS);
-		}// 128, 16
+		}
 		Texture.unbind();
 		hudStamina.bind();
 		hud.setUniform2f("offsetTexture", new Vec2(0.0f, 0.5f));

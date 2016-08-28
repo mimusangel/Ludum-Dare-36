@@ -76,7 +76,6 @@ public class Map
 			ArrayList<Entity> entities = new ArrayList<Entity>();
 			while ((line = reader.readLine()) != null)
 			{
-				line = line.toLowerCase();
 				String data[];
 				data = line.split(" ");
 				if (data[0].equalsIgnoreCase("set"))
@@ -97,6 +96,16 @@ public class Map
 					{
 						makeLadder(Integer.parseInt(data[2]), Integer.parseInt(data[3]), 3);
 					}
+				}
+				else if (data[0].equalsIgnoreCase("spawnSign"))
+				{
+					int ts = line.indexOf("\"");
+					String txt = "";
+					if (ts >= 0)
+					{
+						txt = line.substring(ts + 1, line.length() - 1);
+					}
+					entities.add(new EntitySign(new Vec2(Float.parseFloat(data[1]), Float.parseFloat(data[2])), txt));
 				}
 				else if (data[0].equalsIgnoreCase("spawnBox"))
 				{
