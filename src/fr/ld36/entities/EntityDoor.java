@@ -83,8 +83,8 @@ public class EntityDoor extends Entity implements IBlock, IActivableLink {
 		{
 			EntityPlayer player = LD36.getInstance().game.player;
 			Vec2 t = v.copy().sub(player.pos);
-			double dist = t.length();
-			if (dist < 100f)
+			double dist = t.lengthSqrd();
+			if (dist < 100f * 100f)
 			{
 				Texture tex = Res.images.get("lock");
 				float w = nbLock * 18f - 2f;

@@ -10,6 +10,7 @@ import fr.ld36.entities.spe.IBlock;
 import fr.ld36.entities.spe.IMovable;
 import fr.ld36.entities.spe.IWalkable;
 import fr.ld36.map.Map;
+import fr.ld36.render.Renderer;
 import fr.ld36.utils.Res;
 import fr.mimus.jbasicgl.graphics.Color4f;
 import fr.mimus.jbasicgl.graphics.Mesh;
@@ -26,6 +27,7 @@ public class Game
 	public Map map;
 	public EntityPlayer player;
 	ArrayList<Entity> entities;
+	ArrayList<Entity> entitiesView;
 	Vec2 offset;
 	
 	Texture hudHeart;
@@ -39,6 +41,7 @@ public class Game
 		main = new Shaders("rsc/shaders/main.vert", "rsc/shaders/main.frag");
 		hud = new Shaders("rsc/shaders/main.vert", "rsc/shaders/hud.frag");
 		entities = new ArrayList<Entity>();
+		entitiesView = new ArrayList<Entity>();
 		entities.add(player = new EntityPlayer(new Vec2(48, 80)));
 		map = new Map(this, "rsc/maps/map0.txt");
 		map.createMap();
@@ -84,9 +87,9 @@ public class Game
 		map.render(elapse, main);
 		
 		int i = 0;
-		while (i < entities.size())
+		while (i < entitiesView.size())
 		{
-			entities.get(i).render(main);
+			entitiesView.get(i).render(main);
 			i++;
 		}
 		player.renderGrab(main);
@@ -123,17 +126,22 @@ public class Game
 		hud.setUniform2f("mulTexture", new Vec2(p, 1));
 		hud.setUniformMat4f("m_view", Mat4.multiply(Mat4.scale(p, 1f, 1f), Mat4.translate(5, 405 - 21)));
 		meshStamina.render(GL11.GL_QUADS);
+		Renderer.drawString(hud, "e: " + entitiesView.size() + " / " + entities.size(), new Vec2(5, 30), Color4f.WHITE);
 	}
 	
 	public void update(int tick, double elapse)
 	{
 		map.update(tick, elapse);
 		int i = 0;
+		entitiesView.clear();
 		while (i < entities.size())
 		{
 			Entity e = entities.get(i);
 			if (e.entityAlive())
 			{
+				double dist = e.pos.copy().sub(player.pos).lengthSqrd();
+				if (dist <= 420f * 420f)
+					entitiesView.add(e);
 				Vec2 last = e.pos.copy();
 				e.update(this, tick, elapse);
 				/*
@@ -158,6 +166,7 @@ public class Game
 					if (entityCollid(e, new AABB((int)e.pos.x + 4, (int)last.y + 16, 24, 48)))
 					{
 						e.pos.x = last.x;
+						e.velocity.x = 0;
 					}
 					
 				}
@@ -174,8 +183,9 @@ public class Game
 						if (map.checkCollid(e, new AABB((int)e.pos.x, (int)last.y, aabb.w, aabb.h)))
 						{
 							e.pos.x = last.x;
+							e.velocity.x = 0;
 						}
-						if (!e.spawnFront())
+						if (e.spawnFront())
 						{
 							if (entityCollid(e, new AABB((int)last.x, (int)e.pos.y, aabb.w, aabb.h)))
 							{
@@ -185,13 +195,14 @@ public class Game
 							if (entityCollid(e, new AABB((int)e.pos.x, (int)last.y, aabb.w, aabb.h)))
 							{
 								e.pos.x = last.x;
+								e.velocity.x = 0;
 							}
 						}
 					}
 				}
 				AABB box = e.getBox();
 				if (box != null)
-					e.inFloor = map.floorDetect(e, box) || entityFloor(e, new AABB(box.x + 8, box.y + box.h - 2, 16, 4));
+					e.inFloor = map.floorDetect(e, box) || entityFloor(e, new AABB(box.x + 8, box.y + box.h - 6, 16, 8));
 				map.checkDamage(e);
 				i++;
 			}

@@ -17,5 +17,6 @@ spawnDoor 1008 384 2
 spawnLever 256 192 last
 spawnLever 928 384 last1
 spawnSign 960 384 "E for Use"
+spawnSign 1072 288 "S for Down"
 spawnTrap 704 992 1
 spawnLever 1440 704 last
