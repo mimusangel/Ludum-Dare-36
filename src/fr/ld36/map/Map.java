@@ -26,7 +26,10 @@ import fr.mimus.jbasicgl.maths.Vec2;
 public class Map
 {
 	Game game;
-	Mesh mesh;
+	Mesh meshBack;
+	Mesh meshFront;
+	Mesh meshSystem;
+	ArrayList<Vec2> link;
 	int data[][];
 	Texture texture;
 	public Vec2 spawn;
@@ -43,7 +46,6 @@ public class Map
 		try {
 			BufferedImage image = ImageIO.read(new FileInputStream(path));
 			data = new int[image.getHeight()][image.getWidth()];
-			mesh = new Mesh(data.length * data[0].length * 4 * 2);
 			for (int y = 0; y < data.length; y++)
 			{
 				for (int x = 0; x < data[0].length; x++)
@@ -68,12 +70,27 @@ public class Map
 		return (true);
 	}
 	
+	private void createLink(Vec2 pos, Entity e)
+	{
+		link.add(pos);
+		if (e instanceof EntityDoor)
+			link.add(e.pos.copy().add(16, 2));
+		else if (e instanceof EntityTrap)
+		{
+			if (e.pos.x + 32 < pos.x + 16)
+				link.add(e.pos.copy().add(62, 2));
+			else
+				link.add(e.pos.copy().add(2, 2));
+		}
+	}
+	
 	private boolean reader(String path)
 	{
 		try {
 			BufferedReader reader = new BufferedReader(new FileReader(path));
 			String line = "";
 			ArrayList<Entity> entities = new ArrayList<Entity>();
+			link = new ArrayList<Vec2>();
 			while ((line = reader.readLine()) != null)
 			{
 				String data[];
@@ -125,16 +142,16 @@ public class Map
 					int id;
 					if (data[3].equalsIgnoreCase("last") || data[3].equalsIgnoreCase("last0"))
 						id = entities.size() - 1;
-					else if (data[3].equalsIgnoreCase("last1"))
-						id = entities.size() - 2;
-					else if (data[3].equalsIgnoreCase("last2"))
-						id = entities.size() - 3;
-					else if (data[3].equalsIgnoreCase("last3"))
-						id = entities.size() - 4;
-					else if (data[3].equalsIgnoreCase("last4"))
-						id = entities.size() - 5;
-					else if (data[3].equalsIgnoreCase("last5"))
-						id = entities.size() - 6;
+					else if (data[3].startsWith("last"))
+					{
+						id = entities.size() - 1 - Integer.parseInt(data[3].substring(4));
+					}
+					else if (data[3].equalsIgnoreCase("first") || data[3].equalsIgnoreCase("first0"))
+						id = entities.size() - 1;
+					else if (data[3].startsWith("first"))
+					{
+						id = entities.size() - 1 - Integer.parseInt(data[3].substring(5));
+					}
 					else
 						id = Integer.parseInt(data[3]);
 					if (id >= 0 && id < entities.size())
@@ -142,7 +159,9 @@ public class Map
 						if (entities.get(id) instanceof IActivableLink)
 						{
 							e = entities.get(id);
-							entities.add(new EntityLever(new Vec2(Float.parseFloat(data[1]), Float.parseFloat(data[2])), (IActivableLink) e));
+							Vec2 pos = new Vec2(Float.parseFloat(data[1]), Float.parseFloat(data[2]));
+							createLink(pos.copy().add(16), e);
+							entities.add(new EntityLever(pos, (IActivableLink) e));
 						}
 					}
 					if (e == null)
@@ -156,16 +175,16 @@ public class Map
 					{
 						if (data[3].equalsIgnoreCase("last") || data[3].equalsIgnoreCase("last0"))
 							id = entities.size() - 1;
-						else if (data[3].equalsIgnoreCase("last1"))
-							id = entities.size() - 2;
-						else if (data[3].equalsIgnoreCase("last2"))
-							id = entities.size() - 3;
-						else if (data[3].equalsIgnoreCase("last3"))
-							id = entities.size() - 4;
-						else if (data[3].equalsIgnoreCase("last4"))
-							id = entities.size() - 5;
-						else if (data[3].equalsIgnoreCase("last5"))
-							id = entities.size() - 6;
+						else if (data[3].startsWith("last"))
+						{
+							id = entities.size() - 1 - Integer.parseInt(data[3].substring(4));
+						}
+						else if (data[3].equalsIgnoreCase("first") || data[3].equalsIgnoreCase("first0"))
+							id = entities.size() - 1;
+						else if (data[3].startsWith("first"))
+						{
+							id = entities.size() - 1 - Integer.parseInt(data[3].substring(5));
+						}
 						else
 							id = Integer.parseInt(data[3]);
 					}else{
@@ -176,7 +195,9 @@ public class Map
 						if (entities.get(id) instanceof IActivableLink)
 						{
 							e = entities.get(id);
-							entities.add(new EntityPlate(new Vec2(Float.parseFloat(data[1]), Float.parseFloat(data[2])), (IActivableLink) e));
+							Vec2 pos = new Vec2(Float.parseFloat(data[1]), Float.parseFloat(data[2]));
+							createLink(pos.copy().add(16), e);
+							entities.add(new EntityPlate(pos, (IActivableLink) e));
 						}
 					}
 					if (e == null)
@@ -231,6 +252,8 @@ public class Map
 		Vec2 addUVx = new Vec2(vx, 0);
 		Vec2 addUVy = new Vec2(0, vy);
 		Vec2 addUV = new Vec2(vx, vy);
+		meshBack = new Mesh(data.length * data[0].length * 4);
+		meshFront = new Mesh(data.length * data[0].length * 4);
 		for (int y = 0; y < data.length; y++)
 		{
 			for (int x = 0; x < data[0].length; x++)
@@ -238,14 +261,25 @@ public class Map
 				Vec2 pos = new Vec2(x * 32, y * 32);
 				Color4f color = Color4f.WHITE;
 				Vec2 uv = new Vec2();
-				if (data[y][x] >= 2) // ladder right
+				color = Color4f.GRAY;
+				meshBack.addVertices(pos).addColor(color).addTexCoord2f(uv);
+				meshBack.addVertices(pos.copy().add(32, 0)).addColor(color).addTexCoord2f(uv.copy().add(addUVx));
+				meshBack.addVertices(pos.copy().add(32, 32)).addColor(color).addTexCoord2f(uv.copy().add(addUV));
+				meshBack.addVertices(pos.copy().add(0, 32)).addColor(color).addTexCoord2f(uv.copy().add(addUVy));
+			}
+		}
+		meshBack.buffering();
+		for (int y = 0; y < data.length; y++)
+		{
+			for (int x = 0; x < data[0].length; x++)
+			{
+				if (data[y][x] <= 0)
+					continue;
+				Vec2 pos = new Vec2(x * 32, y * 32);
+				Color4f color = Color4f.WHITE;
+				Vec2 uv = new Vec2();
+				if (data[y][x] >= 2)
 				{
-					color = Color4f.GRAY;
-					mesh.addVertices(pos).addColor(color).addTexCoord2f(uv);
-					mesh.addVertices(pos.copy().add(32, 0)).addColor(color).addTexCoord2f(uv.copy().add(addUVx));
-					mesh.addVertices(pos.copy().add(32, 32)).addColor(color).addTexCoord2f(uv.copy().add(addUV));
-					mesh.addVertices(pos.copy().add(0, 32)).addColor(color).addTexCoord2f(uv.copy().add(addUVy));
-					color = Color4f.WHITE;
 					if (data[y][x] == 2)
 						uv = new Vec2(addUV.x * 2, addUV.y);
 					else if (data[y][x] == 3)
@@ -266,17 +300,24 @@ public class Map
 					else if (data[y][x] == 7)
 						uv = new Vec2(addUV.x * 2, 0);
 				}
-				else if (data[y][x] == 0)
-				{
-					color = Color4f.GRAY;
-				}
-				mesh.addVertices(pos).addColor(color).addTexCoord2f(uv);
-				mesh.addVertices(pos.copy().add(32, 0)).addColor(color).addTexCoord2f(uv.copy().add(addUVx));
-				mesh.addVertices(pos.copy().add(32, 32)).addColor(color).addTexCoord2f(uv.copy().add(addUV));
-				mesh.addVertices(pos.copy().add(0, 32)).addColor(color).addTexCoord2f(uv.copy().add(addUVy));
+				meshFront.addVertices(pos).addColor(color).addTexCoord2f(uv);
+				meshFront.addVertices(pos.copy().add(32, 0)).addColor(color).addTexCoord2f(uv.copy().add(addUVx));
+				meshFront.addVertices(pos.copy().add(32, 32)).addColor(color).addTexCoord2f(uv.copy().add(addUV));
+				meshFront.addVertices(pos.copy().add(0, 32)).addColor(color).addTexCoord2f(uv.copy().add(addUVy));
 			}
 		}
-		mesh.buffering();
+		meshFront.buffering();
+		meshSystem = new Mesh(link.size());
+		Color4f c = new Color4f(Color4f.DARK_GRAY);
+		c.alpha = 0.5f;
+		for (int i = 0; i < link.size(); i += 2)
+		{
+			Vec2 p0 = link.get(i);
+			Vec2 p1 = link.get(i + 1);
+			meshSystem.addVertices(p0).addColor(c);
+			meshSystem.addVertices(p1).addColor(c);
+		}
+		meshSystem.buffering();
 	}
 	
 	public void render(double elapse, Shaders shader)
@@ -284,10 +325,17 @@ public class Map
 		shader.setUniformMat4f("m_view", Mat4.identity());
 		shader.setUniform2f("anim", new Vec2());
 		texture.bind();
-		if (mesh != null)
+		if (meshBack != null)
+			meshBack.render(GL11.GL_QUADS);
+		if (meshSystem != null)
 		{
-			mesh.render(GL11.GL_QUADS);
+			shader.setUniform1i("disableTexture", 1);
+			meshSystem.render(GL11.GL_LINES);
+			shader.setUniform1i("disableTexture", 0);
 		}
+		if (meshFront != null)
+			meshFront.render(GL11.GL_QUADS);
+		
 		Texture.unbind();
 	}
 	
@@ -394,6 +442,8 @@ public class Map
 
 	public void dispose()
 	{
-		mesh.dispose();
+		meshBack.dispose();
+		meshFront.dispose();
+		meshSystem.dispose();
 	}
 }
