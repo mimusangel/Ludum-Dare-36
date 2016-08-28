@@ -186,4 +186,8 @@ public class Animation {
 			return (frame == start);
 		return (frame == end);
 	}
+	
+	public boolean isReversed(){
+		return isReversed;
+	}
 }

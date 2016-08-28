@@ -148,7 +148,42 @@ public class Map
 					if (e == null)
 						entities.add(new EntityLever(new Vec2(Float.parseFloat(data[1]), Float.parseFloat(data[2])), null));
 				}
+				else if (data[0].equalsIgnoreCase("spawnPlate"))
+				{
+					Entity e = null;
+					int id;
+					if(data.length > 3)
+					{
+						if (data[3].equalsIgnoreCase("last") || data[3].equalsIgnoreCase("last0"))
+							id = entities.size() - 1;
+						else if (data[3].equalsIgnoreCase("last1"))
+							id = entities.size() - 2;
+						else if (data[3].equalsIgnoreCase("last2"))
+							id = entities.size() - 3;
+						else if (data[3].equalsIgnoreCase("last3"))
+							id = entities.size() - 4;
+						else if (data[3].equalsIgnoreCase("last4"))
+							id = entities.size() - 5;
+						else if (data[3].equalsIgnoreCase("last5"))
+							id = entities.size() - 6;
+						else
+							id = Integer.parseInt(data[3]);
+					}else{
+						id = -1;
+					}
+					if (id >= 0 && id < entities.size())
+					{
+						if (entities.get(id) instanceof IActivableLink)
+						{
+							e = entities.get(id);
+							entities.add(new EntityPlate(new Vec2(Float.parseFloat(data[1]), Float.parseFloat(data[2])), (IActivableLink) e));
+						}
+					}
+					if (e == null)
+						entities.add(new EntityPlate(new Vec2(Float.parseFloat(data[1]), Float.parseFloat(data[2])), null));
+				}
 			}
+			
 			reader.close();
 			for (Entity e : entities)
 			{
