@@ -14,6 +14,7 @@ import fr.ld36.utils.Res;
 import fr.mimus.jbasicgl.Window;
 import fr.mimus.jbasicgl.graphics.Color4f;
 import fr.mimus.jbasicgl.graphics.Shaders;
+import fr.mimus.jbasicgl.input.Keyboard;
 import fr.mimus.jbasicgl.maths.Mat4;
 import fr.mimus.jbasicgl.maths.Vec2;
 import fr.mimus.jbasicgl.utils.MemoryClass;
@@ -59,6 +60,8 @@ public class LD36
 				time += NS_PER_TICK;
 				if (game != null)
 					game.update(tick, (double)elapse / NS_PER_SECOND);
+				else
+					updateGameOver();
 				tick++;
 			}
 			else
@@ -126,6 +129,15 @@ public class LD36
 		game = null;
 	}
 
+	public void updateGameOver()
+	{
+		Keyboard k = win.getKeyboard();
+		if (k.isPress(Keyboard.KEY_ENTER))
+		{
+			game = new Game();
+		}
+	}
+	
 	public void renderGameOver()
 	{
 		hud.bind();
@@ -136,8 +148,14 @@ public class LD36
 		hud.setUniform2f("offsetTexture", new Vec2());
 		hud.setUniformMat4f("m_view", Mat4.identity());
 		Vec2 size = Renderer.metricString("Score: " + score);
-		Renderer.drawString(hud, "Score: " + score, new Vec2(360, 182).sub(size.div(2)), Color4f.WHITE);
+		size = new Vec2(360, 182).sub(size.div(2));
+		size.x = (float) Math.floor(size.x);
+		size.y = (float) Math.floor(size.y);
+		Renderer.drawString(hud, "Score: " + score, size, Color4f.WHITE);
 		size = Renderer.metricString("Press Enter for Retry");
-		Renderer.drawString(hud, "Press Enter for Retry", new Vec2(360, 232).sub(size.div(2)), Color4f.WHITE);
+		size = new Vec2(360, 232).sub(size.div(2));
+		size.x = (float) Math.floor(size.x);
+		size.y = (float) Math.floor(size.y);
+		Renderer.drawString(hud, "Press Enter for Retry", size, Color4f.WHITE);
 	}
 }

@@ -228,7 +228,15 @@ public class EntityPlayer extends Entity {
 		if (grab != null)
 		{
 			texHandGrab.bind();
-			Vec2 matPos = grab.pos.copy().add(-3f, 8f);
+			int animx = (int)(anim.x * 8);
+			int boxDisplacement = animx==2||animx==6?1:
+				animx==3||animx==5?2:
+				animx==4?3:0;
+			AABB box = grab.getBox();
+			Vec2 grabPos = pos.copy().add(16, 32 + boxDisplacement).sub(box.w / 2, box.h / 2);
+			Vec2 matPos = grabPos.add(-3f, 8f);
+			matPos.x = (float) Math.floor(matPos.x);
+			matPos.y = (float) Math.floor(matPos.y);
 			if (dir < 0)
 				matPos.x += 38f;
 			shader.setUniform2f("anim", new Vec2());
@@ -328,6 +336,9 @@ public class EntityPlayer extends Entity {
 		}
 		else
 		{
+			Entity e = new EntityBones(pos.copy());
+			e.velocity.y = -4;
+			LD36.getInstance().game.addEntity(e);
 			pos = LD36.getInstance().game.map.spawn.copy();
 			velocity.y = 0;
 		}

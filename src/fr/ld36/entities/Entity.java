@@ -81,8 +81,6 @@ public abstract class Entity
 	{
 		if (mesh != null)
 			mesh.dispose();
-		if (texture != null)
-			texture.dispose();
 	}
 	
 	public boolean spawnFront()
