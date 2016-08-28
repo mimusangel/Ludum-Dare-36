@@ -105,12 +105,12 @@ public class Game
 		Texture.unbind();
 		hudStamina.bind();
 		hud.setUniform2f("offsetTexture", new Vec2(0.0f, 0.5f));
-		hud.setUniformMat4f("m_view", Mat4.translate(5, LD36.getInstance().win.getHeight() - 21));
+		hud.setUniformMat4f("m_view", Mat4.translate(5, 405 - 21));
 		meshStamina.render(GL11.GL_QUADS);
 		hud.setUniform2f("offsetTexture", new Vec2(0.0f, 0.0f));
 		float p = ((float)player.getStamina() / 100f);
 		hud.setUniform2f("mulTexture", new Vec2(p, 1));
-		hud.setUniformMat4f("m_view", Mat4.multiply(Mat4.translate(5, LD36.getInstance().win.getHeight() - 21), Mat4.scale(p, 1f, 1f)));
+		hud.setUniformMat4f("m_view", Mat4.multiply(Mat4.scale(p, 1f, 1f), Mat4.translate(5, 405 - 21)));
 		meshStamina.render(GL11.GL_QUADS);
 	}
 	
