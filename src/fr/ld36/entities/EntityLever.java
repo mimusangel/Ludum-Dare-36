@@ -2,6 +2,8 @@ package fr.ld36.entities;
 
 import fr.ld36.AABB;
 import fr.ld36.Game;
+import fr.ld36.entities.spe.IActivable;
+import fr.ld36.entities.spe.IActivableLink;
 import fr.ld36.render.Animation;
 import fr.ld36.utils.Res;
 import fr.mimus.jbasicgl.graphics.Shaders;

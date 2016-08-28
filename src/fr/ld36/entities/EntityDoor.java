@@ -5,6 +5,8 @@ import org.lwjgl.opengl.GL11;
 import fr.ld36.AABB;
 import fr.ld36.Game;
 import fr.ld36.LD36;
+import fr.ld36.entities.spe.IActivableLink;
+import fr.ld36.entities.spe.IBlock;
 import fr.ld36.render.Animation;
 import fr.ld36.utils.Res;
 import fr.mimus.jbasicgl.graphics.Color4f;
@@ -35,7 +37,6 @@ public class EntityDoor extends Entity implements IBlock, IActivableLink {
 		else
 			unlock--;
 		boolean islock = (unlock == nbLock);
-		System.out.println(unlock + " : " + nbLock + " = " + islock);
 		if (lastStat != islock)
 		{
 			lastStat = islock;

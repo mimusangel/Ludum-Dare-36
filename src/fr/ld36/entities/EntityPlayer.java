@@ -5,6 +5,7 @@ import org.lwjgl.opengl.GL11;
 import fr.ld36.AABB;
 import fr.ld36.Game;
 import fr.ld36.LD36;
+import fr.ld36.entities.spe.IMovable;
 import fr.ld36.utils.Res;
 import fr.mimus.jbasicgl.graphics.Color4f;
 import fr.mimus.jbasicgl.graphics.Mesh;
@@ -23,16 +24,20 @@ public class EntityPlayer extends Entity {
 	Texture texHand;
 	Mesh test;
 
-	long repeatSpaceTime;
-	long repeatActionTime;
 	Entity grab;
-	
 	boolean debugMode;
+
+	int life;
+	int stamina;
+	long staTime;
 	
 	public EntityPlayer(Vec2 pos)
 	{
 		super(pos);
 		debugMode = false;
+		life = 3;
+		stamina = 100;
+		staTime = System.currentTimeMillis();
 	}
 
 	public void createEntity()
@@ -52,8 +57,6 @@ public class EntityPlayer extends Entity {
 		texture = Res.images.get("playerWalk");
 		texHand = Res.images.get("playerHand");
 		time = System.currentTimeMillis();
-		repeatSpaceTime = System.currentTimeMillis();
-		repeatActionTime = System.currentTimeMillis();
 		anim = new Vec2();
 		dir = 1;
 		grab = null;
@@ -100,9 +103,8 @@ public class EntityPlayer extends Entity {
 			gravity = 0;
 			this.inFloor = false;
 		}
-		if (keyboard.isDown(Keyboard.KEY_SPACE) && System.currentTimeMillis() - repeatSpaceTime > 150)
+		if (keyboard.isPress(Keyboard.KEY_SPACE))
 		{
-			repeatSpaceTime = System.currentTimeMillis();
 			if (grab == null)
 				grab = game.checkGrab(this);
 			else
@@ -111,11 +113,9 @@ public class EntityPlayer extends Entity {
 				grab = null;
 			}
 		}
-		if (keyboard.isDown(Keyboard.KEY_E) && grab == null && System.currentTimeMillis() - repeatActionTime > 150)
-		{
-			repeatActionTime = System.currentTimeMillis();
+		if (keyboard.isPress(Keyboard.KEY_E) && grab == null)
 			game.action(this);
-		}
+		
 		if (keyboard.isPress(Keyboard.KEY_F3))
 		{
 			debugMode = !debugMode;
@@ -132,6 +132,29 @@ public class EntityPlayer extends Entity {
 		else
 			anim.x = 0;
 		super.update(game, tick, elapse);
+		
+		if (System.currentTimeMillis() - staTime >= 250)
+		{
+			staTime = System.currentTimeMillis();
+			if (grab != null)
+			{
+				stamina--;
+				if (stamina < 0)
+				{
+					stamina = 0;
+					((IMovable)grab).move(new Vec2(0, -8));
+					grab = null;
+				}
+				System.out.println("stamina: " + stamina);
+			}
+			else
+			{
+				stamina++;
+				if (stamina > 100)
+					stamina = 100;
+			}
+			
+		}
 		if (grab != null)
 		{
 			Vec2 v = pos.copy().sub(grab.pos).add(0, 16f - (int)(anim.x * 8) % 2);

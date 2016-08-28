@@ -1,4 +1,6 @@
-package fr.ld36.entities;
+package fr.ld36.entities.spe;
+
+import fr.ld36.entities.Entity;
 
 public interface IActivableLink
 {

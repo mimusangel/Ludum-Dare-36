@@ -3,6 +3,10 @@ package fr.ld36;
 import java.util.ArrayList;
 
 import fr.ld36.entities.*;
+import fr.ld36.entities.spe.IActivable;
+import fr.ld36.entities.spe.IBlock;
+import fr.ld36.entities.spe.IMovable;
+import fr.ld36.entities.spe.IWalkable;
 import fr.ld36.map.Map;
 import fr.ld36.utils.Res;
 import fr.mimus.jbasicgl.graphics.Shaders;
