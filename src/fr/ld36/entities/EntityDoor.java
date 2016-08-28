@@ -103,16 +103,14 @@ public class EntityDoor extends Entity implements IBlock, IActivableLink {
 		}
 	}
 
-	public boolean entityAlive()
-	{
-		return true;
-	}
-
 	public AABB getBox()
 	{
 		if (anim != null)
 			return new AABB((int)pos.x + 12, (int)pos.y, 8, 64 - (anim.getFrame() * 59 / 24));
 		return new AABB((int)pos.x + 12, (int)pos.y, 8, 64);
 	}
+
+	public void giveDamage(Entity src, int dmg) {}
+	public void giveDamage(int x, int y, int dmg){}
 
 }

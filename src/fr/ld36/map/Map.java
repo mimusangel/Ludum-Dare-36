@@ -34,6 +34,7 @@ public class Map
 	public Map(Game game, String mapPath)
 	{
 		this.game = game;
+		texture = Res.images.get("tiles");
 		reader(mapPath);
 	}
 	
@@ -42,6 +43,7 @@ public class Map
 		try {
 			BufferedImage image = ImageIO.read(new FileInputStream(path));
 			data = new int[image.getHeight()][image.getWidth()];
+			mesh = new Mesh(data.length * data[0].length * 4 * 2);
 			for (int y = 0; y < data.length; y++)
 			{
 				for (int x = 0; x < data[0].length; x++)
@@ -166,8 +168,6 @@ public class Map
 	
 	public void createMap()
 	{
-		texture = Res.images.get("tiles");
-		mesh = new Mesh(data.length * data[0].length * 4 * 2);
 		float vx = 32f / (float)texture.getWidth();
 		float vy = 32f / (float)texture.getHeight();
 		Vec2 addUVx = new Vec2(vx, 0);
@@ -306,5 +306,36 @@ public class Map
 			}
 		}
 		return (false);
+	}
+	
+	public void checkDamage(Entity e)
+	{
+		AABB aabb = e.getBox();
+		if (aabb == null)
+			return ;
+		int minX = (int) (aabb.x) / 32;
+		int maxX = (int) (aabb.x + aabb.w) / 32;
+		int minY = (int) (aabb.y + aabb.h) / 32;
+		int maxY = (int) (aabb.y + aabb.h) / 32;
+		for (int y = minY; y <= maxY; y++)
+		{
+			if (y < 0) continue;
+			if (y >= data.length) break;
+			for (int x = minX; x <= maxX; x++)
+			{
+				if (x < 0) continue;
+				if (x >= data[0].length) break;
+				if (data[y][x] == 7 && aabb.collided(x * 32, y * 32 + 18, 32, 14))
+				{
+					e.giveDamage(x, y, 1);
+					return;
+				}
+			}
+		}
+	}
+
+	public void dispose()
+	{
+		mesh.dispose();
 	}
 }

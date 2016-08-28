@@ -3,6 +3,8 @@ spawn 32 448
 ladder right 30 25
 ladder right 23 32
 ladder right 62 22
+ladder right 72 82
+ladder right 28 82
 spawnBox 832 704
 spawnBox 768 480
 spawnBox 1664 896

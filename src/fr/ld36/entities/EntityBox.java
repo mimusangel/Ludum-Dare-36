@@ -39,11 +39,6 @@ public class EntityBox extends Entity implements IMovable, IWalkable
 			velocity.y = 0;
 		super.update(game, tick, elapse);
 	}
-	
-	public boolean entityAlive()
-	{
-		return true;
-	}
 
 	public AABB getBox()
 	{
@@ -55,5 +50,8 @@ public class EntityBox extends Entity implements IMovable, IWalkable
 		velocity.x = vec.x;
 		velocity.y = vec.y;
 	}
+
+	public void giveDamage(Entity src, int dmg) {}
+	public void giveDamage(int x, int y, int dmg){}
 
 }

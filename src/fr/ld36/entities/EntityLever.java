@@ -42,11 +42,6 @@ public class EntityLever extends Entity implements IActivable
 		if (anim != null)
 			anim.render(shader, pos.copy().add(offset));
 	}
-	
-	public boolean entityAlive()
-	{
-		return true;
-	}
 
 	public AABB getBox()
 	{
@@ -78,4 +73,7 @@ public class EntityLever extends Entity implements IActivable
 	{
 		return (false);
 	}
+
+	public void giveDamage(Entity src, int dmg) {}
+	public void giveDamage(int x, int y, int dmg){}
 }
