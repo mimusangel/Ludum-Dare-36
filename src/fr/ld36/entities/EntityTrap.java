@@ -103,15 +103,13 @@ public class EntityTrap extends Entity implements IBlock, IActivableLink {
 		}
 	}
 
-	public boolean entityAlive()
-	{
-		return true;
-	}
-
 	public AABB getBox()
 	{
 		if (anim != null && anim.getFrame() == 13)
 			return (null);
 		return new AABB((int)pos.x, (int)pos.y, 64, 5);
 	}
+
+	public void giveDamage(Entity src, int dmg) {}
+	public void giveDamage(int x, int y, int dmg){}
 }

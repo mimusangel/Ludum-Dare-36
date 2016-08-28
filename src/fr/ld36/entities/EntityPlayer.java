@@ -20,6 +20,7 @@ public class EntityPlayer extends Entity {
 	long time;
 	Vec2 anim;
 	float dir;
+	boolean reversed;
 	Mesh hand;
 	Texture texHand;
 	Mesh test;
@@ -27,7 +28,6 @@ public class EntityPlayer extends Entity {
 	Entity grab;
 	boolean debugMode;
 
-	int life;
 	int stamina;
 	long staTime;
 	
@@ -38,6 +38,7 @@ public class EntityPlayer extends Entity {
 		life = 3;
 		stamina = 100;
 		staTime = System.currentTimeMillis();
+		reversed = false;
 	}
 
 	public void createEntity()
@@ -62,9 +63,8 @@ public class EntityPlayer extends Entity {
 		grab = null;
 		test = new Mesh(2);
 		test.addVertices(0, 0).addColor(Color4f.RED).addTexCoord2f(0, 0);
-		test.addVertices(32, 0).addColor(Color4f.RED).addTexCoord2f(1f, 0);
+		test.addVertices(40, 0).addColor(Color4f.RED).addTexCoord2f(1f, 0);
 		test.buffering();
-		
 	}
 
 	public boolean entityAlive()
@@ -75,14 +75,19 @@ public class EntityPlayer extends Entity {
 	public void update(Game game, int tick, double elapse)
 	{
 		Keyboard keyboard = LD36.getInstance().win.getKeyboard();
+		Mouse mouse = LD36.getInstance().win.getMouse();
 		boolean moving = false;
+		if (mouse.getX() < LD36.WINDOW_WIDTH / 2)
+			dir = -1;
+		else
+			dir = 1;
 		if (keyboard.isDown(Keyboard.KEY_A))
 		{
 			pos.x -= 2;
 			if (System.currentTimeMillis() - time >= 800)
 				time = System.currentTimeMillis();
 			moving = true;
-			dir = -1;
+			reversed = dir == 1;
 		}
 		if (keyboard.isDown(Keyboard.KEY_D))
 		{
@@ -90,7 +95,7 @@ public class EntityPlayer extends Entity {
 			if (System.currentTimeMillis() - time >= 800)
 				time = System.currentTimeMillis();
 			moving = true;
-			dir = 1;
+			reversed = dir == -1;
 		}
 		if (keyboard.isDown(Keyboard.KEY_W) && this.inFloor)
 		{
@@ -126,6 +131,8 @@ public class EntityPlayer extends Entity {
 				anim.x = (float) Math.floor((float)(System.currentTimeMillis() - time) / 100) / 8f;
 			else
 				anim.x = 0;
+			if (reversed)
+				anim.x  = 1f - anim.x ;
 		}
 		else if (moving)
 			anim.x = 2f / 8f;
@@ -232,5 +239,24 @@ public class EntityPlayer extends Entity {
 
 	public AABB getBox() {
 		return new AABB((int)pos.x + 4, (int)pos.y + 16, 24, 48);
+	}
+
+	public void giveDamage(Entity src, int dmg) {}
+	
+	public void giveDamage(int x, int y, int dmg)
+	{
+		if (System.currentTimeMillis() - lifeTime < 1000)
+			return;
+		life--;
+		lifeTime = System.currentTimeMillis();
+		if (life <= 0)
+		{
+			LD36.getInstance().gameOver();
+		}
+		else
+		{
+			pos = LD36.getInstance().game.map.spawn.copy();
+			gravity = 0;
+		}
 	}
 }

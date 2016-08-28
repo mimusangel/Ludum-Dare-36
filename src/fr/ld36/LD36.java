@@ -48,7 +48,8 @@ public class LD36
 			if (elapse >= NS_PER_TICK)
 			{
 				time += NS_PER_TICK;
-				game.update(tick, (double)elapse / NS_PER_SECOND);
+				if (game != null)
+					game.update(tick, (double)elapse / NS_PER_SECOND);
 				tick++;
 			}
 			else
@@ -56,7 +57,8 @@ public class LD36
 				glEnable(GL_BLEND);
 				glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 				glClear(GL_COLOR_BUFFER_BIT);
-				game.render((double)(now - lastRenderTime) / NS_PER_SECOND);
+				if (game != null)
+					game.render((double)(now - lastRenderTime) / NS_PER_SECOND);
 				Shaders.unbind();
 				frame++;
 				lastRenderTime = System.nanoTime();
@@ -73,6 +75,8 @@ public class LD36
 				frame = 0;
 			}
 		}
+		if (game != null)
+			game.dispose();
 		win.destroy();
 	}
 	
@@ -89,6 +93,12 @@ public class LD36
 		
 		instance = new LD36();
 		instance.loop();
+	}
+	
+	public void gameOver()
+	{
+		game.dispose();
+		game = null;
 	}
 
 }

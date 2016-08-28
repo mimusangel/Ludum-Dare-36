@@ -17,7 +17,7 @@ public class Game
 {
 	Mat4 ortho;
 	Shaders main;
-	Map map;
+	public Map map;
 	public EntityPlayer player;
 	ArrayList<Entity> entities;
 	Vec2 offset;
@@ -116,6 +116,7 @@ public class Game
 				AABB box = e.getBox();
 				if (box != null)
 					e.inFloor = map.floorDetect(e, box) || entityFloor(e, new AABB(box.x + 8, box.y + box.h - 2, 16, 4));
+				map.checkDamage(e);
 				i++;
 			}
 			else
@@ -271,6 +272,17 @@ public class Game
 			
 			i++;
 		}
+	}
+	
+	public void dispose()
+	{
+		while (entities.size() > 0)
+		{
+			entities.get(0).dispose();
+			entities.remove(0);
+		}
+		if (map != null)
+			map.dispose();
 	}
 	
 }

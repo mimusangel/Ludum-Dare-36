@@ -17,15 +17,24 @@ public abstract class Entity
 	protected Texture texture;
 	public float gravity = 0;
 	public boolean inFloor = false;
+	int life;
+	long lifeTime;
 	
 	public Entity(Vec2 pos)
 	{
 		this.pos = pos;
+		life = 1;
+		lifeTime = System.currentTimeMillis();
 	}
-	
+
 	public abstract void createEntity();
-	public abstract boolean entityAlive();
+	public abstract void giveDamage(Entity src, int dmg);
+	public abstract void giveDamage(int x, int y, int dmg);
 	public abstract AABB getBox();
+	public boolean entityAlive()
+	{
+		return (life > 0);
+	}
 	
 	public void render(Shaders shader, Vec2 offset)
 	{
