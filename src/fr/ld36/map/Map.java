@@ -203,6 +203,10 @@ public class Map
 					if (e == null)
 						entities.add(new EntityPlate(new Vec2(Float.parseFloat(data[1]), Float.parseFloat(data[2])), null));
 				}
+				else if (data[0].equalsIgnoreCase("spawnChest"))
+				{
+					entities.add(new EntityChest(new Vec2(Float.parseFloat(data[1]), Float.parseFloat(data[2]))));
+				}
 			}
 			
 			reader.close();
