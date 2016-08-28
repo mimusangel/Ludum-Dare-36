@@ -11,19 +11,20 @@ import java.io.File;
 
 import fr.mimus.jbasicgl.Window;
 import fr.mimus.jbasicgl.graphics.Shaders;
+import fr.mimus.jbasicgl.utils.MemoryClass;
 
 public class LD36
 {
 	public static final int		WINDOW_WIDTH = 720;
-	public static final double	NS_PER_SECOND = 1000000000.0f;
-	public static final double	NS_PER_TICK = NS_PER_SECOND / 60.0f;
+	private static final double	NS_PER_SECOND = 1000000000.0f;
+	private static final double	NS_PER_TICK = NS_PER_SECOND / 60.0f;
 	
 	public Window win;
 	public Game game;
 	
 	public LD36()
 	{
-		win = new Window("LD36 - Ancient Technology", 720, 720 * 9 / 16, true);
+		win = new Window("LD36 - Ancient Technology", WINDOW_WIDTH, WINDOW_WIDTH * 9 / 16, true);
 		win.create();
 		win.sync(false);
 		init();
@@ -77,6 +78,7 @@ public class LD36
 		}
 		if (game != null)
 			game.dispose();
+		MemoryClass.clearAll();
 		win.destroy();
 	}
 	

@@ -221,9 +221,9 @@ public class Map
 		mesh.buffering();
 	}
 	
-	public void render(double elapse, Shaders shader, Vec2 offset)
+	public void render(double elapse, Shaders shader)
 	{
-		shader.setUniformMat4f("m_view", Mat4.translate(offset));
+		shader.setUniformMat4f("m_view", Mat4.identity());
 		shader.setUniform2f("anim", new Vec2());
 		texture.bind();
 		if (mesh != null)

@@ -39,14 +39,26 @@ public class Game
 	{
 		main.bind();
 		main.setUniformMat4f("m_proj", ortho);
-		map.render(elapse, main, offset);
+		main.setUniformMat4f("m_offset", Mat4.translate(offset));
+		if (player.grab != null)
+		{
+			main.setUniform1f("ligthDist", 240f);
+			main.setUniform2f("ligthPos", player.pos.copy().add(16, 32));
+		}
+		else
+		{
+			main.setUniform1f("ligthDist", 320f);
+			main.setUniform2f("ligthPos", player.getLightPos());
+		}
+		map.render(elapse, main);
 		
 		int i = 0;
 		while (i < entities.size())
 		{
-			entities.get(i).render(main, offset);
+			entities.get(i).render(main);
 			i++;
 		}
+		player.renderGrab(main);
 	}
 	
 	public void update(int tick, double elapse)

@@ -36,13 +36,13 @@ public abstract class Entity
 		return (life > 0);
 	}
 	
-	public void render(Shaders shader, Vec2 offset)
+	public void render(Shaders shader)
 	{
 		if (texture != null)
 			texture.bind();
 		if (mesh != null)
 		{
-			Vec2 matPos = pos.copy().add(offset);
+			Vec2 matPos = pos.copy();
 			matPos.x = (float) Math.floor(matPos.x);
 			matPos.y = (float) Math.floor(matPos.y);
 			shader.setUniformMat4f("m_view", Mat4.translate(matPos));

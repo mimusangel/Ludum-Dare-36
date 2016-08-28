@@ -74,9 +74,9 @@ public class EntityTrap extends Entity implements IBlock, IActivableLink {
 			createEntity();
 	}
 	
-	public void render(Shaders shader, Vec2 offset)
+	public void render(Shaders shader)
 	{
-		Vec2 v = pos.copy().add(offset);
+		Vec2 v = pos.copy();
 		if (anim != null)
 			anim.render(shader, v);
 		if (mesh != null && nbLock > 0)

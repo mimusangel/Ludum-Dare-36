@@ -37,10 +37,10 @@ public class EntityLever extends Entity implements IActivable
 			createEntity();
 	}
 	
-	public void render(Shaders shader, Vec2 offset)
+	public void render(Shaders shader)
 	{
 		if (anim != null)
-			anim.render(shader, pos.copy().add(offset));
+			anim.render(shader, pos.copy());
 	}
 
 	public AABB getBox()
