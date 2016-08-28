@@ -4,10 +4,10 @@ ladder right 30 25
 ladder right 23 32
 ladder right 62 22
 ladder right 72 82
-ladder right 28 82
+ladder left 28 82
 spawnSign 64 480 "A or D for Moving"
 spawnSign 192 608 "W for Jump"
-spawnSign 808 768 "SPACE for Lift"
+spawnSign 808 768 "SPACE for Lift/Drop"
 spawnBox 832 704
 spawnBox 768 480
 spawnBox 1664 896
@@ -16,5 +16,6 @@ spawnDoor 0 480 0
 spawnDoor 1008 384 2
 spawnLever 256 192 last
 spawnLever 928 384 last1
+spawnSign 960 384 "E for Use"
 spawnTrap 704 992 1
 spawnLever 1440 704 last
