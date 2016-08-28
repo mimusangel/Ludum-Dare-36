@@ -49,10 +49,14 @@ public class Map
 					data[y][x] = 0;
 					if (color == 0)
 						data[y][x] = 1;
-					if (color == 0xff0000)
+					else if (color == 0xff0000)
 						data[y][x] = 4;
-					if (color == 0x00ff00)
+					else if (color == 0x00ff00)
 						data[y][x] = 5;
+					else if (color == 0x808080)
+						data[y][x] = 6;
+					else if (color == 0x800080)
+						data[y][x] = 7;
 				}
 			}
 		} catch (IOException e) {
@@ -185,10 +189,23 @@ public class Map
 					color = Color4f.WHITE;
 					if (data[y][x] == 2)
 						uv = new Vec2(addUV.x * 2, addUV.y);
-					if (data[y][x] == 3)
+					else if (data[y][x] == 3)
 						uv = new Vec2(addUV.x * 2, addUV.y * 2);
-					if (data[y][x] == 4)
-						uv = new Vec2(addUV.x * 1, 0);
+					else if (data[y][x] == 4)
+						uv = new Vec2(addUV.x * 2, addUV.y * 3);
+					else if (data[y][x] == 5)
+					{
+						if (y == 0 || (y > 0 && data[y - 1][x] != 5))
+							uv = new Vec2(0, addUV.y);
+						else if (y == data.length - 1 || (y < data.length - 1 && data[y + 1][x] != 5))
+							uv = new Vec2(0, addUV.y * 3);
+						else
+							uv = new Vec2(0, addUV.y * 2);
+					}
+					else if (data[y][x] == 6)
+						uv = new Vec2(addUV.x, addUV.y * 3);
+					else if (data[y][x] == 7)
+						uv = new Vec2(addUV.x * 2, 0);
 				}
 				else if (data[y][x] == 0)
 				{
@@ -220,7 +237,7 @@ public class Map
 		
 	}
 	
-	public boolean checkCollid(AABB aabb)
+	public boolean checkCollid(Entity e, AABB aabb)
 	{
 		if (aabb != null)
 		{
@@ -246,6 +263,12 @@ public class Map
 						if (collid)
 							return (true);
 					}
+					if (data[y][x] == 6)
+					{
+						boolean collid = aabb.collided(x * 32, y * 32, 32, (int) (8 + e.gravity));
+						if (collid && e.gravity > 0 && aabb.y + aabb.h <= y * 32 + 4 + e.gravity)
+							return (true);
+					}
 				}
 			}
 			
@@ -253,10 +276,10 @@ public class Map
 		return (false);
 	}
 	
-	public boolean floorDetect(AABB aabb)
+	public boolean floorDetect(Entity e, AABB aabb)
 	{
-		int minX = (int) (aabb.x + 8) / 32;
-		int maxX = (int) (aabb.x + aabb.w - 8) / 32;
+		int minX = (int) (aabb.x + 4) / 32;
+		int maxX = (int) (aabb.x + aabb.w - 4) / 32;
 		int minY = (int) (aabb.y + aabb.h - 16) / 32;
 		int maxY = (int) (aabb.y + aabb.h + 1) / 32;
 		for (int y = minY; y <= maxY; y++)
@@ -273,6 +296,12 @@ public class Map
 					return (true);
 				if (data[y][x] == 1)
 					return (true);
+				if (data[y][x] == 6)
+				{
+					AABB tmp = new AABB(aabb.x, aabb.y + aabb.h - 2, aabb.w, 4);
+					if (tmp.collided(x * 32, y * 32, 32, 4))
+					return (true);
+				}
 			}
 		}
 		return (false);

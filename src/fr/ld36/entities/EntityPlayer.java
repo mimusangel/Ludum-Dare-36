@@ -94,6 +94,12 @@ public class EntityPlayer extends Entity {
 			gravity = -12;
 			this.inFloor = false;
 		}
+		if (keyboard.isDown(Keyboard.KEY_S) && this.inFloor)
+		{
+			pos.y += 8;
+			gravity = 0;
+			this.inFloor = false;
+		}
 		if (keyboard.isDown(Keyboard.KEY_SPACE) && System.currentTimeMillis() - repeatSpaceTime > 150)
 		{
 			repeatSpaceTime = System.currentTimeMillis();

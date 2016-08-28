@@ -61,12 +61,12 @@ public class Game
 				 */
 				if (e instanceof EntityPlayer)
 				{
-					if (map.checkCollid(new AABB((int)last.x + 4, (int)e.pos.y + 16, 24, 48)))
+					if (map.checkCollid(e, new AABB((int)last.x + 4, (int)e.pos.y + 16, 24, 48)))
 					{
 						e.pos.y = last.y;
 						e.gravity = 0;
 					}
-					if (map.checkCollid(new AABB((int)e.pos.x + 4, (int)last.y + 16, 24, 48)))
+					if (map.checkCollid(e, new AABB((int)e.pos.x + 4, (int)last.y + 16, 24, 48)))
 					{
 						e.pos.x = last.x;
 					}
@@ -86,12 +86,12 @@ public class Game
 					AABB aabb = e.getBox();
 					if (aabb != null)
 					{
-						if (map.checkCollid(new AABB((int)last.x, (int)e.pos.y, aabb.w, aabb.h)))
+						if (map.checkCollid(e, new AABB((int)last.x, (int)e.pos.y, aabb.w, aabb.h)))
 						{
 							e.pos.y = last.y;
 							e.gravity = 0;
 						}
-						if (map.checkCollid(new AABB((int)e.pos.x, (int)last.y, aabb.w, aabb.h)))
+						if (map.checkCollid(e, new AABB((int)e.pos.x, (int)last.y, aabb.w, aabb.h)))
 						{
 							e.pos.x = last.x;
 						}
@@ -111,7 +111,7 @@ public class Game
 				}
 				AABB box = e.getBox();
 				if (box != null)
-					e.inFloor = map.floorDetect(box) || entityFloor(e, new AABB(box.x + 8, box.y + box.h - 16, 16, 17));
+					e.inFloor = map.floorDetect(e, box) || entityFloor(e, new AABB(box.x + 8, box.y + box.h - 2, 16, 4));
 				i++;
 			}
 			else
@@ -125,7 +125,7 @@ public class Game
 		{
 			Entity e0 = entities.get(i);
 			AABB e0box = e0.getBox();
-			if (e0box == null || !e0.spawnFront())
+			if (e0box == null || !e0.spawnFront() || e0 instanceof IBlock)
 			{
 				i++;
 				continue;
@@ -148,7 +148,7 @@ public class Game
 				Vec2 collid = e0box.collided(e1box);
 				if (collid != null)
 				{
-					if (e0.gravity >= 0 && e0box.y + e0box.h <= e1box.y + e1box.h / 2 && e1 instanceof IWalkable)
+					if (e0.gravity >= 0 && e0box.y + e0box.h <= e1box.y + 4 + e0.gravity && e1 instanceof IWalkable)
 					{
 						if (e0 instanceof EntityPlayer)
 							e0.pos.y = e1box.y - 64;
