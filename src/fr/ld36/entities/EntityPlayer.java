@@ -198,7 +198,11 @@ public class EntityPlayer extends Entity {
 			else
 			{
 				AABB box = grab.getBox();
-				((IMovable)grab).move(pos.copy().add(16, 32 - (int)(anim.x * 8) % 2).sub(box.w / 2, box.h / 2));
+				int animx = (int)(anim.x * 8);
+				int boxDisplacement = animx==2||animx==6?1:
+					animx==3||animx==5?2:
+					animx==4?3:0;
+				((IMovable)grab).move(pos.copy().add(16, 32 + boxDisplacement).sub(box.w / 2, box.h / 2));
 				grab.velocity.y = 0;
 			}
 		}
