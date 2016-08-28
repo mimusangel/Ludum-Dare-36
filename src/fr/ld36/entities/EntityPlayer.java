@@ -6,6 +6,7 @@ import fr.ld36.AABB;
 import fr.ld36.Game;
 import fr.ld36.LD36;
 import fr.ld36.entities.spe.IMovable;
+import fr.ld36.map.Map;
 import fr.ld36.utils.Res;
 import fr.mimus.jbasicgl.graphics.Color4f;
 import fr.mimus.jbasicgl.graphics.Mesh;
@@ -88,15 +89,16 @@ public class EntityPlayer extends Entity {
 
 	public void update(Game game, int tick, double elapse)
 	{
-		Keyboard keyboard = LD36.getInstance().win.getKeyboard();
-		Mouse mouse = LD36.getInstance().win.getMouse();
+		LD36 ld36 = LD36.getInstance();
+		Keyboard keyboard = ld36.win.getKeyboard();
+		Mouse mouse = ld36.win.getMouse();
 		boolean moving = false;
-		if (mouse.getX() < LD36.getInstance().win.getWidth() / 2)
+		float w = ((pos.x + getOffset().x) + 16) * ld36.getScaleX();
+		if (mouse.getX() < w)
 			dir = -1;
 		else
 			dir = 1;
-		float w = LD36.getInstance().win.getWidth() / 2f;
-		float h = LD36.getInstance().win.getHeight() / 2f;
+		float h = ((pos.y + getOffset().y) + 32) * ld36.getScaleY();
 		if (dir < 0)
 			rotateHand = (float) Math.atan2(h - mouse.getY(), w - mouse.getX());
 		else
@@ -123,13 +125,13 @@ public class EntityPlayer extends Entity {
 		}
 		if (keyboard.isDown(Keyboard.KEY_W) && this.inFloor)
 		{
-			gravity = -12;
+			velocity.y = -12;
 			this.inFloor = false;
 		}
 		if (keyboard.isDown(Keyboard.KEY_S) && this.inFloor)
 		{
 			pos.y += 8;
-			gravity = 0;
+			velocity.y = 0;
 			this.inFloor = false;
 		}
 		if (keyboard.isPress(Keyboard.KEY_SPACE))
@@ -138,7 +140,7 @@ public class EntityPlayer extends Entity {
 				grab = game.checkGrab(this);
 			else
 			{
-				((IMovable)grab).move(new Vec2(8 * dir, -8));
+				grab.velocity.add(new Vec2(8 * dir, -4));
 				grab = null;
 			}
 		}
@@ -173,10 +175,9 @@ public class EntityPlayer extends Entity {
 				if (stamina < 0)
 				{
 					stamina = 0;
-					((IMovable)grab).move(new Vec2(0, -8));
+					grab.velocity.add(new Vec2(0, -4));
 					grab = null;
 				}
-				System.out.println("stamina: " + stamina);
 			}
 			else
 			{
@@ -191,13 +192,14 @@ public class EntityPlayer extends Entity {
 			Vec2 v = pos.copy().sub(grab.pos).add(0, 16f - (int)(anim.x * 8) % 2);
 			if (v.length() > 30)
 			{
-				((IMovable)grab).move(new Vec2(4 * dir, -16));
+				grab.velocity.add(new Vec2(4 * dir, -4));
 				grab = null;
 			}
 			else
 			{
-				((IMovable)grab).move(v);
-				grab.gravity = 0;
+				AABB box = grab.getBox();
+				((IMovable)grab).move(pos.copy().add(16, 32 - (int)(anim.x * 8) % 2).sub(box.w / 2, box.h / 2));
+				grab.velocity.y = 0;
 			}
 		}
 	}
@@ -282,8 +284,25 @@ public class EntityPlayer extends Entity {
 
 	public Vec2 getOffset()
 	{
-		Vec2 offset = new Vec2(360 - 16, 202 - 32);
-		offset.sub(pos);
+		Game game = LD36.getInstance().game;
+		if (game == null)
+			return (new Vec2());
+		Map map = game.map;
+		Vec2 offset = new Vec2();
+		if (pos.x >= (360 - 16))
+		{
+			offset.x = (360 - 16) - pos.x;
+			float mx = map.getWidth() * 32 - 720f;
+			if (offset.x < -mx)
+				offset.x = -mx;
+		}
+		if (pos.y >= (202 - 32))
+		{
+			offset.y = (202 - 32) - pos.y;
+			float my = map.getHeight() * 32 - 405f;
+			if (offset.y < -my)
+				offset.y = -my;
+		}
 		return (offset);
 	}
 
@@ -306,7 +325,12 @@ public class EntityPlayer extends Entity {
 		else
 		{
 			pos = LD36.getInstance().game.map.spawn.copy();
-			gravity = 0;
+			velocity.y = 0;
 		}
+	}
+	
+	public int getStamina()
+	{
+		return (stamina);
 	}
 }

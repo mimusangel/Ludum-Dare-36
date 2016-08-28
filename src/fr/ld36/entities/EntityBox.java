@@ -1,7 +1,6 @@
 package fr.ld36.entities;
 
 import fr.ld36.AABB;
-import fr.ld36.Game;
 import fr.ld36.entities.spe.IMovable;
 import fr.ld36.entities.spe.IWalkable;
 import fr.ld36.utils.Res;
@@ -11,11 +10,9 @@ import fr.mimus.jbasicgl.maths.Vec2;
 
 public class EntityBox extends Entity implements IMovable, IWalkable
 {
-	Vec2 velocity;
 	public EntityBox(Vec2 pos)
 	{
 		super(pos);
-		velocity = new Vec2();
 	}
 
 	public void createEntity()
@@ -29,17 +26,6 @@ public class EntityBox extends Entity implements IMovable, IWalkable
 		texture = Res.images.get("box");
 	}
 
-	public void update(Game game, int tick, double elapse)
-	{
-		pos.add(velocity);
-		velocity.mul(0.75f);
-		if (Math.abs(velocity.x) < 0.1f)
-			velocity.x = 0;
-		if (Math.abs(velocity.y) < 0.1f)
-			velocity.y = 0;
-		super.update(game, tick, elapse);
-	}
-
 	public AABB getBox()
 	{
 		return new AABB((int)pos.x, (int)pos.y, 32, 32);
@@ -47,8 +33,10 @@ public class EntityBox extends Entity implements IMovable, IWalkable
 
 	public void move(Vec2 vec)
 	{
-		velocity.x = vec.x;
-		velocity.y = vec.y;
+		pos.x = vec.x;
+		pos.y = vec.y;
+		velocity.x = 0;
+		velocity.y = 0;
 	}
 
 	public void giveDamage(Entity src, int dmg) {}

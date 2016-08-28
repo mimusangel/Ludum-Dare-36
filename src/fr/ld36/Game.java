@@ -2,6 +2,8 @@ package fr.ld36;
 
 import java.util.ArrayList;
 
+import org.lwjgl.opengl.GL11;
+
 import fr.ld36.entities.*;
 import fr.ld36.entities.spe.IActivable;
 import fr.ld36.entities.spe.IBlock;
@@ -9,7 +11,10 @@ import fr.ld36.entities.spe.IMovable;
 import fr.ld36.entities.spe.IWalkable;
 import fr.ld36.map.Map;
 import fr.ld36.utils.Res;
+import fr.mimus.jbasicgl.graphics.Color4f;
+import fr.mimus.jbasicgl.graphics.Mesh;
 import fr.mimus.jbasicgl.graphics.Shaders;
+import fr.mimus.jbasicgl.graphics.Texture;
 import fr.mimus.jbasicgl.maths.Mat4;
 import fr.mimus.jbasicgl.maths.Vec2;
 
@@ -17,22 +22,43 @@ public class Game
 {
 	Mat4 ortho;
 	Shaders main;
+	Shaders hud;
 	public Map map;
 	public EntityPlayer player;
 	ArrayList<Entity> entities;
 	Vec2 offset;
+	
+	Texture hudHeart;
+	Mesh	meshHeart;
+	Texture hudStamina;
+	Mesh	meshStamina;
 	
 	public Game()
 	{
 		Res.autoLoadRsc();
 		ortho = Mat4.orthographic(0, 720 * 9 / 16, 720, 0, -1f, 1f);
 		main = new Shaders("rsc/shaders/main.vert", "rsc/shaders/main.frag");
+		hud = new Shaders("rsc/shaders/main.vert", "rsc/shaders/hud.frag");
 		entities = new ArrayList<Entity>();
 		entities.add(player = new EntityPlayer(new Vec2(48, 80)));
 		map = new Map(this, "rsc/maps/map0.txt");
 		map.createMap();
 		player.pos = map.spawn.copy();
 		offset = new Vec2();
+		hudHeart = Res.images.get("heart");
+		meshHeart = new Mesh(4);
+		meshHeart.addVertices(0, 0).addColor(Color4f.WHITE).addTexCoord2f(0, 0);
+		meshHeart.addVertices(32, 0).addColor(Color4f.WHITE).addTexCoord2f(1f, 0);
+		meshHeart.addVertices(32, 32).addColor(Color4f.WHITE).addTexCoord2f(1f, 1);
+		meshHeart.addVertices(0, 32).addColor(Color4f.WHITE).addTexCoord2f(0, 1);
+		meshHeart.buffering();
+		hudStamina = Res.images.get("stamina");
+		meshStamina = new Mesh(4);
+		meshStamina.addVertices(0, 0).addColor(Color4f.WHITE).addTexCoord2f(0, 0);
+		meshStamina.addVertices(128, 0).addColor(Color4f.WHITE).addTexCoord2f(1f, 0);
+		meshStamina.addVertices(128, 16).addColor(Color4f.WHITE).addTexCoord2f(1f, 0.5f);
+		meshStamina.addVertices(0, 16).addColor(Color4f.WHITE).addTexCoord2f(0, 0.5f);
+		meshStamina.buffering();
 	}
 	
 	public void render(double elapse)
@@ -59,6 +85,33 @@ public class Game
 			i++;
 		}
 		player.renderGrab(main);
+		renderHUD(elapse);
+	}
+	
+	public void renderHUD(double elapse)
+	{
+		Texture.unbind();
+		hud.bind();
+		hud.setUniformMat4f("m_proj", ortho);
+		hud.setUniformMat4f("m_offset", Mat4.identity());
+		hud.setUniform2f("mulTexture", new Vec2(1, 1));
+		hud.setUniform2f("offsetTexture", new Vec2());
+		hudHeart.bind();
+		for (int i = 0; i < player.getLife(); i++)
+		{
+			hud.setUniformMat4f("m_view", Mat4.multiply(Mat4.scale(0.75f), Mat4.translate(5 + i * 32, 5)));
+			meshHeart.render(GL11.GL_QUADS);
+		}// 128, 16
+		Texture.unbind();
+		hudStamina.bind();
+		hud.setUniform2f("offsetTexture", new Vec2(0.0f, 0.5f));
+		hud.setUniformMat4f("m_view", Mat4.translate(5, LD36.getInstance().win.getHeight() - 21));
+		meshStamina.render(GL11.GL_QUADS);
+		hud.setUniform2f("offsetTexture", new Vec2(0.0f, 0.0f));
+		float p = ((float)player.getStamina() / 100f);
+		hud.setUniform2f("mulTexture", new Vec2(p, 1));
+		hud.setUniformMat4f("m_view", Mat4.multiply(Mat4.translate(5, LD36.getInstance().win.getHeight() - 21), Mat4.scale(p, 1f, 1f)));
+		meshStamina.render(GL11.GL_QUADS);
 	}
 	
 	public void update(int tick, double elapse)
@@ -80,7 +133,7 @@ public class Game
 					if (map.checkCollid(e, new AABB((int)last.x + 4, (int)e.pos.y + 16, 24, 48)))
 					{
 						e.pos.y = last.y;
-						e.gravity = 0;
+						e.velocity.y = 0;
 					}
 					if (map.checkCollid(e, new AABB((int)e.pos.x + 4, (int)last.y + 16, 24, 48)))
 					{
@@ -89,7 +142,7 @@ public class Game
 					if (entityCollid(e, new AABB((int)last.x + 4, (int)e.pos.y + 16, 24, 48)))
 					{
 						e.pos.y = last.y;
-						e.gravity = 0;
+						e.velocity.y = 0;
 					}
 					if (entityCollid(e, new AABB((int)e.pos.x + 4, (int)last.y + 16, 24, 48)))
 					{
@@ -105,7 +158,7 @@ public class Game
 						if (map.checkCollid(e, new AABB((int)last.x, (int)e.pos.y, aabb.w, aabb.h)))
 						{
 							e.pos.y = last.y;
-							e.gravity = 0;
+							e.velocity.y = 0;
 						}
 						if (map.checkCollid(e, new AABB((int)e.pos.x, (int)last.y, aabb.w, aabb.h)))
 						{
@@ -116,7 +169,7 @@ public class Game
 							if (entityCollid(e, new AABB((int)last.x, (int)e.pos.y, aabb.w, aabb.h)))
 							{
 								e.pos.y = last.y;
-								e.gravity = 0;
+								e.velocity.y = 0;
 							}
 							if (entityCollid(e, new AABB((int)e.pos.x, (int)last.y, aabb.w, aabb.h)))
 							{
@@ -165,13 +218,13 @@ public class Game
 				Vec2 collid = e0box.collided(e1box);
 				if (collid != null)
 				{
-					if (e0.gravity >= 0 && e0box.y + e0box.h <= e1box.y + 4 + e0.gravity && e1 instanceof IWalkable)
+					if (e0.velocity.y >= 0 && e0box.y + e0box.h <= e1box.y + 4 + e0.velocity.y && e1 instanceof IWalkable)
 					{
 						if (e0 instanceof EntityPlayer)
 							e0.pos.y = e1box.y - 64;
 						else
 							e0.pos.y = e1box.y - e0box.h;
-						e0.gravity = 0;
+						e0.velocity.y = 0;
 						e0.inFloor = true;
 					}
 				}

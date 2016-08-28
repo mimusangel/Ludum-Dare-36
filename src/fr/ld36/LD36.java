@@ -102,5 +102,16 @@ public class LD36
 		game.dispose();
 		game = null;
 	}
+	
+	public float getScaleX()
+	{
+		return (win.getWidth() / (float) WINDOW_WIDTH);
+	}
+	
+	public float getScaleY()
+	{
+		float height = WINDOW_WIDTH * 9f / 16f;
+		return (win.getHeight() / height);
+	}
 
 }

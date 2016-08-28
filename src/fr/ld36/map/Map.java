@@ -165,6 +165,16 @@ public class Map
 			makeLadder(x, y + 1, id);
 		}
 	}
+
+	public int getHeight()
+	{
+		return (data.length);
+	}
+	
+	public int getWidth()
+	{
+		return (data[0].length);
+	}
 	
 	public void createMap()
 	{
@@ -266,8 +276,8 @@ public class Map
 					}
 					if (data[y][x] == 6)
 					{
-						boolean collid = aabb.collided(x * 32, y * 32, 32, (int) (8 + e.gravity));
-						if (collid && e.gravity > 0 && aabb.y + aabb.h <= y * 32 + 4 + e.gravity)
+						boolean collid = aabb.collided(x * 32, y * 32, 32, (int) (8 + e.velocity.y));
+						if (collid && e.velocity.y > 0 && aabb.y + aabb.h <= y * 32 + 4 + e.velocity.y)
 							return (true);
 					}
 				}

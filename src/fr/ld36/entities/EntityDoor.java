@@ -81,8 +81,8 @@ public class EntityDoor extends Entity implements IBlock, IActivableLink {
 			anim.render(shader, v);
 		if (mesh != null && nbLock > 0)
 		{
-			float winW = (LD36.WINDOW_WIDTH * 9f / 16f) /2f;
-			Vec2 t = v.copy().sub(new Vec2(LD36.WINDOW_WIDTH / 2f, winW));
+			EntityPlayer player = LD36.getInstance().game.player;
+			Vec2 t = v.copy().sub(player.pos);
 			double dist = t.length();
 			if (dist < 100f)
 			{

@@ -15,13 +15,14 @@ public abstract class Entity
 	public Vec2 pos;
 	protected Mesh mesh;
 	protected Texture texture;
-	public float gravity = 0;
+	public Vec2 velocity;
 	public boolean inFloor = false;
 	int life;
 	long lifeTime;
 	
 	public Entity(Vec2 pos)
 	{
+		velocity = new Vec2();
 		this.pos = pos;
 		life = 1;
 		lifeTime = System.currentTimeMillis();
@@ -60,17 +61,20 @@ public abstract class Entity
 	
 	public void update(Game game, int tick, double elapse)
 	{
-		if (gravity == 0)
-			gravity = 0.9f;
-		if (gravity > 0)
-			gravity *= 1.15f;
-		if (gravity < 0)
-			gravity *= 0.85f;
-		if (gravity > 16)
-			gravity = 16;
-		if (gravity < 0.1f && gravity > -0.1f)
-			gravity = 0;
-		pos.y += gravity;
+		if (velocity.y == 0)
+			velocity.y = 0.9f;
+		if (velocity.y > 0)
+			velocity.y *= 1.15f;
+		if (velocity.y < 0)
+			velocity.y *= 0.85f;
+		if (velocity.y > 16)
+			velocity.y = 16;
+		if (velocity.y < 0.1f && velocity.y > -0.1f)
+			velocity.y = 0;
+		pos.add(velocity);
+		velocity.x *= 0.75;
+		if (Math.abs(velocity.x) < 0.5)
+			velocity.x = 0;
 	}
 		
 	public void dispose()
@@ -84,5 +88,10 @@ public abstract class Entity
 	public boolean spawnFront()
 	{
 		return (true);
+	}
+	
+	public int getLife()
+	{
+		return (life);
 	}
 }
