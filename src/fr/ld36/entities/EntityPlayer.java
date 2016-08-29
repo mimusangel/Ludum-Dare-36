@@ -389,7 +389,7 @@ public class EntityPlayer extends Entity {
 				if(inv.isItem(selectedSlot)){					
 					Mat4 i0 = Mat4.multiply(Mat4.rotateZf(rotateHand), Mat4.translate(new Vec2(-7, -9).add(inv.getItem(selectedSlot).handOffset)));
 					Mat4 i1 = Mat4.multiply(Mat4.translate(matPos.copy().add(15 * dir, 28 - (int)(anim.x * 8) % 2)), Mat4.scale(dir, 1, 1));
-					
+
 					shader.setUniformMat4f("m_view",Mat4.multiply(i1, i0));
 					
 					inv.getItem(selectedSlot).getTexture().bind();
