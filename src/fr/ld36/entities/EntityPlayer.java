@@ -77,7 +77,6 @@ public class EntityPlayer extends Entity {
 		money = 0;
 		inv = new Inventory(this);
 		inv.addItem(new ItemFlashlight());
-		inv.addItem(new ItemSword());
 		sfxDead = Audio.list.get("rsc/sounds/dead.wav");
 	}
 
@@ -325,21 +324,6 @@ public class EntityPlayer extends Entity {
 		}
 	}
 	
-	public Vec2 getLightPos()
-	{
-		Vec3 light = new Vec3();
-		light.set(-15, 28 - (int)(anim.x * 8) % 2, 0);
-		light.rotateZ(rotateHand);
-		Vec2 p = pos.copy();
-		if (dir < 0)
-			p.add(-15, 28 - (int)(anim.x * 8) % 2);
-		else
-			p.add(15, 28 - (int)(anim.x * 8) % 2);
-		if (dir < 0)
-			return (p.add(light.xy()));
-		return (p.add(-light.x, light.y));
-	}
-	
 	public void renderGrab(Shaders shader)
 	{
 		if (grab != null)
@@ -391,7 +375,7 @@ public class EntityPlayer extends Entity {
 				Res.images.get("backpack").bind();
 				backpack.render(GL11.GL_QUADS);
 				Texture.unbind();
-				
+				shader.setUniform2f("anim", 0, 0);
 				
 				//Item in hand rendering
 				if(inv.isItem(selectedSlot)){					
@@ -418,18 +402,15 @@ public class EntityPlayer extends Entity {
 				shader.setUniform2f("anim", new Vec2());
 				hand.render(GL11.GL_QUADS);
 
-				if(inv.isItem(selectedSlot)){					
-					Item itemSlot = inv.getItem(selectedSlot);
-					if (debugMode && itemSlot instanceof Weapon)
-					{
-						Vec2 f = getImpact();
-						shader.setUniformMat4f("m_view", Mat4.translate(f));
-						shader.setUniform1i("disableTexture", 1);
-						GL11.glPointSize(3f);
-						test.render(GL11.GL_POINTS);
-						GL11.glPointSize(1f);
-						shader.setUniform1i("disableTexture", 0);
-					}
+				if (debugMode)
+				{
+					Vec2 f = getImpact();
+					shader.setUniformMat4f("m_view", Mat4.translate(f));
+					shader.setUniform1i("disableTexture", 1);
+					GL11.glPointSize(3f);
+					test.render(GL11.GL_POINTS);
+					GL11.glPointSize(1f);
+					shader.setUniform1i("disableTexture", 0);
 				}
 			}
 		}
@@ -460,7 +441,13 @@ public class EntityPlayer extends Entity {
 				return (f);
 			}
 		}
-		return (null);
+		Vec2 f = pos.copy().add(15 - dir, 28 - (anim.x * 8 % 2));
+		Vec3 r = new Vec3(24, 7, 0);
+		r.rotateZ(-rotateHand);
+		if (dir < 0)
+			r.x = -r.x;
+		f.add(r.xy());
+		return (f);
 	}
 
 	public Vec2 getOffset()
@@ -491,21 +478,29 @@ public class EntityPlayer extends Entity {
 		return new AABB((int)pos.x + 4, (int)pos.y + 16, 24, 48);
 	}
 
+	public boolean isTouch()
+	{
+		return (System.currentTimeMillis() - lifeTime < 10000);
+	}
+	
 	public void giveDamage(Entity src, int dmg)
 	{
 		if (noclip)
 			return;
+		if (isTouch())
+			life -= dmg;
+		else
+			lifeTime = System.currentTimeMillis();
 	}
 	
 	public void giveDamage(int x, int y, int dmg)
 	{
-		if (System.currentTimeMillis() - lifeTime < 1000 || noclip)
+		if (noclip)
 			return;
-		life--;
-		lifeTime = System.currentTimeMillis();
+		life -= dmg;
 		if (life <= 0)
 		{
-			LD36.getInstance().gameOver(money + life * 1000, timePlay);
+			LD36.getInstance().endGame(money + life * 1000, timePlay);
 		}
 		else
 		{
@@ -531,7 +526,6 @@ public class EntityPlayer extends Entity {
 	
 	public void addMoney(int m){
 		money += m;
-		System.out.println(money);
 	}
 	
 	public int getMoney(){

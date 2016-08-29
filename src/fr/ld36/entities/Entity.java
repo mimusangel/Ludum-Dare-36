@@ -25,7 +25,7 @@ public abstract class Entity
 		velocity = new Vec2();
 		this.pos = pos;
 		life = 1;
-		lifeTime = System.currentTimeMillis();
+		lifeTime = System.currentTimeMillis() - 10000;
 	}
 
 	public abstract void createEntity();

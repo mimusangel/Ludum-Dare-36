@@ -63,7 +63,7 @@ public class LD36
 				if (game != null)
 					game.update(tick, (double)elapse / NS_PER_SECOND);
 				else
-					updateGameOver();
+					updateEndGame();
 				tick++;
 			}
 			else
@@ -74,7 +74,7 @@ public class LD36
 				if (game != null)
 					game.render((double)(now - lastRenderTime) / NS_PER_SECOND);
 				else
-					renderGameOver();
+					renderEndGame();
 				Shaders.unbind();
 				frame++;
 				lastRenderTime = System.nanoTime();
@@ -125,7 +125,7 @@ public class LD36
 	
 	int score;
 	double playTime;
-	public void gameOver(int score, double playTime)
+	public void endGame(int score, double playTime)
 	{
 		this.score = score;
 		this.playTime = playTime;
@@ -133,7 +133,7 @@ public class LD36
 		game = null;
 	}
 
-	public void updateGameOver()
+	public void updateEndGame()
 	{
 		Keyboard k = win.getKeyboard();
 		if (k.isPress(Keyboard.KEY_ENTER))
@@ -142,7 +142,7 @@ public class LD36
 		}
 	}
 	
-	public void renderGameOver()
+	public void renderEndGame()
 	{
 		hud.bind();
 		hud.setUniformMat4f("m_proj", Mat4.orthographic(0, 720 * 9 / 16, 720, 0, -1f, 1f));

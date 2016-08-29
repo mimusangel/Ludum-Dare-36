@@ -55,7 +55,6 @@ public class Game
 	Vec2 editLast;
 	long timeClick;
 	Entity editLink;
-	
 	public Game()
 	{
 		ortho = Mat4.orthographic(0, 720 * 9 / 16, 720, 0, -1f, 1f);
@@ -68,7 +67,7 @@ public class Game
 		map.createMap();
 		player.pos = map.spawn.copy();
 		offset = new Vec2();
-		hudHeart = Res.images.get("heart");
+		hudHeart = Res.images.get("heartg");
 		meshHeart = new Mesh(4);
 		meshHeart.addVertices(0, 0).addColor(Color4f.WHITE).addTexCoord2f(0, 0);
 		meshHeart.addVertices(32, 0).addColor(Color4f.WHITE).addTexCoord2f(1f, 0);
@@ -124,7 +123,7 @@ public class Game
 			else
 				lightDistanceTarget = 200;
 			main.setUniform1f("ligthDist", lightDistance);
-			main.setUniform2f("ligthPos", player.getLightPos());
+			main.setUniform2f("ligthPos", player.getImpact());
 		}
 		else
 		{
@@ -141,7 +140,7 @@ public class Game
 	}
 	
 	public void render(double elapse)
-	{
+	{	
 		lightDistance = FInterpolate.interpolate(lightDistance, lightDistanceTarget, 500, elapse);
 		initRender();
 		map.render(elapse, main);
@@ -184,11 +183,16 @@ public class Game
 		Texture.unbind();
 		initRenderHUD();
 		hudHeart.bind();
+		if (player.isTouch())
+			hud.setUniform4f("color", Color4f.ORANGE.toVector4());
+		else
+			hud.setUniform4f("color", Color4f.RED.toVector4());
 		for (int i = 0; i < player.getLife(); i++)
 		{
-			hud.setUniformMat4f("m_view", Mat4.multiply(Mat4.scale(0.75f), Mat4.translate(5 + i * 32, 5)));
+			hud.setUniformMat4f("m_view", Mat4.translate(5 + i * 32, 5));
 			meshHeart.render(GL11.GL_QUADS);
 		}
+		hud.setUniform4f("color", Color4f.WHITE.toVector4());
 		Texture.unbind();
 		hudStamina.bind();
 		hud.setUniform2f("offsetTexture", new Vec2(0.0f, 0.5f));
@@ -202,19 +206,19 @@ public class Game
 		hud.setUniform2f("mulTexture", new Vec2(1f, 1f));
 		if (player.debugMode)
 		{
-			Renderer.drawString(hud, "e: " + entitiesView.size() + " / " + entities.size(), new Vec2(5, 30), player.editMode ? Color4f.LIGHT_RED : Color4f.WHITE);
-			Renderer.drawString(hud, "x: " + player.pos.x, new Vec2(5, 40), Color4f.WHITE);
-			Renderer.drawString(hud, "y: " + player.pos.y, new Vec2(5, 50), Color4f.WHITE);
+			Renderer.drawString(hud, "e: " + entitiesView.size() + " / " + entities.size(), new Vec2(5, 40), player.editMode ? Color4f.LIGHT_RED : Color4f.WHITE);
+			Renderer.drawString(hud, "x: " + player.pos.x, new Vec2(5, 50), Color4f.WHITE);
+			Renderer.drawString(hud, "y: " + player.pos.y, new Vec2(5, 60), Color4f.WHITE);
 			if (player.editMode)
 			{
-				Renderer.drawString(hud, "noclip: " + player.noclip, new Vec2(5, 60), Color4f.WHITE);
+				Renderer.drawString(hud, "noclip: " + player.noclip, new Vec2(5, 70), Color4f.WHITE);
 				Vec2 m = getMousePos();
 				Vec2 mp = getMousePosInMap();
-				Renderer.drawString(hud, "- grid: " + player.gridAlign, new Vec2(5, 70), Color4f.WHITE);
-				Renderer.drawString(hud, "- mx: " + mp.x + " ( " + m.x + " )", new Vec2(5, 80), Color4f.WHITE);
-				Renderer.drawString(hud, "- my: " + mp.y + " ( " + m.y + " )", new Vec2(5, 90), Color4f.WHITE);
+				Renderer.drawString(hud, "- grid: " + player.gridAlign, new Vec2(5, 80), Color4f.WHITE);
+				Renderer.drawString(hud, "- mx: " + mp.x + " ( " + m.x + " )", new Vec2(5, 90), Color4f.WHITE);
+				Renderer.drawString(hud, "- my: " + mp.y + " ( " + m.y + " )", new Vec2(5, 100), Color4f.WHITE);
 				if (editLink != null)
-					Renderer.drawString(hud, "Place Link !", new Vec2(5, 100), Color4f.RED);
+					Renderer.drawString(hud, "Place Link !", new Vec2(5, 110), Color4f.RED);
 					
 			}
 			hud.setUniform4f("color", Color4f.WHITE.toVector4());
