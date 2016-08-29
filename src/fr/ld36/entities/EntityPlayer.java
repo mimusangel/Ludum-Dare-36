@@ -8,7 +8,6 @@ import fr.ld36.LD36;
 import fr.ld36.entities.spe.IMovable;
 import fr.ld36.items.Inventory;
 import fr.ld36.items.ItemFlashlight;
-import fr.ld36.items.ItemSword;
 import fr.ld36.map.Map;
 import fr.ld36.utils.Audio;
 import fr.ld36.utils.Res;

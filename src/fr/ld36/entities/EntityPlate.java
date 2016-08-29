@@ -44,11 +44,16 @@ public class EntityPlate extends Entity implements IActivable, IWalkable{
 		//Colision avec les entités se trouvant à - de 32px
 		if(!colide){
 			ArrayList<Entity> entities = game.entities;
+			AABB box = new AABB((int) pos.x + 4, (int) pos.y + 28, 24, 4);
 			for(int i = 0; i < entities.size(); i++){
 				if(entities.get(i).getBox() != null && entities.get(i) != this){
 					if(this.distance(entities.get(i))<=32){
-						colide = getBox().collided(entities.get(i).getBox()) != null;
-						if(colide) break;
+						colide = box.collided(entities.get(i).getBox()) != null;
+						if(colide) 
+						{
+							entities.get(i).velocity.y = 0;
+							break;
+						}
 					}
 				}
 			}
