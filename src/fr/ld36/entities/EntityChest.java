@@ -19,7 +19,10 @@ public class EntityChest extends Entity implements IActivable{
 	Animation anim;
 	
 	boolean isOpen;
-		
+	
+	//1 common, 2 uncommon, 3 rare, 4 epic, 5 amazing!
+	int rarity = 1;
+	
 	double lastItemSpawn;
 	float itemSpawnDelay = 0.1f;
 	ArrayList<Item> itemsToSpawn = new ArrayList<Item>();
@@ -31,6 +34,19 @@ public class EntityChest extends Entity implements IActivable{
 	
 	public EntityChest(Vec2 pos) {
 		super(pos);
+	}
+	
+	public EntityChest(Vec2 pos, int rarity) {
+		super(pos);
+		this.rarity = rarity;
+	}
+	
+	public EntityChest(Vec2 pos, int rarity, Item...items) {
+		super(pos);
+		this.rarity = rarity;
+		for(Item i : items){
+			itemsToSpawn.add(i);
+		}
 	}
 	
 	public void update(Game game, int tick, double elapse){
@@ -45,6 +61,8 @@ public class EntityChest extends Entity implements IActivable{
 			Entity e = new EntityItem(pos.copy().add(new Vec2(16, 0)), itemsToSpawn.get(0));
 			e.velocity.add((float) (Math.random() * 4 - 2), -2);
 			game.entities.add(e);
+			
+			System.out.println(itemsToSpawn.get(0));
 			
 			itemsToSpawn.remove(0);
 		}
@@ -71,12 +89,10 @@ public class EntityChest extends Entity implements IActivable{
 			isOpen = true;
 			anim.restart();
 			
-			for(int i = 0; i < Math.random()  * 20f; i++)
+			for(int i = 0; i < Math.random()  * 20f * rarity; i++)
 			{
 				itemsToSpawn.add(new ItemCoin());
 			}
-			itemsToSpawn.add(new ItemFlashlight());
-			itemsToSpawn.add(new ItemTest());
 		}
 	}
 
@@ -86,7 +102,7 @@ public class EntityChest extends Entity implements IActivable{
 	}
 	
 	private boolean itemSpawnable(){
-		if(itemsToSpawn.size() > 0 && System.currentTimeMillis() - lastItemSpawn > itemSpawnDelay * 1000)
+		if(isOpen && itemsToSpawn.size() > 0 && System.currentTimeMillis() - lastItemSpawn > itemSpawnDelay * 1000)
 		{
 			lastItemSpawn = System.currentTimeMillis();
 			return true;

@@ -11,6 +11,8 @@ public class ItemCoin extends ItemValuable{
 	public ItemCoin() {
 		this.setName("Coin");
 		this.scale = 0.2f;
+		if(a == null)
+			setAnimation(new Animation(1, 32, Res.images.get("coin"), 0.1f, scale));
 	}
 
 	@Override
