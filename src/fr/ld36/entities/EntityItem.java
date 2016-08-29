@@ -3,7 +3,6 @@ package fr.ld36.entities;
 import fr.ld36.AABB;
 import fr.ld36.Game;
 import fr.ld36.items.Item;
-import fr.ld36.items.ItemCoin;
 import fr.ld36.items.ItemValuable;
 import fr.ld36.render.Animation;
 import fr.mimus.jbasicgl.graphics.Shaders;

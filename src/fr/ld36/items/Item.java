@@ -1,11 +1,13 @@
 package fr.ld36.items;
 
 import fr.ld36.render.Animation;
+import fr.mimus.jbasicgl.graphics.Texture;
 
 public abstract class Item {
 	private String name = "Item";
-	//Au cas où on ferait une anim pour l'item drop au sol
 	public Float scale = 1f;
+	//L'animation et la texture sont statiques dans la classe fille pour pas quelle soit recrée à chaque item, 
+	//du coup j'ai fait les deux fonctions abstract get/set anim et texture
 	
 	public String getName() {
 		return name;
@@ -16,7 +18,8 @@ public abstract class Item {
 	}
 
 	abstract public Animation getAnimation();
-
 	abstract public void setAnimation(Animation anim);
 	
+	abstract public Texture getTexture();
+	abstract public void setTexture(Texture tex);
 }
