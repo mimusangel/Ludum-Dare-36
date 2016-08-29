@@ -19,6 +19,9 @@ import fr.ld36.Game;
 import fr.ld36.LD36;
 import fr.ld36.entities.*;
 import fr.ld36.entities.spe.IActivableLink;
+import fr.ld36.items.Item;
+import fr.ld36.items.ItemFlashlight;
+import fr.ld36.items.ItemTest;
 import fr.ld36.utils.Res;
 import fr.mimus.jbasicgl.graphics.Color4f;
 import fr.mimus.jbasicgl.graphics.Mesh;
@@ -217,7 +220,20 @@ public class Map
 				}
 				else if (data[0].equalsIgnoreCase("spawnChest"))
 				{
-					entities.add(new EntityChest(new Vec2(Float.parseFloat(data[1]), Float.parseFloat(data[2]))));
+					int rarity = 1;
+					ArrayList<Item> items = new ArrayList<Item>();
+					try{
+						if(data.length > 3) rarity = Integer.valueOf(data[3]);
+					}catch(NumberFormatException e){}
+					if(data.length > 4){
+						for(int i = 4; i < data.length; i++){
+							if(data[i].equalsIgnoreCase("flashLight")) items.add(new ItemFlashlight());
+							if(data[i].equalsIgnoreCase("test")) items.add(new ItemTest());
+						}
+					}
+					Item[] itemArray = new Item[items.size()];
+					items.toArray(itemArray);
+					entities.add(new EntityChest(new Vec2(Float.parseFloat(data[1]), Float.parseFloat(data[2])), rarity, itemArray));
 				}
 			}
 			

@@ -33,6 +33,7 @@ public class EntityPlayer extends Entity {
 	Mesh hand;
 	Mesh handGrab;
 	Mesh test;
+	Mesh backpack;
 
 	public Entity grab;
 	int stamina;
@@ -46,6 +47,9 @@ public class EntityPlayer extends Entity {
 	public boolean editMode;
 	public boolean noclip;
 	public boolean gridAlign;
+	
+	//Argent pour augment d'un la taille du sac
+	int bagIncrement = 200;
 
 	public EntityPlayer(Vec2 pos)
 	{
@@ -96,6 +100,13 @@ public class EntityPlayer extends Entity {
 		test.addVertices(0, 0).addColor(Color4f.RED).addTexCoord2f(0, 0);
 		test.addVertices(40, 0).addColor(Color4f.RED).addTexCoord2f(1f, 0);
 		test.buffering();
+		
+		backpack = new Mesh(4);
+		backpack.addVertices(0, 0).addColor(Color4f.WHITE).addTexCoord2f(0, 0);
+		backpack.addVertices(32, 0).addColor(Color4f.WHITE).addTexCoord2f(1f / 5f, 0);
+		backpack.addVertices(32, 32).addColor(Color4f.WHITE).addTexCoord2f(1f / 5f, 1);
+		backpack.addVertices(0, 32).addColor(Color4f.WHITE).addTexCoord2f(0, 1);
+		backpack.buffering();
 	}
 
 	public boolean entityAlive()
@@ -320,6 +331,18 @@ public class EntityPlayer extends Entity {
 			{
 				texture.bind();
 				mesh.render(GL11.GL_QUADS);
+				
+				//Backpack rendering
+				int bagStep = money / bagIncrement;
+				if(bagStep > 4)
+					bagStep = 4;
+				
+				shader.setUniformMat4f("m_view", Mat4.multiply(Mat4.translate(matPos.copy().add(0,12 - (anim.x * 8 % 2))), Mat4.scale(dir, 1, 1)));
+				shader.setUniform2f("anim", bagStep/5f, 0);
+				Res.images.get("backpack").bind();
+				backpack.render(GL11.GL_QUADS);
+				Texture.unbind();
+				
 				texHand.bind();
 				if (dir < 0)
 					matPos.add(-15, 28 - (int)(anim.x * 8) % 2);
