@@ -62,26 +62,25 @@ public class EntityChest extends Entity implements IActivable{
 	
 	private void initRandomItem()
 	{
+		itemsToRandom.add(new ItemStick());
 		itemsToRandom.add(new ItemCoin());
-		itemsToRandom.add(new ItemCoin());
-		itemsToRandom.add(new ItemCoin());
+		itemsToRandom.add(new ItemStick());
+		itemsToRandom.add(new ItemKnife());
 		itemsToRandom.add(new ItemCoin());
 		itemsToRandom.add(new ItemSword());
+		itemsToRandom.add(new ItemCoin());
+		itemsToRandom.add(new ItemStick());
+		itemsToRandom.add(new ItemCoin());
+		itemsToRandom.add(new ItemCoin());
+		itemsToRandom.add(new ItemStick());
+		itemsToRandom.add(new ItemKnife());
+		itemsToRandom.add(new ItemCoin());
+		itemsToRandom.add(new ItemKnife());
+		itemsToRandom.add(new ItemCoin());
 		itemsToRandom.add(new ItemSword());
-		itemsToRandom.add(new ItemSword());
 		itemsToRandom.add(new ItemCoin());
-		itemsToRandom.add(new ItemCoin());
-		itemsToRandom.add(new ItemCoin());
-		itemsToRandom.add(new ItemCoin());
-		itemsToRandom.add(new ItemCoin());
-		itemsToRandom.add(new ItemCoin());
-		itemsToRandom.add(new ItemCoin());
-		itemsToRandom.add(new ItemCoin());
-		itemsToRandom.add(new ItemCoin());
-		itemsToRandom.add(new ItemCoin());
-		itemsToRandom.add(new ItemCoin());
-		itemsToRandom.add(new ItemCoin());
-		itemsToRandom.add(new ItemCoin());
+		itemsToRandom.add(new ItemStick());
+		itemsToRandom.add(new ItemKnife());
 	}
 	
 	public void update(Game game, int tick, double elapse){

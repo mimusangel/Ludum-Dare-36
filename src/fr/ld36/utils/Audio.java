@@ -22,6 +22,8 @@ public class Audio
 		new Audio("rsc/sounds/actionDefault.wav");
 		new Audio("rsc/sounds/actionFail.wav");
 		new Audio("rsc/sounds/dead.wav");
+		new Audio("rsc/sounds/hit.wav");
+		new Audio("rsc/sounds/hit2.wav");
 		new Thread() {
 			public void run() 
 			{

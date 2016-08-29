@@ -6,11 +6,7 @@ import fr.ld36.AABB;
 import fr.ld36.Game;
 import fr.ld36.LD36;
 import fr.ld36.entities.spe.IMovable;
-import fr.ld36.items.Inventory;
-import fr.ld36.items.Item;
-import fr.ld36.items.ItemFlashlight;
-import fr.ld36.items.ItemSword;
-import fr.ld36.items.Weapon;
+import fr.ld36.items.*;
 import fr.ld36.map.Map;
 import fr.ld36.utils.Audio;
 import fr.ld36.utils.Res;
@@ -57,7 +53,8 @@ public class EntityPlayer extends Entity {
 	
 	public boolean isAttacking = false;
 	float startAngle = 0;
-	
+
+	Audio hit;
 	//Argent pour augment d'un la taille du sac
 	int bagIncrement = 200;
 
@@ -77,7 +74,10 @@ public class EntityPlayer extends Entity {
 		money = 0;
 		inv = new Inventory(this);
 		inv.addItem(new ItemFlashlight());
+		//inv.addItem(new ItemLoupe());
+		inv.addItem(new ItemStick());
 		sfxDead = Audio.list.get("rsc/sounds/dead.wav");
+		hit = Audio.list.get("rsc/sounds/hit2.wav");
 	}
 
 	public void createEntity()
@@ -150,6 +150,13 @@ public class EntityPlayer extends Entity {
 			rotateHand -= 20 * elapse;
 			if(rotateHand < startAngle - Math.PI*2){
 				isAttacking = false;
+			}
+			if (tick % 3 == 0)
+			{
+				if(inv.isItem(selectedSlot) && inv.getItem(selectedSlot) instanceof Weapon)
+					game.giveDamage(this, getImpact(), (int)((Weapon)inv.getItem(selectedSlot)).getDamage());
+				else
+					game.giveDamage(this, getImpact(), 1);
 			}
 		}
 		else
@@ -449,6 +456,13 @@ public class EntityPlayer extends Entity {
 		f.add(r.xy());
 		return (f);
 	}
+	
+	public boolean viewSystem()
+	{
+		if(inv.isItem(selectedSlot))
+			return (inv.getItem(selectedSlot) instanceof ItemLoupe);
+		return (false);
+	}
 
 	public Vec2 getOffset()
 	{
@@ -491,6 +505,15 @@ public class EntityPlayer extends Entity {
 			life -= dmg;
 		else
 			lifeTime = System.currentTimeMillis();
+		Vec2 v = src.pos.copy().sub(pos);
+		v.normalise();
+		this.velocity.x = -v.x * 5;
+		this.velocity.y -= 4;
+		hit.play();
+		if (life <= 0)
+		{
+			LD36.getInstance().endGame(money + life * 1000, timePlay);
+		}
 	}
 	
 	public void giveDamage(int x, int y, int dmg)

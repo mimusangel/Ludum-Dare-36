@@ -7,8 +7,8 @@ import fr.ld36.utils.Res;
 import fr.mimus.jbasicgl.graphics.Texture;
 import fr.mimus.jbasicgl.maths.Vec2;
 
-public class ItemSword extends Weapon implements IActivable{
-
+public class ItemSword extends Weapon implements IActivable
+{
 	public static Texture t;
 	public static Animation a;
 	

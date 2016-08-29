@@ -16,6 +16,7 @@ import org.lwjgl.opengl.GL11;
 
 import fr.ld36.AABB;
 import fr.ld36.Game;
+import fr.ld36.LD36;
 import fr.ld36.entities.*;
 import fr.ld36.entities.spe.IActivableLink;
 import fr.ld36.items.Item;
@@ -389,7 +390,7 @@ public class Map
 		texture.bind();
 		if (meshBack != null)
 			meshBack.render(GL11.GL_QUADS);
-		if (meshSystem != null)
+		if (meshSystem != null && LD36.getInstance().game.player.viewSystem())
 		{
 			shader.setUniform1i("disableTexture", 1);
 			meshSystem.render(GL11.GL_LINES);

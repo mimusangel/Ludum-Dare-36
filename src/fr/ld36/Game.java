@@ -688,5 +688,21 @@ public class Game
 		if (map != null)
 			map.dispose();
 	}
+
+	public void giveDamage(Entity entity, Vec2 vec, int damage)
+	{
+		int i = 0;
+		while (i < entities.size())
+		{
+			Entity e = entities.get(i);
+			if (e != entity)
+			{
+				AABB box = e.getBox();
+				if (box != null && box.collided(vec))
+					e.giveDamage(entity, damage);
+			}
+			i++;
+		}
+	}
 	
 }

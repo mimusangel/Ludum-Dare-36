@@ -24,7 +24,9 @@ public class EntitySarcophage extends Entity implements IActivable{
 	}
 
 	@Override
-	public void action(Entity e) {
+	public void action(Entity e)
+	{
+		
 	}
 
 	@Override

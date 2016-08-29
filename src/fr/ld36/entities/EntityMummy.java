@@ -1,11 +1,16 @@
 package fr.ld36.entities;
 
+import java.util.Random;
+
 import org.lwjgl.opengl.GL11;
 
 import fr.ld36.AABB;
 import fr.ld36.Game;
 import fr.ld36.LD36;
+import fr.ld36.items.Item;
+import fr.ld36.items.Weapon;
 import fr.ld36.render.Animation;
+import fr.ld36.utils.Audio;
 import fr.ld36.utils.Res;
 import fr.mimus.jbasicgl.graphics.Color4f;
 import fr.mimus.jbasicgl.graphics.Mesh;
@@ -13,6 +18,7 @@ import fr.mimus.jbasicgl.graphics.Shaders;
 import fr.mimus.jbasicgl.graphics.Texture;
 import fr.mimus.jbasicgl.maths.Mat4;
 import fr.mimus.jbasicgl.maths.Vec2;
+import fr.mimus.jbasicgl.maths.Vec3;
 
 public class EntityMummy extends Entity{
 
@@ -38,6 +44,8 @@ public class EntityMummy extends Entity{
 	float attackDelay = 1.5f;
 	float attackDelayCounter;
 
+	Audio hit;
+	Mesh test;
 	public EntityMummy(Vec2 pos) {
 		super(pos);
 		anim = new Animation(9, 1, 32, 64, Res.images.get("momie"), 1, 8, 0.15f, true, 1);
@@ -50,7 +58,13 @@ public class EntityMummy extends Entity{
 		hand.addVertices(0, 32).addColor(Color4f.WHITE).addTexCoord2f(0, 1);
 		hand.buffering();
 		
-		this.life = 15;
+		Random rand = new Random();
+		this.life = 5 + rand.nextInt(11);
+		hit = Audio.list.get("rsc/sounds/hit.wav");
+
+		test = new Mesh(1);
+		test.addVertices(0, 0).addColor(Color4f.RED);
+		test.buffering();
 	}
 
 	@Override
@@ -109,6 +123,28 @@ public class EntityMummy extends Entity{
 		hand.render(GL11.GL_QUADS);
 		
 		Texture.unbind();
+		
+		if (LD36.getInstance().game.player.debugMode)
+		{
+			Vec2 f = getImpact();
+			shader.setUniformMat4f("m_view", Mat4.translate(f));
+			shader.setUniform1i("disableTexture", 1);
+			GL11.glPointSize(3f);
+			test.render(GL11.GL_POINTS);
+			GL11.glPointSize(1f);
+			shader.setUniform1i("disableTexture", 0);
+		}
+	}
+	
+	public Vec2 getImpact()
+	{
+		Vec2 f = pos.copy().add(15, 28);
+		Vec3 r = new Vec3(24, 7, 0);
+		r.rotateZ(-angle);
+		if (!faceRight)
+			r.x = -r.x;
+		f.add(r.xy());
+		return (f);
 	}
 
 	@Override
@@ -154,11 +190,9 @@ public class EntityMummy extends Entity{
 			if(angle < targetAngle){
 				isAttacking = false;
 				angle = 0;
-				
-				if(this.distance(p) < 25){
-					p.giveDamage(this, 1);
-				}
 			}
+			if (tick % 5 == 0)
+				game.giveDamage(this, getImpact(), 1);
 		}
 		
 		//Flip animation to face with the mummy direction
@@ -180,7 +214,15 @@ public class EntityMummy extends Entity{
 
 	@Override
 	public void giveDamage(Entity src, int dmg) {
+		if (System.currentTimeMillis() - lifeTime < 300)
+			return ;
 		life -= dmg;
+		lifeTime = System.currentTimeMillis();
+		hit.play();
+		Vec2 v = src.pos.copy().sub(pos);
+		v.normalise();
+		this.velocity.x = -v.x * 5;
+		this.velocity.y -= 4;
 	}
 
 	@Override
