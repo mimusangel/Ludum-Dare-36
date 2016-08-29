@@ -5,6 +5,7 @@ import fr.ld36.entities.spe.IActivable;
 import fr.ld36.render.Animation;
 import fr.ld36.utils.Res;
 import fr.mimus.jbasicgl.graphics.Texture;
+import fr.mimus.jbasicgl.maths.Vec2;
 
 public class ItemSword extends Weapon implements IActivable{
 
@@ -18,6 +19,8 @@ public class ItemSword extends Weapon implements IActivable{
 			t = Res.images.get("sword");
 		if(a == null)
 			a = new Animation(1, 32, Res.images.get("sword"), 1f);
+		
+		this.handOffset = new Vec2(0, -12f);
 	}
 
 	@Override
