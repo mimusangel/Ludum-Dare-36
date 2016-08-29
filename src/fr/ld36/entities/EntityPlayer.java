@@ -7,6 +7,7 @@ import fr.ld36.Game;
 import fr.ld36.LD36;
 import fr.ld36.entities.spe.IMovable;
 import fr.ld36.items.Inventory;
+import fr.ld36.items.ItemSword;
 import fr.ld36.map.Map;
 import fr.ld36.utils.Audio;
 import fr.ld36.utils.Res;
@@ -34,12 +35,14 @@ public class EntityPlayer extends Entity {
 	Mesh handGrab;
 	Mesh test;
 	Mesh backpack;
+	Mesh item;
 
 	public Entity grab;
 	int stamina;
 	long staTime;
 	int money;
 	Inventory inv;
+	public int selectedSlot = 0;
 	Audio sfxDead;
 	double timePlay;
 	
@@ -47,6 +50,9 @@ public class EntityPlayer extends Entity {
 	public boolean editMode;
 	public boolean noclip;
 	public boolean gridAlign;
+	
+	public boolean isAttacking = false;
+	float startAngle = 0;
 	
 	//Argent pour augment d'un la taille du sac
 	int bagIncrement = 200;
@@ -65,7 +71,7 @@ public class EntityPlayer extends Entity {
 		reversed = false;
 		timePlay = 0;
 		money = 0;
-		inv = new Inventory();
+		inv = new Inventory(this);
 		sfxDead = Audio.list.get("rsc/sounds/dead.wav");
 	}
 
@@ -107,6 +113,13 @@ public class EntityPlayer extends Entity {
 		backpack.addVertices(32, 32).addColor(Color4f.WHITE).addTexCoord2f(1f / 5f, 1);
 		backpack.addVertices(0, 32).addColor(Color4f.WHITE).addTexCoord2f(0, 1);
 		backpack.buffering();
+		
+		item = new Mesh(4);
+		item.addVertices(0, 0).addColor(Color4f.WHITE).addTexCoord2f(0, 0);
+		item.addVertices(32, 0).addColor(Color4f.WHITE).addTexCoord2f(1f, 0);
+		item.addVertices(32, 32).addColor(Color4f.WHITE).addTexCoord2f(1f, 1);
+		item.addVertices(0, 32).addColor(Color4f.WHITE).addTexCoord2f(0, 1);
+		item.buffering();
 	}
 
 	public boolean entityAlive()
@@ -126,15 +139,26 @@ public class EntityPlayer extends Entity {
 			dir = -1;
 		else
 			dir = 1;
-		float h = ((pos.y + getOffset().y) + 32) * ld36.getScaleY();
-		if (dir < 0)
-			rotateHand = (float) Math.atan2(h - mouse.getY(), w - mouse.getX());
+		
+		if(isAttacking){
+			rotateHand -= 2 * elapse;
+			if(rotateHand > startAngle *2){
+				isAttacking = false;
+			}
+			System.out.println(startAngle);
+		}
 		else
-			rotateHand = (float) Math.atan2(h - mouse.getY(), mouse.getX() - w);
-		if (rotateHand < -0.8f)
-			rotateHand = -0.8f;
-		if (rotateHand > 1.4f)
-			rotateHand = 1.4f;
+		{
+			float h = ((pos.y + getOffset().y) + 32) * ld36.getScaleY();
+			if (dir < 0)
+				rotateHand = (float) Math.atan2(h - mouse.getY(), w - mouse.getX());
+			else
+				rotateHand = (float) Math.atan2(h - mouse.getY(), mouse.getX() - w);
+			if (rotateHand < -0.8f)
+				rotateHand = -0.8f;
+			if (rotateHand > 1.4f)
+				rotateHand = 1.4f;
+		}
 		if (keyboard.isDown(Keyboard.KEY_A))
 		{
 			pos.x -= 2 + (noclip ? 2 : 0);
@@ -215,6 +239,9 @@ public class EntityPlayer extends Entity {
 				}
 			}
 		}
+		if(mouse.isDown(Mouse.MOUSE_BUTTON_1)){
+			attack();
+		}
 		if (this.inFloor && moving)
 		{
 			if (System.currentTimeMillis() - time < 800)
@@ -273,6 +300,18 @@ public class EntityPlayer extends Entity {
 				((IMovable)grab).move(pos.copy().add(16, 32 + boxDisplacement).sub(box.w / 2, box.h / 2));
 				grab.velocity.y = 0;
 			}
+		}
+		if(mouse.getWheelY() != 0){
+			selectedSlot = selectedSlot == 0? 1 : 0;
+		}
+		if(keyboard.isDown(Keyboard.KEY_1)){
+			selectedSlot = 0;
+		}
+		if(keyboard.isDown(Keyboard.KEY_2)){
+			selectedSlot = 1;
+		}
+		if(keyboard.isDown(Keyboard.KEY_Q)){
+			inv.dropItem(selectedSlot);
 		}
 	}
 	
@@ -343,6 +382,20 @@ public class EntityPlayer extends Entity {
 				backpack.render(GL11.GL_QUADS);
 				Texture.unbind();
 				
+				
+				//Item in hand rendering
+				if(inv.isItem(selectedSlot)){					
+					Mat4 i0 = Mat4.multiply(Mat4.rotateZf(rotateHand), Mat4.translate(new Vec2(-7, -21)));
+					Mat4 i1 = Mat4.multiply(Mat4.translate(matPos.copy().add(15 * dir, 28 - (int)(anim.x * 8) % 2)), Mat4.scale(dir, 1, 1));
+					
+					shader.setUniformMat4f("m_view",Mat4.multiply(i1, i0));
+					
+					inv.getItem(selectedSlot).getTexture().bind();
+					item.render(GL11.GL_QUADS);
+					Texture.unbind();
+				}
+				
+				//Hand rendering
 				texHand.bind();
 				if (dir < 0)
 					matPos.add(-15, 28 - (int)(anim.x * 8) % 2);
@@ -450,5 +503,18 @@ public class EntityPlayer extends Entity {
 	public Entity copy()
 	{
 		return new EntityPlayer(pos.copy());
+	}
+	
+	public boolean lookRight(){
+		return dir == 1;
+	}
+	
+	public void attack(){
+		if(!isAttacking)
+		{
+			isAttacking = true;
+			startAngle = rotateHand;
+			rotateHand++;
+		}
 	}
 }

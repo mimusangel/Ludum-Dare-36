@@ -4,41 +4,26 @@ import fr.ld36.entities.Entity;
 import fr.ld36.render.Animation;
 import fr.mimus.jbasicgl.graphics.Texture;
 
-public class Weapon extends Item{
+public abstract class Weapon extends Item{
 
 	float damages;
 	
-	private static Animation a;
-	private static Texture t;
-	
-	public Weapon(String name, float damages) {
+	public Weapon() {
 		super();
-		this.setName(name);
-		this.damages = damages;
+		this.setName("Weapon");
 	}
 	
-	public void attack(Entity e, int dmg){
-		e.giveDamage(0, 0, dmg);
+	public void attack(Entity e){
+		e.giveDamage(0, 0, (int) damages);
 	}
 
-	@Override
-	public Animation getAnimation() {
-		return a;
-	}
+	public abstract float getDamage();
+	
+	public abstract Animation getAnimation();
 
-	@Override
-	public void setAnimation(Animation anim) {
-		a = anim;
-	}
+	public abstract void setAnimation(Animation anim);
 
-	@Override
-	public Texture getTexture() {
-		return t;
-	}
+	public abstract Texture getTexture();
 
-	@Override
-	public void setTexture(Texture tex) {
-		t = tex;
-	}
-
+	public abstract void setTexture(Texture tex);
 }

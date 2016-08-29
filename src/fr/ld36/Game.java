@@ -10,9 +10,11 @@ import fr.ld36.entities.spe.IBlock;
 import fr.ld36.entities.spe.IMovable;
 import fr.ld36.entities.spe.IWalkable;
 import fr.ld36.items.Item;
+import fr.ld36.items.ItemFlashlight;
 import fr.ld36.map.Map;
 import fr.ld36.render.Renderer;
 import fr.ld36.utils.Audio;
+import fr.ld36.utils.FInterpolate;
 import fr.ld36.utils.Res;
 import fr.mimus.jbasicgl.graphics.Color4f;
 import fr.mimus.jbasicgl.graphics.Mesh;
@@ -39,6 +41,7 @@ public class Game
 	Mesh	meshStamina;
 	Texture hudCoin;
 	Mesh	meshCoin;
+	Mesh	meshSlot;
 	
 	Audio sfxAction;
 	Audio sfxActionFail;
@@ -78,8 +81,17 @@ public class Game
 		meshCoin.buffering();
 		sfxAction = Audio.list.get("rsc/sounds/actionDefault.wav");
 		sfxActionFail = Audio.list.get("rsc/sounds/actionFail.wav");
+		
+		meshSlot = new Mesh(4);
+		meshSlot.addVertices(0, 0).addColor(Color4f.WHITE).addTexCoord2f(0, 0);
+		meshSlot.addVertices(32, 0).addColor(Color4f.WHITE).addTexCoord2f(1f, 0);
+		meshSlot.addVertices(32, 32).addColor(Color4f.WHITE).addTexCoord2f(1f, 1f);
+		meshSlot.addVertices(0, 32).addColor(Color4f.WHITE).addTexCoord2f(0, 1f);
+		meshSlot.buffering();
 	}
 	
+	float lightDistance = 100;
+	float lightDistanceTarget = 100;
 	public void initRender()
 	{
 		main.bind();
@@ -87,19 +99,28 @@ public class Game
 		main.setUniformMat4f("m_offset", Mat4.translate(offset));
 		if (player.grab != null)
 		{
-			main.setUniform1f("ligthDist", 240f);
+			lightDistanceTarget = 240;
+			main.setUniform1f("ligthDist", lightDistance);
 			main.setUniform2f("ligthPos", player.pos.copy().add(16, 32));
+		}
+		else if(player.getInv().isItem(player.selectedSlot) && player.getInv().getItem(player.selectedSlot) instanceof ItemFlashlight)
+		{
+			lightDistanceTarget = 320;
+			main.setUniform1f("ligthDist", lightDistance);
+			main.setUniform2f("ligthPos", player.getLightPos());
 		}
 		else
 		{
-			main.setUniform1f("ligthDist", 320f);
-			main.setUniform2f("ligthPos", player.getLightPos());
+			lightDistanceTarget = 100;
+			main.setUniform1f("ligthDist", lightDistance);
+			main.setUniform2f("ligthPos", player.pos.copy().add(16, 32));
 		}
 		main.setUniformMat4f("m_view", Mat4.identity());
 	}
 	
 	public void render(double elapse)
 	{
+		lightDistance = FInterpolate.interpolate(lightDistance, lightDistanceTarget, 500, elapse);
 		initRender();
 		map.render(elapse, main);
 		
@@ -176,15 +197,30 @@ public class Game
 		Texture.unbind();
 		
 		Item i;
-		hud.setUniformMat4f("m_view", Mat4.multiply(Mat4.scale(1f), Mat4.translate(LD36.WINDOW_WIDTH / 2 - 64, 5)));
+		hud.setUniformMat4f("m_view", Mat4.multiply(Mat4.scale(1f), Mat4.translate(LD36.WINDOW_WIDTH / 2 - 32, 5)));
 		i = player.getInv().getItem(0);
 		if(i != null)
 			i.getAnimation().render(main, new Vec2(0));
 		
-		hud.setUniformMat4f("m_view", Mat4.multiply(Mat4.scale(1f), Mat4.translate(LD36.WINDOW_WIDTH / 2 - 32, 5)));
+		hud.setUniformMat4f("m_view", Mat4.multiply(Mat4.scale(1f), Mat4.translate(LD36.WINDOW_WIDTH / 2, 5)));
 		i = player.getInv().getItem(1);
 		if(i != null)
 			i.getAnimation().render(main, new Vec2(0));
+		
+		if(player.selectedSlot == 0)
+			Res.images.get("invSlotSelected").bind();
+		else
+			Res.images.get("invSlot").bind();
+		hud.setUniformMat4f("m_view", Mat4.multiply(Mat4.scale(1f), Mat4.translate(LD36.WINDOW_WIDTH / 2 - 32, 5)));
+		meshSlot.render(GL11.GL_QUADS);
+		
+		if(player.selectedSlot == 1)
+			Res.images.get("invSlotSelected").bind();
+		else
+			Res.images.get("invSlot").bind();
+		hud.setUniformMat4f("m_view", Mat4.multiply(Mat4.scale(1f), Mat4.translate(LD36.WINDOW_WIDTH / 2, 5)));
+		meshSlot.render(GL11.GL_QUADS);
+		Texture.unbind();
 	}
 	
 	public void update(int tick, double elapse)
@@ -421,8 +457,12 @@ public class Game
 				//Ramassage Item
 				if(e instanceof EntityItem){
 					EntityItem ei = (EntityItem) e;
+					if(!player.getInv().isFreeSlot()){
+						player.getInv().dropItem(player.selectedSlot);
+					}
 					player.getInv().addItem(ei.getItem());
 					e.setLife(0);
+					break;
 				}
 				//Activation entity
 				else{

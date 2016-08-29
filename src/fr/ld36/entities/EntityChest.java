@@ -7,8 +7,6 @@ import fr.ld36.Game;
 import fr.ld36.entities.spe.IActivable;
 import fr.ld36.items.Item;
 import fr.ld36.items.ItemCoin;
-import fr.ld36.items.ItemFlashlight;
-import fr.ld36.items.ItemTest;
 import fr.ld36.render.Animation;
 import fr.ld36.utils.Res;
 import fr.mimus.jbasicgl.graphics.Shaders;

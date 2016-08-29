@@ -16,18 +16,16 @@ import org.lwjgl.opengl.GL11;
 
 import fr.ld36.AABB;
 import fr.ld36.Game;
-import fr.ld36.LD36;
 import fr.ld36.entities.*;
 import fr.ld36.entities.spe.IActivableLink;
 import fr.ld36.items.Item;
 import fr.ld36.items.ItemFlashlight;
-import fr.ld36.items.ItemTest;
+import fr.ld36.items.ItemSword;
 import fr.ld36.utils.Res;
 import fr.mimus.jbasicgl.graphics.Color4f;
 import fr.mimus.jbasicgl.graphics.Mesh;
 import fr.mimus.jbasicgl.graphics.Shaders;
 import fr.mimus.jbasicgl.graphics.Texture;
-import fr.mimus.jbasicgl.input.Mouse;
 import fr.mimus.jbasicgl.maths.Mat4;
 import fr.mimus.jbasicgl.maths.Vec2;
 
@@ -233,7 +231,7 @@ public class Map
 					if(data.length > 4){
 						for(int i = 4; i < data.length; i++){
 							if(data[i].equalsIgnoreCase("flashLight")) items.add(new ItemFlashlight());
-							if(data[i].equalsIgnoreCase("test")) items.add(new ItemTest());
+							if(data[i].equalsIgnoreCase("sword")) items.add(new ItemSword());
 						}
 					}
 					Item[] itemArray = new Item[items.size()];

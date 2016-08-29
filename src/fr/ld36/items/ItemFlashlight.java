@@ -8,8 +8,8 @@ import fr.mimus.jbasicgl.graphics.Texture;
 
 public class ItemFlashlight extends Item implements IActivable{
 
-	private static Animation a = new Animation(1,32,Res.images.get("playerHand"),1f);
-	private static Texture t = Res.images.get("playerHand");
+	private static Animation a = new Animation(1,32,Res.images.get("flashlight"),1f);
+	private static Texture t = Res.images.get("flashlight");
 	
 	public ItemFlashlight(){
 		this.setName("Flashlight");

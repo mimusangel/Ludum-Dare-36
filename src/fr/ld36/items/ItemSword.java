@@ -6,15 +6,20 @@ import fr.ld36.render.Animation;
 import fr.ld36.utils.Res;
 import fr.mimus.jbasicgl.graphics.Texture;
 
-public class ItemTest extends Item implements IActivable{
+public class ItemSword extends Weapon implements IActivable{
 
-	private static Animation a = new Animation(1,32,Res.images.get("heart"),1f);
-	private static Texture t = Res.images.get("heart");
+	public static Texture t;
+	public static Animation a;
 	
-	public ItemTest(){
-		this.setName("Test");
+	public ItemSword() {
+		super();
+		this.setName("Iron sword");
+		if(t == null)
+			t = Res.images.get("sword");
+		if(a == null)
+			a = new Animation(1, 32, Res.images.get("sword"), 1f);
 	}
-	
+
 	@Override
 	public Animation getAnimation() {
 		return a;
@@ -26,17 +31,22 @@ public class ItemTest extends Item implements IActivable{
 	}
 
 	@Override
-	public void action(Entity e) {
-	}
-
-	@Override
 	public Texture getTexture() {
 		return t;
 	}
 
 	@Override
 	public void setTexture(Texture tex) {
-		t = tex;		
+		t = tex;
+	}
+
+	@Override
+	public float getDamage() {
+		return 10;
+	}
+
+	@Override
+	public void action(Entity e) {
 	}
 
 }
