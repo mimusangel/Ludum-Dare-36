@@ -1,24 +1,12 @@
 package fr.ld36.items;
 
 import fr.ld36.render.Animation;
-import fr.mimus.jbasicgl.graphics.Texture;
 
 public abstract class Item {
-	private String name;
-	private Texture tex;
+	private String name = "Item";
 	//Au cas où on ferait une anim pour l'item drop au sol
-	private Animation a;
+	public Float scale = 1f;
 	
-	public Item(String name, Texture texture){
-		this(name, texture, null);
-	}
-	
-	public Item(String name, Texture texture, Animation animation){
-		this.name = name;
-		this.tex = texture;
-		this.a = animation;
-	}
-
 	public String getName() {
 		return name;
 	}
@@ -27,20 +15,8 @@ public abstract class Item {
 		this.name = name;
 	}
 
-	public Texture getTexure() {
-		return tex;
-	}
+	abstract public Animation getAnimation();
 
-	public void setTexture(Texture tex) {
-		this.tex = tex;
-	}
-
-	public Animation getAnimation() {
-		return a;
-	}
-
-	public void setAnimation(Animation a) {
-		this.a = a;
-	}
+	abstract public void setAnimation(Animation anim);
 	
 }

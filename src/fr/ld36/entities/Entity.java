@@ -88,6 +88,11 @@ public abstract class Entity
 		return (true);
 	}
 	
+	public void setLife(int life)
+	{
+		this.life = life;
+	}
+	
 	public int getLife()
 	{
 		return (life);
@@ -95,5 +100,11 @@ public abstract class Entity
 	
 	public int distance(Entity e){
 		return (int) e.pos.copy().sub(this.pos).length();
+	}
+	public int distance(Entity e, Vec2 offSet){
+		return (int) e.pos.copy().sub(this.pos).length();
+	}
+	public int distance(Entity e, Vec2 offSet, Vec2 offSetpam){
+		return (int) e.pos.copy().add(offSetpam).sub(this.pos.copy().add(offSet)).length();
 	}
 }

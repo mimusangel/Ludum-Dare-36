@@ -6,6 +6,7 @@ import fr.ld36.AABB;
 import fr.ld36.Game;
 import fr.ld36.LD36;
 import fr.ld36.entities.spe.IMovable;
+import fr.ld36.items.Inventory;
 import fr.ld36.map.Map;
 import fr.ld36.utils.Res;
 import fr.mimus.jbasicgl.graphics.Color4f;
@@ -38,15 +39,21 @@ public class EntityPlayer extends Entity {
 	int stamina;
 	long staTime;
 	
+	int money;
+	Inventory inv;
+	
 	public EntityPlayer(Vec2 pos)
 	{
 		super(pos);
 		anim = new Vec2();
 		debugMode = false;
 		life = 3;
-		stamina = 100;
+		stamina = 100;		
 		staTime = System.currentTimeMillis();
 		reversed = false;
+		
+		money = 0;
+		inv = new Inventory();
 	}
 
 	public void createEntity()
@@ -347,5 +354,18 @@ public class EntityPlayer extends Entity {
 	public int getStamina()
 	{
 		return (stamina);
+	}
+	
+	public void addMoney(int m){
+		money += m;
+		System.out.println(money);
+	}
+	
+	public int getMoney(){
+		return money;
+	}
+	
+	public Inventory getInv(){
+		return inv;
 	}
 }

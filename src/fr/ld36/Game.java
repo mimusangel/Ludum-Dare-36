@@ -9,6 +9,8 @@ import fr.ld36.entities.spe.IActivable;
 import fr.ld36.entities.spe.IBlock;
 import fr.ld36.entities.spe.IMovable;
 import fr.ld36.entities.spe.IWalkable;
+import fr.ld36.items.Item;
+import fr.ld36.items.ItemFlashlight;
 import fr.ld36.map.Map;
 import fr.ld36.render.Renderer;
 import fr.ld36.utils.Res;
@@ -34,6 +36,8 @@ public class Game
 	Mesh	meshHeart;
 	Texture hudStamina;
 	Mesh	meshStamina;
+	Texture hudCoin;
+	Mesh	meshCoin;
 	
 	public Game()
 	{
@@ -61,6 +65,14 @@ public class Game
 		meshStamina.addVertices(128, 16).addColor(Color4f.WHITE).addTexCoord2f(1f, 0.5f);
 		meshStamina.addVertices(0, 16).addColor(Color4f.WHITE).addTexCoord2f(0, 0.5f);
 		meshStamina.buffering();
+		
+		hudCoin = Res.images.get("coin");
+		meshCoin = new Mesh(4);
+		meshCoin.addVertices(0, 0).addColor(Color4f.WHITE).addTexCoord2f(0, 0);
+		meshCoin.addVertices(32, 0).addColor(Color4f.WHITE).addTexCoord2f(1f, 0);
+		meshCoin.addVertices(32, 32).addColor(Color4f.WHITE).addTexCoord2f(1f, 1f);
+		meshCoin.addVertices(0, 32).addColor(Color4f.WHITE).addTexCoord2f(0, 1f);
+		meshCoin.buffering();
 	}
 	
 	public void initRender()
@@ -127,6 +139,24 @@ public class Game
 		hud.setUniformMat4f("m_view", Mat4.multiply(Mat4.scale(p, 1f, 1f), Mat4.translate(5, 405 - 21)));
 		meshStamina.render(GL11.GL_QUADS);
 		Renderer.drawString(hud, "e: " + entitiesView.size() + " / " + entities.size(), new Vec2(5, 30), Color4f.WHITE);
+		
+		hudCoin.bind();
+		hud.setUniform2f("offsetTexture", new Vec2(0f, 0f));
+		hud.setUniformMat4f("m_view", Mat4.multiply(Mat4.scale(1f), Mat4.translate(LD36.WINDOW_WIDTH - 37, 5)));
+		meshCoin.render(GL11.GL_QUADS);
+		Renderer.drawString(hud, player.getMoney()+"", new Vec2(LD36.WINDOW_WIDTH-50 - ((player.getMoney()+"").length() * 6.2f), 20), Color4f.WHITE);
+		Texture.unbind();
+		
+		Item i;
+		hud.setUniformMat4f("m_view", Mat4.multiply(Mat4.scale(1f), Mat4.translate(LD36.WINDOW_WIDTH / 2 - 64, 5)));
+		i = player.getInv().getItem(0);
+		if(i != null)
+			i.getAnimation().render(main, new Vec2(0));
+		
+		hud.setUniformMat4f("m_view", Mat4.multiply(Mat4.scale(1f), Mat4.translate(LD36.WINDOW_WIDTH / 2 - 32, 5)));
+		i = player.getInv().getItem(1);
+		if(i != null)
+			i.getAnimation().render(main, new Vec2(0));
 	}
 	
 	public void update(int tick, double elapse)
@@ -347,14 +377,26 @@ public class Game
 			Entity e = entities.get(i);
 			if (e == entity || !(e instanceof IActivable))
 			{
-				i++;
-				continue;
+				if(!(e instanceof EntityItem && (((EntityItem)e).getItem() instanceof IActivable))){
+					i++;
+					continue;
+				}
 			}
+
 			AABB e1box = e.getBox();
 			Vec2 collid = e0box.collided(e1box);
 			if (collid != null)
 			{
-				((IActivable)e).action(entity);
+				//Ramassage Item
+				if(e instanceof EntityItem){
+					EntityItem ei = (EntityItem) e;
+					player.getInv().addItem(ei.getItem());
+					e.setLife(0);
+				}
+				//Activation entity
+				else{
+					((IActivable)e).action(entity);
+				}
 			}
 			
 			i++;

@@ -21,3 +21,4 @@ spawnSign 960 384 "E for Use"
 spawnSign 1072 288 "S for Down"
 spawnTrap 704 992 1
 spawnLever 1440 704 last
+spawnChest 200 638

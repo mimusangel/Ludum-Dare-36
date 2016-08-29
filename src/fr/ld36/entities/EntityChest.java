@@ -1,8 +1,14 @@
 package fr.ld36.entities;
 
+import java.util.ArrayList;
+
 import fr.ld36.AABB;
 import fr.ld36.Game;
 import fr.ld36.entities.spe.IActivable;
+import fr.ld36.items.Item;
+import fr.ld36.items.ItemCoin;
+import fr.ld36.items.ItemFlashlight;
+import fr.ld36.items.ItemTest;
 import fr.ld36.render.Animation;
 import fr.ld36.utils.Res;
 import fr.mimus.jbasicgl.graphics.Shaders;
@@ -13,10 +19,13 @@ public class EntityChest extends Entity implements IActivable{
 	Animation anim;
 	
 	boolean isOpen;
+		
+	double lastItemSpawn;
+	float itemSpawnDelay = 0.1f;
+	ArrayList<Item> itemsToSpawn = new ArrayList<Item>();
 	
 	@Override
 	public void createEntity() {
-		// TODO Auto-generated method stub
 		
 	}
 	
@@ -30,6 +39,14 @@ public class EntityChest extends Entity implements IActivable{
 			anim.setPause(true);
 		}else{
 			anim.update();
+		}
+		
+		if(itemSpawnable()){
+			Entity e = new EntityItem(pos.copy().add(new Vec2(16, 0)), itemsToSpawn.get(0));
+			e.velocity.add((float) (Math.random() * 4 - 2), -2);
+			game.entities.add(e);
+			
+			itemsToSpawn.remove(0);
 		}
 	}
 	
@@ -54,8 +71,27 @@ public class EntityChest extends Entity implements IActivable{
 			isOpen = true;
 			anim.restart();
 			
-			//Donner item au joueur ICI
+			for(int i = 0; i < Math.random()  * 20f; i++)
+			{
+				itemsToSpawn.add(new ItemCoin());
+			}
+			itemsToSpawn.add(new ItemFlashlight());
+			itemsToSpawn.add(new ItemTest());
 		}
+	}
+
+	@Override
+	public boolean spawnFront() {
+		return false;
+	}
+	
+	private boolean itemSpawnable(){
+		if(itemsToSpawn.size() > 0 && System.currentTimeMillis() - lastItemSpawn > itemSpawnDelay * 1000)
+		{
+			lastItemSpawn = System.currentTimeMillis();
+			return true;
+		}
+		return false;
 	}
 
 }

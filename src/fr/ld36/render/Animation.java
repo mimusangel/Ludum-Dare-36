@@ -13,6 +13,8 @@ public class Animation {
 	int columns, lines, width, height;
 	int start, end;
 	
+	float scale = 1;
+	
 	Texture tex;
 	
 	Mesh m;
@@ -26,32 +28,42 @@ public class Animation {
 	long lastFrame;
 	
 	public Animation(int c, int w, Texture texture, float secDelay){
-		this(c, 1, w, w, texture, 0, c-1, secDelay, false);
+		this(c, 1, w, w, texture, 0, c-1, secDelay, false, 1);
+	}
+	
+	public Animation(int c, int w, Texture texture, float secDelay, float scale){
+		this(c, 1, w, w, texture, 0, c-1, secDelay, false, scale);
 	}
 	
 	public Animation(int c, int w, int h, Texture texture, float secDelay){
-		this(c, 1, w, h, texture, 0, c-1, secDelay, false);
+		this(c, 1, w, h, texture, 0, c-1, secDelay, false, 1);
+	}
+	
+	public Animation(int c, int w, int h, Texture texture, float secDelay, float scale){
+		this(c, 1, w, h, texture, 0, c-1, secDelay, false, scale);
 	}
 	
 	public Animation(int c, int w, Texture texture, float secDelay, boolean loop){
-		this(c, 1, w, w, texture, 0, c-1, secDelay, loop);
+		this(c, 1, w, w, texture, 0, c-1, secDelay, loop, 1);
 	}
 	
 	public Animation(int c, int w, Texture texture, int s, int e, float secDelay){
-		this(c, 1, w, w, texture, s, e, secDelay, false);
+		this(c, 1, w, w, texture, s, e, secDelay, false, 1);
 	}
 	
 	public Animation(int c, int w, Texture texture, int s, int e, float secDelay, boolean loop){
-		this(c, 1, w, w, texture, s, e, secDelay, loop);
+		this(c, 1, w, w, texture, s, e, secDelay, loop, 1);
 	}
 	
-	public Animation(int c, int l, int w, int h, Texture texture, int s, int e, float secDelay, boolean loop){
+	public Animation(int c, int l, int w, int h, Texture texture, int s, int e, float secDelay, boolean loop, float scale){
 		columns = c;
 		lines = l;
 		width = w;
 		height = h;
 		start = s;
 		end = e;
+		
+		this.scale = scale;
 		
 		tex = texture;
 		
@@ -61,9 +73,9 @@ public class Animation {
 		
 		m = new Mesh(4);
 		m.addVertices(0,0).addTexCoord2f(0, 0).addColor(Color4f.WHITE);
-		m.addVertices(width,0).addTexCoord2f(1f / columns, 0).addColor(Color4f.WHITE);
-		m.addVertices(width,height).addTexCoord2f(1f / columns, 1f / lines).addColor(Color4f.WHITE);
-		m.addVertices(0,height).addTexCoord2f(0, 1f / lines).addColor(Color4f.WHITE);
+		m.addVertices(width * scale,0).addTexCoord2f(1f / columns, 0).addColor(Color4f.WHITE);
+		m.addVertices(width * scale,height * scale).addTexCoord2f(1f / columns, 1f / lines).addColor(Color4f.WHITE);
+		m.addVertices(0,height * scale).addTexCoord2f(0, 1f / lines).addColor(Color4f.WHITE);
 		
 		m.buffering();
 	}
