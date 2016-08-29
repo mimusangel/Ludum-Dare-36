@@ -78,6 +78,9 @@ public class Map
 						data[y][x] = 7;
 					else if (color == 0xc0c0c0)
 						data[y][x] = 8;
+					else if (color == 0xff8000)
+						data[y][x] = 9;
+					
 					
 				}
 			}
@@ -309,6 +312,13 @@ public class Map
 				{
 					uv.add(addUV.x * (float)rand.nextInt(5), addUV.y * (4f + (float)rand.nextInt(4)));
 				}
+				if (data[y][x] == 9)
+				{
+					if (y > 0 && data[y - 1][x] == 9)
+						uv.add(addUV.x * 1, addUV.y * 2);
+					else
+						uv.add(addUV.x * 1, addUV.y * 1);
+				}
 				meshBack.addVertices(pos).addColor(color).addTexCoord2f(uv);
 				meshBack.addVertices(pos.copy().add(32, 0)).addColor(color).addTexCoord2f(uv.copy().add(addUVx));
 				meshBack.addVertices(pos.copy().add(32, 32)).addColor(color).addTexCoord2f(uv.copy().add(addUV));
@@ -320,7 +330,7 @@ public class Map
 		{
 			for (int x = 0; x < data[0].length; x++)
 			{
-				if (data[y][x] <= 0 || data[y][x] == 8)
+				if (data[y][x] <= 0 || data[y][x] == 8 || data[y][x] == 9)
 					continue;
 				Vec2 pos = new Vec2(x * 32, y * 32);
 				Color4f color = Color4f.WHITE;

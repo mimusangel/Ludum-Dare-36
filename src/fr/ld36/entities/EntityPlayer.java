@@ -227,7 +227,7 @@ public class EntityPlayer extends Entity {
 				if (!editMode)
 					noclip = false;
 			}
-			if (keyboard.isPress(Keyboard.KEY_F5))
+			if (editMode && keyboard.isPress(Keyboard.KEY_F5))
 				noclip = !noclip;
 			if (keyboard.isPress(Keyboard.KEY_F6))
 				gridAlign = !gridAlign;
@@ -301,7 +301,7 @@ public class EntityPlayer extends Entity {
 				grab.velocity.y = 0;
 			}
 		}
-		if(mouse.getWheelY() != 0){
+		if(!editMode && mouse.getWheelY() != 0){
 			selectedSlot = selectedSlot == 0? 1 : 0;
 		}
 		if(keyboard.isDown(Keyboard.KEY_1)){

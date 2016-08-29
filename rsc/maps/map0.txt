@@ -1,76 +1,75 @@
 set rsc/maps/map0.png
-spawn 32.0 448.0
-spawnSign 64.0 480.0 "A or D for Moving"
-spawnSign 192.0 608.0 "W for Jump"
+spawn 64.0 448.0
+spawnSign 96.0 480.0 "A or D for Moving"
+spawnSign 224.0 608.0 "W for Jump"
 spawnSign 808.0 768.0 "SPACE for Lift/Drop"
-spawnBones 96.0 480.0
+spawnBones 128.0 448.0
 spawnBox 832.0 704.0
 spawnBox 768.0 480.0
 spawnBox 1664.0 896.0
 spawnBox 1728.0 896.0
-spawnDoor 0.0 480.0 0
 spawnDoor 1008.0 384.0 2
-spawnLever 256.0 192.0 9
-spawnLever 928.0 384.0 9
+spawnLever 256.0 192.0 8
+spawnLever 928.0 384.0 8
 spawnSign 960.0 384.0 "E for Use"
 spawnSign 1072.0 288.0 "S for Down"
 spawnTrap 704.0 992.0 1
-spawnLever 1440.0 704.0 14
+spawnLever 1440.0 704.0 13
 spawnBox 1936.0 1408.0
 spawnBones 1632.0 1440.0
 spawnTrap 1920.0 1472.0 2
-spawnPlate 1968.0 1536.0 18
-spawnPlate 1968.0 1728.0 18
+spawnPlate 1968.0 1536.0 17
+spawnPlate 1968.0 1728.0 17
 spawnDoor 2029.0 1888.0 1
 spawnTrap 1568.0 2208.0 1
-spawnLever 1536.0 2336.0 22
+spawnLever 1536.0 2336.0 21
 spawnBox 1583.0 2344.0
 spawnTrap 1568.0 3040.0 1
 spawnChest 960.0 3296.0
-spawnTrap 1568.0 2784.0 3
-spawnLever 2080.0 1888.0 21
+spawnTrap 1568.0 2784.0 4
+spawnLever 2080.0 1888.0 20
 spawnDoor 2016.0 3232.0 1
 spawnDoor 2016.0 3520.0 1
-spawnLever 1562.0 3049.0 25
+spawnLever 1562.0 3049.0 24
 spawnTrap 1216.0 3680.0 1
 spawnTrap 448.0 3601.0 2
 spawnBox 464.0 3540.0
 spawnBones 341.0 3621.0
-spawnPlate 448.0 3648.0 33
-spawnPlate 448.0 3840.0 33
+spawnPlate 448.0 3648.0 32
+spawnPlate 448.0 3840.0 32
 spawnDoor 736.0 3616.0 1
 spawnDoor 864.0 3808.0 1
 spawnDoor 1024.0 3808.0 1
-spawnLever 945.0 3822.0 38
-spawnLever 800.0 4000.0 39
+spawnLever 945.0 3822.0 37
+spawnLever 800.0 4000.0 38
 spawnDoor 864.0 4000.0 1
-spawnLever 800.0 3616.0 40
-spawnLever 1168.0 3625.0 43
+spawnLever 800.0 3616.0 39
+spawnLever 1168.0 3625.0 42
 spawnChest 928.0 4032.0
-spawnLever 1248.0 3392.0 32
+spawnLever 1248.0 3392.0 31
 spawnChest 1295.0 3648.0
 spawnChest 128.0 4032.0
 spawnBones 544.0 3840.0
-spawnLever 197.0 4016.0 27
+spawnLever 197.0 4016.0 26
 spawnBones 41.0 4008.0
 spawnDoor 2944.0 3424.0 1
 spawnDoor 2816.0 3552.0 1
-spawnLever 2816.0 3424.0 54
-spawnLever 2944.0 3552.0 53
+spawnLever 2816.0 3424.0 53
+spawnLever 2944.0 3552.0 52
 spawnChest 3008.0 3456.0
 spawnBones 2976.0 3456.0
 spawnSign 168.0 4016.0 "First lever to open the tomb room"
-spawnLever 2048.0 3232.0 29
-spawnLever 3136.0 3296.0 30
-spawnLever 3104.0 3136.0 27
+spawnLever 2048.0 3232.0 28
+spawnLever 3136.0 3296.0 29
+spawnLever 3104.0 3136.0 26
 spawnDoor 3424.0 3136.0 1
 spawnDoor 3552.0 3136.0 1
 spawnBox 3489.0 3155.0
 spawnChest 3232.0 3168.0
 spawnTrap 3360.0 3328.0 1
-spawnLever 3360.0 3136.0 67
-spawnLever 3232.0 3872.0 63
-spawnLever 4032.0 3552.0 64
+spawnLever 3360.0 3136.0 66
+spawnLever 3232.0 3872.0 62
+spawnLever 4032.0 3552.0 63
 spawnChest 3456.0 3424.0
 spawnBox 3756.0 3982.0
 spawnBox 3797.0 3982.0
@@ -80,25 +79,25 @@ spawnBones 3193.0 4020.0
 spawnChest 2976.0 3840.0
 spawnSign 3136.0 3136.0 "Here is the second lever"
 spawnDoor 2464.0 2272.0 1
-spawnLever 2368.0 2464.0 79
+spawnLever 2368.0 2464.0 78
 spawnTrap 3200.0 2336.0 1
-spawnLever 3008.0 2272.0 81
+spawnLever 3008.0 2272.0 80
 spawnChest 3168.0 2304.0
 spawnTrap 3808.0 2560.0 1
 spawnChest 3744.0 2368.0
 spawnDoor 2816.0 2976.0 1
-spawnLever 2880.0 2976.0 86
+spawnLever 2880.0 2976.0 85
 spawnBox 2957.0 2988.0
-spawnPlate 3488.0 2368.0 84
+spawnPlate 3488.0 2368.0 83
 spawnBox 3456.0 1920.0
 spawnDoor 3136.0 1888.0 1
 spawnChest 2705.0 1536.0
-spawnLever 2624.0 1504.0 27
-spawnLever 2784.0 1504.0 91
+spawnLever 2624.0 1504.0 26
+spawnLever 2784.0 1504.0 90
 spawnTrap 2688.0 1312.0 4
-spawnPlate 2208.0 1280.0 95
-spawnPlate 2208.0 1696.0 95
-spawnPlate 3200.0 1280.0 95
+spawnPlate 2208.0 1280.0 94
+spawnPlate 2208.0 1696.0 94
+spawnPlate 3200.0 1280.0 94
 spawnBones 2144.0 1664.0
 spawnBones 3904.0 1696.0
 spawnTrap 3872.0 1600.0 3
@@ -106,20 +105,29 @@ spawnBox 3886.0 1534.0
 spawnPlate 3712.0 1440.0 -1
 spawnBox 2672.0 434.0
 spawnChest 3889.0 1087.0
-spawnPlate 3680.0 1440.0 101
+spawnPlate 3680.0 1440.0 100
 spawnPlate 3648.0 1440.0 -1
-spawnPlate 3616.0 1440.0 101
+spawnPlate 3616.0 1440.0 100
 spawnPlate 3552.0 1440.0 -1
-spawnPlate 3520.0 1440.0 101
+spawnPlate 3520.0 1440.0 100
 spawnPlate 3488.0 1440.0 -1
 spawnPlate 3456.0 1440.0 -1
 spawnDoor 3584.0 1056.0 1
-spawnPlate 3360.0 1440.0 113
+spawnPlate 3360.0 1440.0 112
 spawnBones 3368.0 1395.0
 spawnBox 3731.0 1391.0
 spawnSign 3340.0 1674.0 "Agility"
 spawnSign 2461.0 617.0 "Luck"
 spawnSign 3373.0 1257.0 "Intelligence"
 spawnTrap 2880.0 1952.0 1
-spawnLever 2400.0 2272.0 120
-spawnPlate 3200.0 1696.0 95
+spawnLever 2400.0 2272.0 119
+spawnPlate 3200.0 1696.0 94
+spawnBox 3218.0 831.0
+spawnBox 3280.0 831.0
+spawnChest 4000.0 416.0
+spawnPlate 3584.0 416.0 26
+spawnSign 3552.0 416.0 "Here we are, this is the last plate to activate"
+spawnSign 1583.0 2851.0 "To open this room you must find the right levers and pressure plates"
+spawnChest 1952.0 3552.0
+spawnBones 1920.0 3552.0
+spawnSign 3584.0 1408.0 "42, Base 2"
