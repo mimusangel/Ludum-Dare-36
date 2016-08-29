@@ -8,6 +8,7 @@ import fr.ld36.LD36;
 import fr.ld36.entities.spe.IMovable;
 import fr.ld36.items.Inventory;
 import fr.ld36.items.ItemFlashlight;
+import fr.ld36.items.ItemSword;
 import fr.ld36.map.Map;
 import fr.ld36.utils.Audio;
 import fr.ld36.utils.Res;
@@ -73,6 +74,7 @@ public class EntityPlayer extends Entity {
 		money = 0;
 		inv = new Inventory(this);
 		inv.addItem(new ItemFlashlight());
+		inv.addItem(new ItemSword());
 		sfxDead = Audio.list.get("rsc/sounds/dead.wav");
 	}
 
@@ -385,7 +387,7 @@ public class EntityPlayer extends Entity {
 				
 				//Item in hand rendering
 				if(inv.isItem(selectedSlot)){					
-					Mat4 i0 = Mat4.multiply(Mat4.rotateZf(rotateHand), Mat4.translate(new Vec2(-7, -21)));
+					Mat4 i0 = Mat4.multiply(Mat4.rotateZf(rotateHand), Mat4.translate(new Vec2(-7, -9).add(inv.getItem(selectedSlot).handOffset)));
 					Mat4 i1 = Mat4.multiply(Mat4.translate(matPos.copy().add(15 * dir, 28 - (int)(anim.x * 8) % 2)), Mat4.scale(dir, 1, 1));
 					
 					shader.setUniformMat4f("m_view",Mat4.multiply(i1, i0));

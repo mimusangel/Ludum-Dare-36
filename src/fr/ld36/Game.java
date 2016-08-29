@@ -226,15 +226,19 @@ public class Game
 		Texture.unbind();
 		
 		Item i;
-		hud.setUniformMat4f("m_view", Mat4.multiply(Mat4.scale(1f), Mat4.translate(LD36.WINDOW_WIDTH / 2 - 32, 5)));
 		i = player.getInv().getItem(0);
 		if(i != null)
+		{
+			hud.setUniformMat4f("m_view", Mat4.multiply(Mat4.scale(1f), Mat4.translate(LD36.WINDOW_WIDTH / 2 - 32, 5)));
 			i.getAnimation().render(main, new Vec2(0));
+		}
 		
-		hud.setUniformMat4f("m_view", Mat4.multiply(Mat4.scale(1f), Mat4.translate(LD36.WINDOW_WIDTH / 2, 5)));
 		i = player.getInv().getItem(1);
 		if(i != null)
+		{
+			hud.setUniformMat4f("m_view", Mat4.multiply(Mat4.scale(1f), Mat4.translate(LD36.WINDOW_WIDTH / 2, 5)));
 			i.getAnimation().render(main, new Vec2(0));
+		}		
 		
 		if(player.selectedSlot == 0)
 			Res.images.get("invSlotSelected").bind();
