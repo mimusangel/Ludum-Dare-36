@@ -81,8 +81,9 @@ public class Animation {
 	}
 	
 	public void render(Shaders shader, Vec2 pos){
-		if(isFlipped) pos.add(new Vec2((float)width,0f));
-		shader.setUniformMat4f("m_view", Mat4.multiply(Mat4.translate(pos), Mat4.scale(isFlipped?-1:1, 1, 1)));
+		Vec2 npos = pos.copy();
+		if(isFlipped) npos.add(new Vec2((float)width,0f));
+		shader.setUniformMat4f("m_view", Mat4.multiply(Mat4.translate(npos), Mat4.scale(isFlipped?-1:1, 1, 1)));
 		shader.setUniform2f("anim", new Vec2((float) frame / columns, 0));
 		
 		if(tex != null){
@@ -201,5 +202,14 @@ public class Animation {
 	
 	public boolean isReversed(){
 		return isReversed;
+	}
+	
+	public void stop(){
+		setPause(true);
+		frame = start;
+	}
+	
+	public boolean isPaused(){
+		return isPaused;
 	}
 }

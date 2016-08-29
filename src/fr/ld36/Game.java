@@ -103,6 +103,8 @@ public class Game
 		timeClick = System.currentTimeMillis();
 		editorSelect = new EditorSelectEntity();
 		editLink = null;
+		
+		this.addEntity(new EntityMummy(new Vec2(300, 600)));
 	}
 	
 	float lightDistance = 100;
