@@ -40,4 +40,9 @@ public class EntityBones extends Entity implements IMovable
 
 	public void giveDamage(Entity src, int dmg) {}
 	public void giveDamage(int x, int y, int dmg){}
+
+	public Entity copy()
+	{
+		return new EntityBones(pos.copy());
+	}
 }

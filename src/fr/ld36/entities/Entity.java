@@ -32,6 +32,7 @@ public abstract class Entity
 	public abstract void giveDamage(Entity src, int dmg);
 	public abstract void giveDamage(int x, int y, int dmg);
 	public abstract AABB getBox();
+	public abstract Entity copy();
 	public boolean entityAlive()
 	{
 		return (life > 0);

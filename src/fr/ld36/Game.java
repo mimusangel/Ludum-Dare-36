@@ -12,11 +12,13 @@ import fr.ld36.entities.spe.IWalkable;
 import fr.ld36.items.Item;
 import fr.ld36.map.Map;
 import fr.ld36.render.Renderer;
+import fr.ld36.utils.Audio;
 import fr.ld36.utils.Res;
 import fr.mimus.jbasicgl.graphics.Color4f;
 import fr.mimus.jbasicgl.graphics.Mesh;
 import fr.mimus.jbasicgl.graphics.Shaders;
 import fr.mimus.jbasicgl.graphics.Texture;
+import fr.mimus.jbasicgl.input.Mouse;
 import fr.mimus.jbasicgl.maths.Mat4;
 import fr.mimus.jbasicgl.maths.Vec2;
 
@@ -37,6 +39,9 @@ public class Game
 	Mesh	meshStamina;
 	Texture hudCoin;
 	Mesh	meshCoin;
+	
+	Audio sfxAction;
+	Audio sfxActionFail;
 	
 	public Game()
 	{
@@ -64,7 +69,6 @@ public class Game
 		meshStamina.addVertices(128, 16).addColor(Color4f.WHITE).addTexCoord2f(1f, 0.5f);
 		meshStamina.addVertices(0, 16).addColor(Color4f.WHITE).addTexCoord2f(0, 0.5f);
 		meshStamina.buffering();
-		
 		hudCoin = Res.images.get("coin");
 		meshCoin = new Mesh(4);
 		meshCoin.addVertices(0, 0).addColor(Color4f.WHITE).addTexCoord2f(0, 0);
@@ -72,6 +76,8 @@ public class Game
 		meshCoin.addVertices(32, 32).addColor(Color4f.WHITE).addTexCoord2f(1f, 1f);
 		meshCoin.addVertices(0, 32).addColor(Color4f.WHITE).addTexCoord2f(0, 1f);
 		meshCoin.buffering();
+		sfxAction = Audio.list.get("rsc/sounds/actionDefault.wav");
+		sfxActionFail = Audio.list.get("rsc/sounds/actionFail.wav");
 	}
 	
 	public void initRender()
@@ -97,13 +103,21 @@ public class Game
 		initRender();
 		map.render(elapse, main);
 		
-		int i = 0;
-		while (i < entitiesView.size())
+		if (player.editMode)
 		{
-			entitiesView.get(i).render(main);
-			i++;
+			player.render(main);
+			map.renderEditMode(main);
 		}
-		player.renderGrab(main);
+		else
+		{
+			int i = 0;
+			while (i < entitiesView.size())
+			{
+				entitiesView.get(i).render(main);
+				i++;
+			}
+			player.renderGrab(main);
+		}
 		renderHUD(elapse);
 	}
 	
@@ -137,8 +151,23 @@ public class Game
 		hud.setUniform2f("mulTexture", new Vec2(p, 1));
 		hud.setUniformMat4f("m_view", Mat4.multiply(Mat4.scale(p, 1f, 1f), Mat4.translate(5, 405 - 21)));
 		meshStamina.render(GL11.GL_QUADS);
-		Renderer.drawString(hud, "e: " + entitiesView.size() + " / " + entities.size(), new Vec2(5, 30), Color4f.WHITE);
-		
+		hud.setUniform2f("mulTexture", new Vec2(1f, 1f));
+		if (player.debugMode)
+		{
+			Renderer.drawString(hud, "e: " + entitiesView.size() + " / " + entities.size(), new Vec2(5, 30), player.editMode ? Color4f.LIGHT_RED : Color4f.WHITE);
+			Renderer.drawString(hud, "x: " + player.pos.x, new Vec2(5, 40), Color4f.WHITE);
+			Renderer.drawString(hud, "y: " + player.pos.y, new Vec2(5, 50), Color4f.WHITE);
+			if (player.editMode)
+			{
+				Renderer.drawString(hud, "noclip: " + player.noclip, new Vec2(5, 60), Color4f.WHITE);
+				Vec2 m = getMousePos();
+				Vec2 mp = getMousePosInMap();
+				Renderer.drawString(hud, "- grid: " + player.gridAlign, new Vec2(5, 70), Color4f.WHITE);
+				Renderer.drawString(hud, "- mx: " + mp.x + " ( " + m.x + " )", new Vec2(5, 80), Color4f.WHITE);
+				Renderer.drawString(hud, "- my: " + mp.y + " ( " + m.y + " )", new Vec2(5, 90), Color4f.WHITE);
+			}
+			hud.setUniform4f("color", Color4f.WHITE.toVector4());
+		}
 		hudCoin.bind();
 		hud.setUniform2f("offsetTexture", new Vec2(0f, 0f));
 		hud.setUniformMat4f("m_view", Mat4.multiply(Mat4.scale(1f), Mat4.translate(LD36.WINDOW_WIDTH - 37, 5)));
@@ -178,26 +207,28 @@ public class Game
 				 */
 				if (e instanceof EntityPlayer)
 				{
-					if (map.checkCollid(e, new AABB((int)last.x + 4, (int)e.pos.y + 16, 24, 48)))
+					if (!((EntityPlayer)e).noclip)
 					{
-						e.pos.y = last.y;
-						e.velocity.y = 0;
+						if (map.checkCollid(e, new AABB((int)last.x + 4, (int)e.pos.y + 16, 24, 48)))
+						{
+							e.pos.y = last.y;
+							e.velocity.y = 0;
+						}
+						if (map.checkCollid(e, new AABB((int)e.pos.x + 4, (int)last.y + 16, 24, 48)))
+						{
+							e.pos.x = last.x;
+						}
+						if (entityCollid(e, new AABB((int)last.x + 4, (int)e.pos.y + 16, 24, 48)))
+						{
+							e.pos.y = last.y;
+							e.velocity.y = 0;
+						}
+						if (entityCollid(e, new AABB((int)e.pos.x + 4, (int)last.y + 16, 24, 48)))
+						{
+							e.pos.x = last.x;
+							e.velocity.x = 0;
+						}
 					}
-					if (map.checkCollid(e, new AABB((int)e.pos.x + 4, (int)last.y + 16, 24, 48)))
-					{
-						e.pos.x = last.x;
-					}
-					if (entityCollid(e, new AABB((int)last.x + 4, (int)e.pos.y + 16, 24, 48)))
-					{
-						e.pos.y = last.y;
-						e.velocity.y = 0;
-					}
-					if (entityCollid(e, new AABB((int)e.pos.x + 4, (int)last.y + 16, 24, 48)))
-					{
-						e.pos.x = last.x;
-						e.velocity.x = 0;
-					}
-					
 				}
 				else
 				{
@@ -370,6 +401,7 @@ public class Game
 	
 	public void action(Entity entity) {
 		int i = 0;
+		boolean actionFail = true;
 		AABB e0box = entity.getBox();
 		while (i < entities.size())
 		{
@@ -381,11 +413,11 @@ public class Game
 					continue;
 				}
 			}
-
 			AABB e1box = e.getBox();
 			Vec2 collid = e0box.collided(e1box);
 			if (collid != null)
 			{
+				actionFail = false;
 				//Ramassage Item
 				if(e instanceof EntityItem){
 					EntityItem ei = (EntityItem) e;
@@ -400,6 +432,36 @@ public class Game
 			
 			i++;
 		}
+		if (actionFail)
+			sfxActionFail.setVolume(0.65f).play();
+		else
+			sfxAction.setVolume(0.65f).play();
+	}
+
+	
+	public Vec2 getMousePos()
+	{
+		LD36 ld36 = LD36.getInstance();
+		Mouse m = ld36.win.getMouse();
+		Vec2 mp = new Vec2((float)m.getX(), (float)m.getY());
+		if (player != null)
+			mp.sub(player.getOffset());
+		mp.x = (float) Math.floor(mp.x);
+		mp.y = (float) Math.floor(mp.y);
+		return (mp);
+	}
+	
+	public Vec2 getMousePosInMap()
+	{
+		LD36 ld36 = LD36.getInstance();
+		Mouse m = ld36.win.getMouse();
+		Vec2 mp = new Vec2((float)m.getX(), (float)m.getY());
+		if (player != null)
+			mp.sub(player.getOffset());
+		mp.div(32f * ld36.getScaleX(), 32f * ld36.getScaleY());
+		mp.x = (float) Math.floor(mp.x);
+		mp.y = (float) Math.floor(mp.y);
+		return (mp);
 	}
 	
 	public void dispose()
@@ -409,6 +471,9 @@ public class Game
 			entities.get(0).dispose();
 			entities.remove(0);
 		}
+		meshHeart.dispose();
+		meshStamina.dispose();
+		meshCoin.dispose();
 		if (map != null)
 			map.dispose();
 	}

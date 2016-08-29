@@ -1,0 +1,29 @@
+set rsc/maps/map0.png
+spawn 1632.0 1440.0
+ladder right 62 22
+ladder right 30 25
+ladder right 23 32
+ladder left 28 82
+ladder right 72 82
+spawnSign 64.0 480.0 "A or D for Moving"
+spawnSign 192.0 608.0 "W for Jump"
+spawnSign 808.0 768.0 "SPACE for Lift/Drop"
+spawnBones 96.0 480.0
+spawnBox 832.0 704.0
+spawnBox 768.0 480.0
+spawnBox 1664.0 896.0
+spawnBox 1728.0 896.0
+spawnDoor 0.0 480.0 0
+spawnDoor 1008.0 384.0 2
+spawnLever 256.0 192.0 9
+spawnLever 928.0 384.0 9
+spawnSign 960.0 384.0 "E for Use"
+spawnSign 1072.0 288.0 "S for Down"
+spawnTrap 704.0 992.0 1
+spawnLever 1440.0 704.0 14
+spawnBox 1936.0 1408.0
+spawnBones 1632.0 1440.0
+spawnTrap 1920.0 1472.0 2
+spawnPlate 1968.0 1536.0 18
+spawnPlate 1968.0 1728.0 18
+spawnChest 200.0 638.0

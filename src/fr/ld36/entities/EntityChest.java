@@ -24,8 +24,8 @@ public class EntityChest extends Entity implements IActivable{
 	float itemSpawnDelay = 0.1f;
 	ArrayList<Item> itemsToSpawn = new ArrayList<Item>();
 	
-	@Override
-	public void createEntity() {
+	public void createEntity()
+	{
 		
 	}
 	
@@ -92,6 +92,11 @@ public class EntityChest extends Entity implements IActivable{
 			return true;
 		}
 		return false;
+	}
+
+	public Entity copy()
+	{
+		return new EntityChest(pos.copy());
 	}
 
 }

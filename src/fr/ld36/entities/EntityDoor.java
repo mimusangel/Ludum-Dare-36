@@ -8,6 +8,7 @@ import fr.ld36.LD36;
 import fr.ld36.entities.spe.IActivableLink;
 import fr.ld36.entities.spe.IBlock;
 import fr.ld36.render.Animation;
+import fr.ld36.utils.Audio;
 import fr.ld36.utils.Res;
 import fr.mimus.jbasicgl.graphics.Color4f;
 import fr.mimus.jbasicgl.graphics.Mesh;
@@ -20,14 +21,18 @@ public class EntityDoor extends Entity implements IBlock, IActivableLink {
 
 	Animation anim;
 	int unlock;
-	int nbLock;
+	public int nbLock;
 	boolean lastStat;
+	Audio sfxOpen;
+	Audio sfxLock;
 	public EntityDoor(Vec2 pos, int nbLock)
 	{
 		super(pos);
 		this.nbLock = nbLock;
 		unlock = 0;
 		lastStat = false;
+		sfxOpen = Audio.list.get("rsc/sounds/opendoor.wav");
+		sfxLock = Audio.list.get("rsc/sounds/lock.wav");
 	}
 
 	public void toggle(Entity e, boolean toggle)
@@ -39,6 +44,10 @@ public class EntityDoor extends Entity implements IBlock, IActivableLink {
 		boolean islock = (unlock == nbLock);
 		if (lastStat != islock)
 		{
+			if (islock)
+				sfxOpen.play(e.pos, pos);
+			else
+				sfxLock.play(e.pos, pos);
 			lastStat = islock;
 			anim.setReverse(!islock);
 			anim.setPause(false);
@@ -112,5 +121,10 @@ public class EntityDoor extends Entity implements IBlock, IActivableLink {
 
 	public void giveDamage(Entity src, int dmg) {}
 	public void giveDamage(int x, int y, int dmg){}
+
+	public Entity copy()
+	{
+		return new EntityDoor(pos.copy(), nbLock);
+	}
 
 }

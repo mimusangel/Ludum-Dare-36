@@ -16,7 +16,7 @@ import fr.mimus.jbasicgl.maths.Vec2;
 
 public class EntitySign extends Entity implements IBlock
 {
-	String text;
+	public String text;
 	public EntitySign(Vec2 pos, String msg)
 	{
 		super(pos);
@@ -83,5 +83,9 @@ public class EntitySign extends Entity implements IBlock
 	public boolean spawnFront()
 	{
 		return (false);
+	}
+
+	public Entity copy() {
+		return (new EntitySign(pos.copy(), text));
 	}
 }

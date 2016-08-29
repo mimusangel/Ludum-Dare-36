@@ -13,7 +13,7 @@ public class EntityLever extends Entity implements IActivable
 {
 	Animation anim;
 	boolean toggle;
-	IActivableLink link;
+	public IActivableLink link;
 	public EntityLever(Vec2 pos, IActivableLink link)
 	{
 		super(pos);
@@ -76,4 +76,9 @@ public class EntityLever extends Entity implements IActivable
 
 	public void giveDamage(Entity src, int dmg) {}
 	public void giveDamage(int x, int y, int dmg){}
+
+	public Entity copy()
+	{
+		return new EntityLever(pos.copy(), link);
+	}
 }

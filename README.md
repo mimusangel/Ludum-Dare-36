@@ -2,12 +2,11 @@
 
 ## Team
 * Mimus: http://ludumdare.com/compo/author/mimus/
-* Marccspro: http://ludumdare.com/compo/author/marccspro/
 * Freebios
 
 ## Soft
 * IDE: Eclipse, Intell IJ
-* Sound effect: bfxr, sfxr
+* Sound effect: bfxr, sfxr, Audacity
 * Graphic: photoshop (SpriteSheet generator script: https://github.com/bogdanrybak/spritesheet-generator)
 
 ## Link

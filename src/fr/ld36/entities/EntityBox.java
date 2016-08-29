@@ -42,4 +42,9 @@ public class EntityBox extends Entity implements IMovable, IWalkable
 	public void giveDamage(Entity src, int dmg) {}
 	public void giveDamage(int x, int y, int dmg){}
 
+	public Entity copy()
+	{
+		return (new EntityBox(pos.copy()));
+	}
+
 }

@@ -2,10 +2,13 @@ package fr.ld36.map;
 
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.FileInputStream;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Random;
 
 import javax.imageio.ImageIO;
 
@@ -13,6 +16,7 @@ import org.lwjgl.opengl.GL11;
 
 import fr.ld36.AABB;
 import fr.ld36.Game;
+import fr.ld36.LD36;
 import fr.ld36.entities.*;
 import fr.ld36.entities.spe.IActivableLink;
 import fr.ld36.utils.Res;
@@ -20,6 +24,7 @@ import fr.mimus.jbasicgl.graphics.Color4f;
 import fr.mimus.jbasicgl.graphics.Mesh;
 import fr.mimus.jbasicgl.graphics.Shaders;
 import fr.mimus.jbasicgl.graphics.Texture;
+import fr.mimus.jbasicgl.input.Mouse;
 import fr.mimus.jbasicgl.maths.Mat4;
 import fr.mimus.jbasicgl.maths.Vec2;
 
@@ -33,10 +38,14 @@ public class Map
 	int data[][];
 	Texture texture;
 	public Vec2 spawn;
+	String set;
+	ArrayList<Entity> entitiesOrigin;
 
 	public Map(Game game, String mapPath)
 	{
 		this.game = game;
+		set = "";
+		entitiesOrigin = new ArrayList<Entity>();
 		texture = Res.images.get("tiles");
 		reader(mapPath);
 	}
@@ -62,6 +71,9 @@ public class Map
 						data[y][x] = 6;
 					else if (color == 0x800080)
 						data[y][x] = 7;
+					else if (color == 0xc0c0c0)
+						data[y][x] = 8;
+					
 				}
 			}
 		} catch (IOException e) {
@@ -89,14 +101,15 @@ public class Map
 		try {
 			BufferedReader reader = new BufferedReader(new FileReader(path));
 			String line = "";
-			ArrayList<Entity> entities = new ArrayList<Entity>();
 			link = new ArrayList<Vec2>();
+			ArrayList<Entity> entities = new ArrayList<Entity>();
 			while ((line = reader.readLine()) != null)
 			{
 				String data[];
 				data = line.split(" ");
 				if (data[0].equalsIgnoreCase("set"))
 				{
+					set = data[1];
 					loadmap(data[1]);
 				}
 				else if (data[0].equalsIgnoreCase("spawn"))
@@ -216,11 +229,38 @@ public class Map
 			reader.close();
 			for (Entity e : entities)
 			{
+				entitiesOrigin.add(e.copy());
+				entitiesOrigin.get(entitiesOrigin.size() - 1).createEntity();
 				if (e.spawnFront())
 					game.addEntity(e);
 				else
 					game.addFirstEntity(e);
 					
+			}
+			for (Entity e : entitiesOrigin)
+			{
+				if (e instanceof EntityLever)
+				{
+					for (int j = 0; j < entities.size(); j++)
+					{
+						if (((EntityLever)e).link == entities.get(j))
+						{
+							((EntityLever)e).link = (IActivableLink) entitiesOrigin.get(j);
+							break;
+						}
+					}
+				}
+				if (e instanceof EntityPlate)
+				{
+					for (int j = 0; j < entities.size(); j++)
+					{
+						if (((EntityPlate)e).link == entities.get(j))
+						{
+							((EntityPlate)e).link = (IActivableLink) entitiesOrigin.get(j);
+							break;
+						}
+					}
+				}
 			}
 		} catch (IOException e) {
 			return (false);
@@ -258,6 +298,7 @@ public class Map
 		Vec2 addUV = new Vec2(vx, vy);
 		meshBack = new Mesh(data.length * data[0].length * 4);
 		meshFront = new Mesh(data.length * data[0].length * 4);
+		Random rand = new Random();
 		for (int y = 0; y < data.length; y++)
 		{
 			for (int x = 0; x < data[0].length; x++)
@@ -266,6 +307,10 @@ public class Map
 				Color4f color = Color4f.WHITE;
 				Vec2 uv = new Vec2();
 				color = Color4f.GRAY;
+				if (data[y][x] == 8)
+				{
+					uv.add(addUV.x * (float)rand.nextInt(5), addUV.y * (4f + (float)rand.nextInt(4)));
+				}
 				meshBack.addVertices(pos).addColor(color).addTexCoord2f(uv);
 				meshBack.addVertices(pos.copy().add(32, 0)).addColor(color).addTexCoord2f(uv.copy().add(addUVx));
 				meshBack.addVertices(pos.copy().add(32, 32)).addColor(color).addTexCoord2f(uv.copy().add(addUV));
@@ -277,7 +322,7 @@ public class Map
 		{
 			for (int x = 0; x < data[0].length; x++)
 			{
-				if (data[y][x] <= 0)
+				if (data[y][x] <= 0 || data[y][x] == 8)
 					continue;
 				Vec2 pos = new Vec2(x * 32, y * 32);
 				Color4f color = Color4f.WHITE;
@@ -425,7 +470,7 @@ public class Map
 			return ;
 		int minX = (int) (aabb.x) / 32;
 		int maxX = (int) (aabb.x + aabb.w) / 32;
-		int minY = (int) (aabb.y + aabb.h) / 32;
+		int minY = (int) (aabb.y) / 32;
 		int maxY = (int) (aabb.y + aabb.h) / 32;
 		for (int y = minY; y <= maxY; y++)
 		{
@@ -443,7 +488,70 @@ public class Map
 			}
 		}
 	}
-
+	private int getEntityID(IActivableLink link)
+	{
+		for (int i = 0; i < entitiesOrigin.size(); i++)
+		{
+			if (link == entitiesOrigin.get(i))
+			{
+				return (i);
+			}
+		}
+		return (-1);
+	}
+	public void adminEditSave()
+	{
+		String p = set.substring(0, set.lastIndexOf(".")) + ".tmp";
+		try {
+			BufferedWriter write = new BufferedWriter(new FileWriter(p));
+			write.write("set " + set + "\n");
+			write.write("spawn " + spawn.x + " " + spawn.y + "\n");
+			for (int y = 0; y < data.length; y++)
+			{
+				for (int x = 0; x < data[0].length; x++)
+				{
+					if (data[y][x] == 2 && (y == 0 || (y > 0 && data[y - 1][x] != 2)))
+						write.write("ladder right " + x + " " + y + "\n");
+					if (data[y][x] == 3 && (y == 0 || (y > 0 && data[y - 1][x] != 3)))
+						write.write("ladder left " + x + " " + y + "\n");
+				}
+			}
+			for (Entity e : entitiesOrigin)
+			{
+				if (e instanceof EntitySign)
+					write.write("spawnSign " + e.pos.x + " " + e.pos.y + " \"" + ((EntitySign)e).text + "\"" + "\n");
+				else if (e instanceof EntityBox)
+					write.write("spawnBox " + e.pos.x + " " + e.pos.y + "\n");
+				else if (e instanceof EntityBones)
+					write.write("spawnBones " + e.pos.x + " " + e.pos.y + "\n");
+				else if (e instanceof EntityDoor)
+					write.write("spawnDoor " + e.pos.x + " " + e.pos.y + " " + ((EntityDoor)e).nbLock + "\n");
+				else if (e instanceof EntityTrap)
+					write.write("spawnTrap " + e.pos.x + " " + e.pos.y + " " + ((EntityTrap)e).nbLock + "\n");
+				else if (e instanceof EntityLever)
+					write.write("spawnLever " + e.pos.x + " " + e.pos.y + " " + getEntityID(((EntityLever)e).link) + "\n");
+				else if (e instanceof EntityPlate)
+					write.write("spawnPlate " + e.pos.x + " " + e.pos.y + " " + getEntityID(((EntityPlate)e).link) + "\n");
+				else if (e instanceof EntityChest)
+					write.write("spawnChest " + e.pos.x + " " + e.pos.y + "\n");
+			}
+			write.close();
+			System.out.println("Map saved! " + p);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void renderEditMode(Shaders shader)
+	{
+		int i = 0;
+		while (i < entitiesOrigin.size())
+		{
+			entitiesOrigin.get(i).render(shader);
+			i++;
+		}
+	}
+	
 	public void dispose()
 	{
 		meshBack.dispose();

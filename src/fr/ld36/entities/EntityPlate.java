@@ -15,7 +15,7 @@ import fr.mimus.jbasicgl.maths.Vec2;
 public class EntityPlate extends Entity implements IActivable, IWalkable{
 
 	Animation anim;
-	IActivableLink link;
+	public IActivableLink link;
 	Boolean toggled = false;
 	Boolean hasBeenToggled = false;
 	
@@ -101,7 +101,14 @@ public class EntityPlate extends Entity implements IActivable, IWalkable{
 
 	@Override
 	public AABB getBox() {
-		return new AABB((int) pos.x + 4, (int) pos.y + 28 + anim.getFrame(), 24, 4 - anim.getFrame());
+		if (anim != null)
+			return new AABB((int) pos.x + 4, (int) pos.y + 28 + anim.getFrame(), 24, 4 - anim.getFrame());
+		return new AABB((int) pos.x + 4, (int) pos.y + 28, 24, 4);
+	}
+	
+	public Entity copy()
+	{
+		return new EntityPlate(pos.copy(), link);
 	}
 
 }

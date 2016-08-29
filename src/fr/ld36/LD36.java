@@ -10,6 +10,7 @@ import static org.lwjgl.opengl.GL11.glEnable;
 import java.io.File;
 
 import fr.ld36.render.Renderer;
+import fr.ld36.utils.Audio;
 import fr.ld36.utils.Res;
 import fr.mimus.jbasicgl.Window;
 import fr.mimus.jbasicgl.graphics.Color4f;
@@ -40,6 +41,7 @@ public class LD36
 	{
 		Res.autoLoadRsc();
 		Renderer.load();
+		Audio.loadSound();
 		game = new Game();
 		hud = new Shaders("rsc/shaders/main.vert", "rsc/shaders/hud.frag");
 	}
@@ -122,9 +124,11 @@ public class LD36
 	}
 	
 	int score;
-	public void gameOver(int score)
+	double playTime;
+	public void gameOver(int score, double playTime)
 	{
 		this.score = score;
+		this.playTime = playTime;
 		game.dispose();
 		game = null;
 	}
@@ -152,6 +156,12 @@ public class LD36
 		size.x = (float) Math.floor(size.x);
 		size.y = (float) Math.floor(size.y);
 		Renderer.drawString(hud, "Score: " + score, size, Color4f.WHITE);
+		int time = (int) Math.round(playTime);
+		size = Renderer.metricString(time + "s");
+		size = new Vec2(360, 202).sub(size.div(2));
+		size.x = (float) Math.floor(size.x);
+		size.y = (float) Math.floor(size.y);
+		Renderer.drawString(hud, time + "s", size, Color4f.WHITE);
 		size = Renderer.metricString("Press Enter for Retry");
 		size = new Vec2(360, 232).sub(size.div(2));
 		size.x = (float) Math.floor(size.x);

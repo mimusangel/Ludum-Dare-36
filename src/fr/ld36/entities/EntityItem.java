@@ -108,4 +108,9 @@ public class EntityItem extends Entity{
 	public Item getItem(){
 		return i;
 	}
+
+	public Entity copy()
+	{
+		return new EntityItem(pos.copy(), i);
+	}
 }

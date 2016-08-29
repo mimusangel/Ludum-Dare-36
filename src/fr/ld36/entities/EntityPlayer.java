@@ -8,6 +8,7 @@ import fr.ld36.LD36;
 import fr.ld36.entities.spe.IMovable;
 import fr.ld36.items.Inventory;
 import fr.ld36.map.Map;
+import fr.ld36.utils.Audio;
 import fr.ld36.utils.Res;
 import fr.mimus.jbasicgl.graphics.Color4f;
 import fr.mimus.jbasicgl.graphics.Mesh;
@@ -34,26 +35,34 @@ public class EntityPlayer extends Entity {
 	Mesh test;
 
 	public Entity grab;
-	boolean debugMode;
-
 	int stamina;
 	long staTime;
-	
 	int money;
 	Inventory inv;
+	Audio sfxDead;
+	double timePlay;
 	
+	public boolean debugMode;
+	public boolean editMode;
+	public boolean noclip;
+	public boolean gridAlign;
+
 	public EntityPlayer(Vec2 pos)
 	{
 		super(pos);
 		anim = new Vec2();
 		debugMode = false;
+		editMode = false;
+		noclip = false;
+		gridAlign = true;
 		life = 3;
 		stamina = 100;		
 		staTime = System.currentTimeMillis();
 		reversed = false;
-		
+		timePlay = 0;
 		money = 0;
 		inv = new Inventory();
+		sfxDead = Audio.list.get("rsc/sounds/dead.wav");
 	}
 
 	public void createEntity()
@@ -96,6 +105,7 @@ public class EntityPlayer extends Entity {
 
 	public void update(Game game, int tick, double elapse)
 	{
+		timePlay += elapse;
 		LD36 ld36 = LD36.getInstance();
 		Keyboard keyboard = ld36.win.getKeyboard();
 		Mouse mouse = ld36.win.getMouse();
@@ -116,7 +126,7 @@ public class EntityPlayer extends Entity {
 			rotateHand = 1.4f;
 		if (keyboard.isDown(Keyboard.KEY_A))
 		{
-			pos.x -= 2;
+			pos.x -= 2 + (noclip ? 2 : 0);
 			if (System.currentTimeMillis() - time >= 800)
 				time = System.currentTimeMillis();
 			moving = true;
@@ -124,22 +134,33 @@ public class EntityPlayer extends Entity {
 		}
 		if (keyboard.isDown(Keyboard.KEY_D))
 		{
-			pos.x += 2;
+			pos.x += 2 + (noclip ? 2 : 0);
 			if (System.currentTimeMillis() - time >= 800)
 				time = System.currentTimeMillis();
 			moving = true;
 			reversed = dir == -1;
 		}
-		if (keyboard.isDown(Keyboard.KEY_W) && this.inFloor)
+		if (keyboard.isDown(Keyboard.KEY_W) && (this.inFloor || noclip))
 		{
-			velocity.y = -12;
-			this.inFloor = false;
+			if (noclip)
+				pos.y -= 4;
+			else
+			{
+				velocity.y = -12;
+				this.inFloor = false;
+				Audio.list.get("rsc/sounds/jump.wav").play();
+			}
 		}
-		if (keyboard.isDown(Keyboard.KEY_S) && this.inFloor)
+		if (keyboard.isDown(Keyboard.KEY_S) && (this.inFloor || noclip))
 		{
-			pos.y += 8;
-			velocity.y = 0;
-			this.inFloor = false;
+			if (noclip)
+				pos.y += 4;
+			else
+			{
+				pos.y += 8;
+				velocity.y = 0;
+				this.inFloor = false;
+			}
 		}
 		if (keyboard.isPress(Keyboard.KEY_SPACE))
 		{
@@ -157,6 +178,31 @@ public class EntityPlayer extends Entity {
 		if (keyboard.isPress(Keyboard.KEY_F3))
 		{
 			debugMode = !debugMode;
+			if (!debugMode)
+			{
+				editMode = false;
+				noclip = false;
+			}
+		}
+		if (debugMode)
+		{
+			if (keyboard.isPress(Keyboard.KEY_F8))
+			{
+				editMode = !editMode;
+				if (!editMode)
+					noclip = false;
+			}
+			if (keyboard.isPress(Keyboard.KEY_F5))
+				noclip = !noclip;
+			if (keyboard.isPress(Keyboard.KEY_F6))
+				gridAlign = !gridAlign;
+			if (editMode)
+			{
+				if (keyboard.isPress(Keyboard.KEY_F2))
+				{
+					ld36.game.map.adminEditSave();
+				}
+			}
 		}
 		if (this.inFloor && moving)
 		{
@@ -168,11 +214,15 @@ public class EntityPlayer extends Entity {
 				anim.x  = 1f - anim.x ;
 		}
 		else if (moving)
+		{
 			anim.x = 2f / 8f;
+		}
 		else
+		{
 			anim.x = 0;
-		super.update(game, tick, elapse);
-		
+		}
+		if (!noclip)
+			super.update(game, tick, elapse);
 		if (System.currentTimeMillis() - staTime >= 250)
 		{
 			staTime = System.currentTimeMillis();
@@ -280,7 +330,7 @@ public class EntityPlayer extends Entity {
 				shader.setUniformMat4f("m_view", Mat4.multiply(m1, m0));
 				shader.setUniform2f("anim", new Vec2());
 				hand.render(GL11.GL_QUADS);
-				if (debugMode)
+				if (editMode)
 				{
 					m0 = Mat4.multiply(Mat4.rotateZf(rotateHand), Mat4.translate(new Vec2(15, 7.5f)));
 					shader.setUniformMat4f("m_view", Mat4.multiply(m1, m0));
@@ -329,20 +379,25 @@ public class EntityPlayer extends Entity {
 		return new AABB((int)pos.x + 4, (int)pos.y + 16, 24, 48);
 	}
 
-	public void giveDamage(Entity src, int dmg) {}
+	public void giveDamage(Entity src, int dmg)
+	{
+		if (noclip)
+			return;
+	}
 	
 	public void giveDamage(int x, int y, int dmg)
 	{
-		if (System.currentTimeMillis() - lifeTime < 1000)
+		if (System.currentTimeMillis() - lifeTime < 1000 || noclip)
 			return;
 		life--;
 		lifeTime = System.currentTimeMillis();
 		if (life <= 0)
 		{
-			LD36.getInstance().gameOver(0);
+			LD36.getInstance().gameOver(money + life * 1000, timePlay);
 		}
 		else
 		{
+			sfxDead.setVolume(0.6f).play();
 			Entity e = new EntityBones(pos.copy());
 			e.velocity.y = -4;
 			LD36.getInstance().game.addEntity(e);
@@ -367,5 +422,10 @@ public class EntityPlayer extends Entity {
 	
 	public Inventory getInv(){
 		return inv;
+	}
+
+	public Entity copy()
+	{
+		return new EntityPlayer(pos.copy());
 	}
 }
