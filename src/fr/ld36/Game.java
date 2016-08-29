@@ -112,30 +112,25 @@ public class Game
 		main.bind();
 		main.setUniformMat4f("m_proj", ortho);
 		main.setUniformMat4f("m_offset", Mat4.translate(offset));
-		if (player.editMode)
-		{
+		if (player.editMode)	
 			lightDistanceTarget = 720;
-			main.setUniform1f("ligthDist", lightDistance);
-			main.setUniform2f("ligthPos", player.pos.copy().add(16, 32));
-		}
-		else if (player.grab != null)
-		{
-			lightDistanceTarget = 240;
-			main.setUniform1f("ligthDist", lightDistance);
-			main.setUniform2f("ligthPos", player.pos.copy().add(16, 32));
-		}
 		else if(player.getInv().isItem(player.selectedSlot) && player.getInv().getItem(player.selectedSlot) instanceof ItemFlashlight)
 		{
-			lightDistanceTarget = 320;
-			main.setUniform1f("ligthDist", lightDistance);
-			main.setUniform2f("ligthPos", player.getLightPos());
+			if(player.grab == null)
+				lightDistanceTarget = 300;
+			else
+				lightDistanceTarget = 200;
 		}
 		else
 		{
-			lightDistanceTarget = 100;
-			main.setUniform1f("ligthDist", lightDistance);
-			main.setUniform2f("ligthPos", player.pos.copy().add(16, 32));
+			if(player.grab == null)
+				lightDistanceTarget = 150;
+			else
+				lightDistanceTarget = 100;
 		}
+		
+		main.setUniform1f("ligthDist", lightDistance);
+		main.setUniform2f("ligthPos", player.pos.copy().add(16, 32));
 		main.setUniformMat4f("m_view", Mat4.identity());
 	}
 	
