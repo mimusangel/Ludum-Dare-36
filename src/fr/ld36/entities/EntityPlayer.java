@@ -143,11 +143,10 @@ public class EntityPlayer extends Entity {
 			dir = 1;
 		
 		if(isAttacking){
-			rotateHand -= 2 * elapse;
-			if(rotateHand > startAngle *2){
+			rotateHand -= 20 * elapse;
+			if(rotateHand < startAngle - Math.PI*2){
 				isAttacking = false;
 			}
-			System.out.println(startAngle);
 		}
 		else
 		{
@@ -516,7 +515,6 @@ public class EntityPlayer extends Entity {
 		{
 			isAttacking = true;
 			startAngle = rotateHand;
-			rotateHand++;
 		}
 	}
 }
