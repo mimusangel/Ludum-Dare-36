@@ -17,7 +17,9 @@ public class EditorSelectEntity
 			new EntityTrap(new Vec2(), 0),
 			new EntityLever(new Vec2(), null),
 			new EntityPlate(new Vec2(), null),
-			new EntitySign(new Vec2(), "")
+			new EntitySign(new Vec2(), ""),
+			new EntityMummy(new Vec2()),
+			new EntitySarcophage(new Vec2())
 		};
 		for (Entity e : list)
 			e.createEntity();

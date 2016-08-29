@@ -194,7 +194,7 @@ public class EntityMummy extends Entity{
 
 	@Override
 	public Entity copy() {
-		return null;
+		return new EntityMummy(pos.copy());
 	}
 
 }

@@ -122,7 +122,6 @@ spawnSign 3373.0 1257.0 "Intelligence"
 spawnTrap 2880.0 1952.0 1
 spawnLever 2400.0 2272.0 119
 spawnPlate 3200.0 1696.0 94
-spawnBox 3218.0 831.0
 spawnBox 3280.0 831.0
 spawnChest 4000.0 416.0
 spawnPlate 3584.0 416.0 26
@@ -134,3 +133,23 @@ spawnSign 3584.0 1408.0 "42, Base 2"
 spawnSign 1184.0 288.0 "Q for drop item"
 spawnChest 1888.0 672.0
 spawnSign 1312.0 352.0 "1 and 2 for switch Item"
+spawnMummy 833.0 1870.0
+spawnMummy 2515.0 1880.0
+spawnMummy 1197.0 2963.0
+spawnMummy 1939.0 2957.0
+spawnMummy 2875.0 3805.0
+spawnMummy 1987.0 3511.0
+spawnMummy 2897.0 3420.0
+spawnMummy 3191.0 3132.0
+spawnMummy 3749.0 1885.0
+spawnMummy 2656.0 1499.0
+spawnBones 2754.0 1515.0
+spawnMummy 3507.0 820.0
+spawnMummy 3686.0 821.0
+spawnBones 3551.0 814.0
+spawnChest 832.0 1600.0
+spawnSign 512.0 1184.0 "Mouse Left Click for Attack"
+spawnSarcophage 1632.0 2752.0
+spawnChest 1504.0 2752.0
+spawnChest 1440.0 2720.0
+spawnChest 1728.0 2720.0

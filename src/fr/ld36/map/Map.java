@@ -80,8 +80,8 @@ public class Map
 						data[y][x] = 8;
 					else if (color == 0xff8000)
 						data[y][x] = 9;
-					
-					
+					else if (color == 0x0000ff)
+						data[y][x] = 10;
 				}
 			}
 		} catch (IOException e) {
@@ -123,9 +123,7 @@ public class Map
 					loadmap(data[1]);
 				}
 				else if (data[0].equalsIgnoreCase("spawn"))
-				{
 					spawn = new Vec2(Float.parseFloat(data[1]), Float.parseFloat(data[2]));
-				}
 				else if (data[0].equalsIgnoreCase("spawnSign"))
 				{
 					int ts = line.indexOf("\"");
@@ -137,21 +135,15 @@ public class Map
 					entities.add(new EntitySign(new Vec2(Float.parseFloat(data[1]), Float.parseFloat(data[2])), txt));
 				}
 				else if (data[0].equalsIgnoreCase("spawnBox"))
-				{
 					entities.add(new EntityBox(new Vec2(Float.parseFloat(data[1]), Float.parseFloat(data[2]))));
-				}
 				else if (data[0].equalsIgnoreCase("spawnBones"))
-				{
 					entities.add(new EntityBones(new Vec2(Float.parseFloat(data[1]), Float.parseFloat(data[2]))));
-				}
+				else if (data[0].equalsIgnoreCase("spawnMummy"))
+					entities.add(new EntityMummy(new Vec2(Float.parseFloat(data[1]), Float.parseFloat(data[2]))));
 				else if (data[0].equalsIgnoreCase("spawnDoor"))
-				{
 					entities.add(new EntityDoor(new Vec2(Float.parseFloat(data[1]), Float.parseFloat(data[2])), Integer.parseInt(data[3])));
-				}
 				else if (data[0].equalsIgnoreCase("spawnTrap"))
-				{
 					entities.add(new EntityTrap(new Vec2(Float.parseFloat(data[1]), Float.parseFloat(data[2])), Integer.parseInt(data[3])));
-				}
 				else if (data[0].equalsIgnoreCase("spawnLever"))
 				{
 					Entity e = null;
@@ -236,6 +228,9 @@ public class Map
 					items.toArray(itemArray);
 					entities.add(new EntityChest(new Vec2(Float.parseFloat(data[1]), Float.parseFloat(data[2])), rarity, itemArray));
 				}
+				else if (data[0].equalsIgnoreCase("spawnSarcophage"))
+					entities.add(new EntitySarcophage(new Vec2(Float.parseFloat(data[1]), Float.parseFloat(data[2]))));
+				
 			}
 			
 			reader.close();
@@ -357,10 +352,20 @@ public class Map
 					else if (data[y][x] == 7)
 						uv = new Vec2(addUV.x * 2, 0);
 				}
-				meshFront.addVertices(pos).addColor(color).addTexCoord2f(uv);
-				meshFront.addVertices(pos.copy().add(32, 0)).addColor(color).addTexCoord2f(uv.copy().add(addUVx));
-				meshFront.addVertices(pos.copy().add(32, 32)).addColor(color).addTexCoord2f(uv.copy().add(addUV));
-				meshFront.addVertices(pos.copy().add(0, 32)).addColor(color).addTexCoord2f(uv.copy().add(addUVy));
+				if (data[y][x] == 10)
+				{
+					meshFront.addVertices(pos.copy().add(-16, 0)).addColor(color).addTexCoord2f(addUV.x * 3, addUV.y * 1);
+					meshFront.addVertices(pos.copy().add(48, 0)).addColor(color).addTexCoord2f(addUV.x * 5, addUV.y * 1);
+					meshFront.addVertices(pos.copy().add(48, 64)).addColor(color).addTexCoord2f(addUV.x * 5, addUV.y * 3);
+					meshFront.addVertices(pos.copy().add(-16, 64)).addColor(color).addTexCoord2f(addUV.x * 3, addUV.y * 3);
+				}
+				else
+				{
+					meshFront.addVertices(pos).addColor(color).addTexCoord2f(uv);
+					meshFront.addVertices(pos.copy().add(32, 0)).addColor(color).addTexCoord2f(uv.copy().add(addUVx));
+					meshFront.addVertices(pos.copy().add(32, 32)).addColor(color).addTexCoord2f(uv.copy().add(addUV));
+					meshFront.addVertices(pos.copy().add(0, 32)).addColor(color).addTexCoord2f(uv.copy().add(addUVy));
+				}
 			}
 		}
 		meshFront.buffering();
@@ -532,6 +537,10 @@ public class Map
 					write.write("spawnPlate " + e.pos.x + " " + e.pos.y + " " + getEntityID(((EntityPlate)e).link) + "\n");
 				else if (e instanceof EntityChest)
 					write.write("spawnChest " + e.pos.x + " " + e.pos.y + "\n");
+				else if (e instanceof EntityMummy)
+					write.write("spawnMummy " + e.pos.x + " " + e.pos.y + "\n");
+				else if (e instanceof EntitySarcophage)
+					write.write("spawnSarcophage " + e.pos.x + " " + e.pos.y + "\n");
 			}
 			write.close();
 			System.out.println("Map saved! " + p);

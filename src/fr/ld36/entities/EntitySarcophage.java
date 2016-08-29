@@ -1,15 +1,11 @@
 package fr.ld36.entities;
 
-import org.lwjgl.opengl.GL11;
 
 import fr.ld36.AABB;
-import fr.ld36.Game;
 import fr.ld36.entities.spe.IActivable;
 import fr.ld36.utils.Res;
 import fr.mimus.jbasicgl.graphics.Color4f;
 import fr.mimus.jbasicgl.graphics.Mesh;
-import fr.mimus.jbasicgl.graphics.Shaders;
-import fr.mimus.jbasicgl.graphics.Texture;
 import fr.mimus.jbasicgl.maths.Vec2;
 
 public class EntitySarcophage extends Entity implements IActivable{
@@ -50,7 +46,7 @@ public class EntitySarcophage extends Entity implements IActivable{
 
 	@Override
 	public Entity copy() {
-		return null;
+		return new EntitySarcophage(pos.copy());
 	}
 
 	@Override
