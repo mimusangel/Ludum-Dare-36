@@ -20,7 +20,8 @@ public class ItemSword extends Weapon implements IActivable{
 		if(a == null)
 			a = new Animation(1, 32, Res.images.get("sword"), 1f);
 		
-		this.handOffset = new Vec2(0, -12f);
+		this.handOffset = new Vec2(-16, -30f);
+		this.rotate = -45f;
 	}
 
 	@Override
@@ -50,6 +51,12 @@ public class ItemSword extends Weapon implements IActivable{
 
 	@Override
 	public void action(Entity e) {
+	}
+
+	@Override
+	public Vec2 getImpact()
+	{
+		return new Vec2(-6, -24f);
 	}
 
 }

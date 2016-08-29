@@ -11,8 +11,10 @@ public class ItemFlashlight extends Item implements IActivable{
 	private static Animation a = new Animation(1,32,Res.images.get("flashlight"),1f);
 	private static Texture t = Res.images.get("flashlight");
 	
-	public ItemFlashlight(){
+	public ItemFlashlight()
+	{
 		this.setName("Flashlight");
+		this.handOffset.set(-13, -17);
 	}
 	
 	@Override

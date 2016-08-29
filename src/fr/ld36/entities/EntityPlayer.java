@@ -7,8 +7,10 @@ import fr.ld36.Game;
 import fr.ld36.LD36;
 import fr.ld36.entities.spe.IMovable;
 import fr.ld36.items.Inventory;
+import fr.ld36.items.Item;
 import fr.ld36.items.ItemFlashlight;
 import fr.ld36.items.ItemSword;
+import fr.ld36.items.Weapon;
 import fr.ld36.map.Map;
 import fr.ld36.utils.Audio;
 import fr.ld36.utils.Res;
@@ -34,10 +36,11 @@ public class EntityPlayer extends Entity {
 	Texture texHandGrab;
 	Mesh hand;
 	Mesh handGrab;
-	Mesh test;
 	Mesh backpack;
 	Mesh item;
+	Mesh test;
 
+	Vec2 grabOrigin;
 	public Entity grab;
 	int stamina;
 	long staTime;
@@ -105,10 +108,6 @@ public class EntityPlayer extends Entity {
 		time = System.currentTimeMillis();
 		dir = 1;
 		grab = null;
-		test = new Mesh(2);
-		test.addVertices(0, 0).addColor(Color4f.RED).addTexCoord2f(0, 0);
-		test.addVertices(40, 0).addColor(Color4f.RED).addTexCoord2f(1f, 0);
-		test.buffering();
 		
 		backpack = new Mesh(4);
 		backpack.addVertices(0, 0).addColor(Color4f.WHITE).addTexCoord2f(0, 0);
@@ -123,6 +122,11 @@ public class EntityPlayer extends Entity {
 		item.addVertices(32, 32).addColor(Color4f.WHITE).addTexCoord2f(1f, 1);
 		item.addVertices(0, 32).addColor(Color4f.WHITE).addTexCoord2f(0, 1);
 		item.buffering();
+		
+		// Test
+		test = new Mesh(1);
+		test.addVertices(0, 0).addColor(Color4f.RED);
+		test.buffering();
 	}
 
 	public boolean entityAlive()
@@ -202,7 +206,11 @@ public class EntityPlayer extends Entity {
 		if (keyboard.isPress(Keyboard.KEY_SPACE))
 		{
 			if (grab == null)
+			{
 				grab = game.checkGrab(this);
+				if (grab != null)
+					grabOrigin = grab.pos.copy();
+			}	
 			else
 			{
 				grab.velocity.add(new Vec2(8 * dir, -4));
@@ -387,12 +395,13 @@ public class EntityPlayer extends Entity {
 				
 				//Item in hand rendering
 				if(inv.isItem(selectedSlot)){					
-					Mat4 i0 = Mat4.multiply(Mat4.rotateZf(rotateHand), Mat4.translate(new Vec2(-7, -9).add(inv.getItem(selectedSlot).handOffset)));
+					Item itemSlot = inv.getItem(selectedSlot);
+					Mat4 i0 = Mat4.multiply(Mat4.rotateZf(rotateHand), Mat4.translate(new Vec2(7, 9)));
 					Mat4 i1 = Mat4.multiply(Mat4.translate(matPos.copy().add(15 * dir, 28 - (int)(anim.x * 8) % 2)), Mat4.scale(dir, 1, 1));
-
-					shader.setUniformMat4f("m_view",Mat4.multiply(i1, i0));
+					Mat4 i = Mat4.multiply(Mat4.rotateZ(itemSlot.rotate), Mat4.translate(itemSlot.handOffset));
+					shader.setUniformMat4f("m_view",Mat4.multiply(i1, Mat4.multiply(i0, i)));
 					
-					inv.getItem(selectedSlot).getTexture().bind();
+					itemSlot.getTexture().bind();
 					item.render(GL11.GL_QUADS);
 					Texture.unbind();
 				}
@@ -408,18 +417,21 @@ public class EntityPlayer extends Entity {
 				shader.setUniformMat4f("m_view", Mat4.multiply(m1, m0));
 				shader.setUniform2f("anim", new Vec2());
 				hand.render(GL11.GL_QUADS);
-				if (editMode)
-				{
-					m0 = Mat4.multiply(Mat4.rotateZf(rotateHand), Mat4.translate(new Vec2(15, 7.5f)));
-					shader.setUniformMat4f("m_view", Mat4.multiply(m1, m0));
-					shader.setUniform1i("disableTexture", 1);
-					GL11.glLineWidth(3f);
-					test.render(GL11.GL_LINES);
-					GL11.glLineWidth(1f);
-					shader.setUniform1i("disableTexture", 0);
+
+				if(inv.isItem(selectedSlot)){					
+					Item itemSlot = inv.getItem(selectedSlot);
+					if (debugMode && itemSlot instanceof Weapon)
+					{
+						Vec2 f = getImpact();
+						shader.setUniformMat4f("m_view", Mat4.translate(f));
+						shader.setUniform1i("disableTexture", 1);
+						GL11.glPointSize(3f);
+						test.render(GL11.GL_POINTS);
+						GL11.glPointSize(1f);
+						shader.setUniform1i("disableTexture", 0);
+					}
 				}
 			}
-			
 		}
 		else
 		{
@@ -427,6 +439,28 @@ public class EntityPlayer extends Entity {
 			createEntity();
 		}
 		Texture.unbind();
+	}
+	
+	public Vec2 getImpact()
+	{
+		if(inv.isItem(selectedSlot)){					
+			Item itemSlot = inv.getItem(selectedSlot);
+			if (itemSlot instanceof Weapon)
+			{
+				Weapon weapon = (Weapon)itemSlot;
+				Vec2 f = pos.copy().add(15 - dir, 28 - (anim.x * 8 % 2));
+				Vec3 r = new Vec3(10, 7, 0);
+				Vec3 w = new Vec3(weapon.getImpact(), 0);
+				w.rotateZ(-weapon.rotate);
+				r.add(w);
+				r.rotateZ(-rotateHand);
+				if (dir < 0)
+					r.x = -r.x;
+				f.add(r.xy());
+				return (f);
+			}
+		}
+		return (null);
 	}
 
 	public Vec2 getOffset()
@@ -481,6 +515,12 @@ public class EntityPlayer extends Entity {
 			LD36.getInstance().game.addEntity(e);
 			pos = LD36.getInstance().game.map.spawn.copy();
 			velocity.y = 0;
+			if (grab != null)
+			{
+				grab.pos = grabOrigin;
+				grab = null;
+				grabOrigin = null;
+			}
 		}
 	}
 	

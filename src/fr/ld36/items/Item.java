@@ -8,6 +8,7 @@ public abstract class Item {
 	private String name = "Item";
 	public Float scale = 1f;
 	public Vec2 handOffset = new Vec2(0, 0);
+	public float rotate = 0;
 	//L'animation et la texture sont statiques dans la classe fille pour pas quelle soit recrée à chaque item, 
 	//du coup j'ai fait les deux fonctions abstract get/set anim et texture
 	
