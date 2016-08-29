@@ -9,6 +9,9 @@
 * Sound effect: bfxr, sfxr, Audacity
 * Graphic: photoshop (SpriteSheet generator script: https://github.com/bogdanrybak/spritesheet-generator)
 
+## Asset not produced
+* Sound by Hicham Chahidi: http://www.musicscreen.be/musique-libre-de-droit/Catalogue/Octa.html
+
 ## Link
 * JBasicGL: https://github.com/mimusangel/JBasicGL
 * LWJGL: https://www.lwjgl.org/

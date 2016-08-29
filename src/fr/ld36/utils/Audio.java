@@ -22,6 +22,13 @@ public class Audio
 		new Audio("rsc/sounds/actionDefault.wav");
 		new Audio("rsc/sounds/actionFail.wav");
 		new Audio("rsc/sounds/dead.wav");
+		new Thread() {
+			public void run() 
+			{
+				Audio octa = new Audio("rsc/sounds/Octa.wav");
+				octa.setVolume(0.7f).loop();
+			}
+		}.start();
 	}
 	
 	Clip clip;
