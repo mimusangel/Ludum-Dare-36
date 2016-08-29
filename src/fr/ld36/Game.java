@@ -259,6 +259,16 @@ public class Game
 		hud.setUniformMat4f("m_view", Mat4.multiply(Mat4.scale(1f), Mat4.translate(LD36.WINDOW_WIDTH / 2, 5)));
 		meshSlot.render(GL11.GL_QUADS);
 		Texture.unbind();
+
+		Item select = player.getItemSelect();
+		if (select != null)
+		{
+			Vec2 size = Renderer.metricString(select.getName());
+			Vec2 pText = new Vec2(LD36.WINDOW_WIDTH / 2 - size.x / 2, 38);
+			pText.x = (float) Math.floor(pText.x);
+			pText.y = (float) Math.floor(pText.y);
+			Renderer.drawString(hud, select.getName(), pText, Color4f.WHITE);
+		}
 	}
 	
 	public void update(int tick, double elapse)

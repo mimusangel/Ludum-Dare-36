@@ -74,8 +74,7 @@ public class EntityPlayer extends Entity {
 		money = 0;
 		inv = new Inventory(this);
 		inv.addItem(new ItemFlashlight());
-		//inv.addItem(new ItemLoupe());
-		inv.addItem(new ItemStick());
+		inv.addItem(new ItemLoupe());
 		sfxDead = Audio.list.get("rsc/sounds/dead.wav");
 		hit = Audio.list.get("rsc/sounds/hit2.wav");
 	}
@@ -463,6 +462,13 @@ public class EntityPlayer extends Entity {
 			return (inv.getItem(selectedSlot) instanceof ItemLoupe);
 		return (false);
 	}
+	
+	public Item getItemSelect()
+	{
+		if(inv.isItem(selectedSlot))
+			return (inv.getItem(selectedSlot));
+		return (null);
+	}
 
 	public Vec2 getOffset()
 	{
@@ -499,7 +505,7 @@ public class EntityPlayer extends Entity {
 	
 	public void giveDamage(Entity src, int dmg)
 	{
-		if (noclip)
+		if (noclip || editMode)
 			return;
 		if (isTouch())
 			life -= dmg;
@@ -518,7 +524,7 @@ public class EntityPlayer extends Entity {
 	
 	public void giveDamage(int x, int y, int dmg)
 	{
-		if (noclip)
+		if (noclip || editMode)
 			return;
 		life -= dmg;
 		if (life <= 0)
