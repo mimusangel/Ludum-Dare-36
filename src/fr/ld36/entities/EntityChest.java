@@ -27,7 +27,8 @@ public class EntityChest extends Entity implements IActivable{
 	
 	public void createEntity()
 	{
-		
+		anim = new Animation(9, 32, Res.images.get("chest"),0.1f);
+		anim.setPause(true);
 	}
 	
 	public EntityChest(Vec2 pos) {
@@ -49,8 +50,7 @@ public class EntityChest extends Entity implements IActivable{
 	
 	public void update(Game game, int tick, double elapse){
 		if(anim == null){
-			anim = new Animation(9, 32, Res.images.get("chest"),0.1f);
-			anim.setPause(true);
+			createEntity();
 		}else{
 			anim.update();
 		}
@@ -67,7 +67,8 @@ public class EntityChest extends Entity implements IActivable{
 	}
 	
 	public void render(Shaders shader){
-		anim.render(shader, pos);
+		if(anim != null)
+			anim.render(shader, pos);
 	}
 
 	@Override

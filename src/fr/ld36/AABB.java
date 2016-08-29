@@ -43,4 +43,9 @@ public class AABB
 			return (false);
 		return (true);
 	}
+
+	public boolean collided(Vec2 p)
+	{
+		return (p.x >= x && p.x < x + w && p.y >= y && p.y < y + h);
+	}
 }

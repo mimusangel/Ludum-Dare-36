@@ -2,10 +2,13 @@ package fr.ld36;
 
 import java.util.ArrayList;
 
+import javax.swing.JOptionPane;
+
 import org.lwjgl.opengl.GL11;
 
 import fr.ld36.entities.*;
 import fr.ld36.entities.spe.IActivable;
+import fr.ld36.entities.spe.IActivableLink;
 import fr.ld36.entities.spe.IBlock;
 import fr.ld36.entities.spe.IMovable;
 import fr.ld36.entities.spe.IWalkable;
@@ -45,6 +48,13 @@ public class Game
 	
 	Audio sfxAction;
 	Audio sfxActionFail;
+
+	EditorSelectEntity editorSelect;
+	int editSelect;
+	Vec2 editOffset;
+	Vec2 editLast;
+	long timeClick;
+	Entity editLink;
 	
 	public Game()
 	{
@@ -88,6 +98,11 @@ public class Game
 		meshSlot.addVertices(32, 32).addColor(Color4f.WHITE).addTexCoord2f(1f, 1f);
 		meshSlot.addVertices(0, 32).addColor(Color4f.WHITE).addTexCoord2f(0, 1f);
 		meshSlot.buffering();
+		editSelect = -1;
+		editOffset = new Vec2();
+		timeClick = System.currentTimeMillis();
+		editorSelect = new EditorSelectEntity();
+		editLink = null;
 	}
 	
 	float lightDistance = 100;
@@ -139,6 +154,11 @@ public class Game
 			}
 			player.renderGrab(main);
 		}
+		/*
+		 * TODO : 
+		 */
+		if (player.editMode && editSelect < 0)
+			editorSelect.getSelect().render(main);
 		renderHUD(elapse);
 	}
 	
@@ -186,6 +206,9 @@ public class Game
 				Renderer.drawString(hud, "- grid: " + player.gridAlign, new Vec2(5, 70), Color4f.WHITE);
 				Renderer.drawString(hud, "- mx: " + mp.x + " ( " + m.x + " )", new Vec2(5, 80), Color4f.WHITE);
 				Renderer.drawString(hud, "- my: " + mp.y + " ( " + m.y + " )", new Vec2(5, 90), Color4f.WHITE);
+				if (editLink != null)
+					Renderer.drawString(hud, "Place Link !", new Vec2(5, 100), Color4f.RED);
+					
 			}
 			hud.setUniform4f("color", Color4f.WHITE.toVector4());
 		}
@@ -351,6 +374,142 @@ public class Game
 			i++;
 		}
 		offset = player.getOffset();
+		if (player.editMode)
+		{
+			/*
+			 * TODO : ici
+			 */
+			Mouse mouse = LD36.getInstance().win.getMouse();
+			Vec2 m = getMousePos();
+			if (editSelect < 0)
+			{
+				if (mouse.isDown(Mouse.MOUSE_BUTTON_LEFT) && System.currentTimeMillis() - timeClick > 200)
+				{
+					editSelect = map.getSelectEntity(m);
+					if (editLink != null)
+					{
+						if (editSelect >= 0)
+						{
+							Entity j = map.getEntity(editSelect);
+							if (j instanceof IActivableLink)
+							{
+								Entity last = null;
+								if (editLink instanceof EntityLever)
+									last = (Entity) ((EntityLever)editLink).link;
+								if (editLink instanceof EntityPlate)
+									last = (Entity) ((EntityPlate)editLink).link;
+								if (last != null)
+								{
+									if (last instanceof EntityDoor)
+										((EntityDoor)last).nbLock--;
+									if (last instanceof EntityTrap)
+										((EntityTrap)last).nbLock--;
+								}
+								if (editLink instanceof EntityLever)
+									((EntityLever)editLink).link = (IActivableLink) j;
+								if (editLink instanceof EntityPlate)
+									((EntityPlate)editLink).link = (IActivableLink) j;
+								if (j instanceof EntityDoor)
+									((EntityDoor)j).nbLock++;
+								if (j instanceof EntityTrap)
+									((EntityTrap)j).nbLock++;
+							}
+							editSelect = -1;
+						}
+						editLink = null;
+						map.refreshMeshSystem();
+					}
+					else if (editSelect >= 0)
+					{
+						editLast = map.getEntity(editSelect).pos.copy();
+						editOffset = m.copy().sub(editLast);
+					}
+					timeClick = System.currentTimeMillis();
+				}
+				if (mouse.isDown(Mouse.MOUSE_BUTTON_MIDDLE) && System.currentTimeMillis() - timeClick > 200 && editLink == null)
+				{
+					int s = map.getSelectEntity(m);
+					if (s >= 0)
+					{
+						Entity e = map.getEntity(s);
+						Entity last = null;
+						if (e instanceof EntityLever)
+							last = (Entity) ((EntityLever)e).link;
+						if (e instanceof EntityPlate)
+							last = (Entity) ((EntityPlate)e).link;
+						map.deleteSelectEntity(s);
+						if (last != null)
+						{
+							if (last instanceof EntityDoor)
+								((EntityDoor)last).nbLock--;
+							if (last instanceof EntityTrap)
+								((EntityTrap)last).nbLock--;
+							map.refreshMeshSystem();
+						}
+					}
+				}
+				if (mouse.isDown(Mouse.MOUSE_BUTTON_RIGHT) && System.currentTimeMillis() - timeClick > 200 && editLink == null)
+				{
+					Entity e = editorSelect.getSelect().copy();
+					if (e instanceof EntitySign)
+					{
+						String txt = JOptionPane.showInputDialog(((EntitySign)e).text);
+						if (txt != null)
+							((EntitySign)e).text = txt;
+					}
+					if (e instanceof EntityLever || e instanceof EntityPlate)
+						editLink = e;
+					e.createEntity();
+					map.addSelectEntity(e);
+					System.out.println("Add Entity");
+					timeClick = System.currentTimeMillis();
+				}
+				double wheel = mouse.getWheelY();
+				if (wheel > 0)
+					editorSelect.setSelect(editorSelect.getSelectId() - 1);
+				if (wheel < 0)
+					editorSelect.setSelect(editorSelect.getSelectId() + 1);
+				if (editSelect < 0)
+				{
+					Entity e = editorSelect.getSelect();
+					if (player.gridAlign)
+						e.pos = getMousePosInMap().mul(32f);
+					else
+						e.pos = m.copy().sub(16, 16);
+				}
+			}
+			else
+			{
+				Entity e = map.getEntity(editSelect);
+				if (mouse.isDown(Mouse.MOUSE_BUTTON_LEFT) && System.currentTimeMillis() - timeClick > 200)
+				{
+					if (e instanceof EntitySign)
+					{
+						String txt = JOptionPane.showInputDialog(((EntitySign)e).text);
+						if (txt != null)
+							((EntitySign)e).text = txt;
+					}
+					editSelect = -1;
+					timeClick = System.currentTimeMillis();
+				}
+				if (mouse.isDown(Mouse.MOUSE_BUTTON_RIGHT) && System.currentTimeMillis() - timeClick > 200)
+				{
+					e.pos = editLast;
+					editSelect = -1;
+					timeClick = System.currentTimeMillis();
+				}
+				if (editSelect >= 0)
+				{
+					if (player.gridAlign)
+						e.pos = getMousePosInMap().mul(32f);
+					else
+						e.pos = m.copy().sub(editOffset);
+				}
+			}
+			//editOffset;
+			//Vec2 m = getMousePos();
+			//Vec2 mp = getMousePosInMap();
+		}
 	}
 
 	public void addEntity(Entity entity)
@@ -484,6 +643,7 @@ public class Game
 		LD36 ld36 = LD36.getInstance();
 		Mouse m = ld36.win.getMouse();
 		Vec2 mp = new Vec2((float)m.getX(), (float)m.getY());
+		mp.div(ld36.getScaleX(), ld36.getScaleY());
 		if (player != null)
 			mp.sub(player.getOffset());
 		mp.x = (float) Math.floor(mp.x);
@@ -493,12 +653,8 @@ public class Game
 	
 	public Vec2 getMousePosInMap()
 	{
-		LD36 ld36 = LD36.getInstance();
-		Mouse m = ld36.win.getMouse();
-		Vec2 mp = new Vec2((float)m.getX(), (float)m.getY());
-		if (player != null)
-			mp.sub(player.getOffset());
-		mp.div(32f * ld36.getScaleX(), 32f * ld36.getScaleY());
+		Vec2 mp = getMousePos();
+		mp.div(32f, 32f);
 		mp.x = (float) Math.floor(mp.x);
 		mp.y = (float) Math.floor(mp.y);
 		return (mp);

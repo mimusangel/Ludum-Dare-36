@@ -64,6 +64,10 @@ public class Map
 					data[y][x] = 0;
 					if (color == 0)
 						data[y][x] = 1;
+					else if (color == 0x008000)
+						data[y][x] = 2;
+					else if (color == 0x808000)
+						data[y][x] = 3;
 					else if (color == 0xff0000)
 						data[y][x] = 4;
 					else if (color == 0x00ff00)
@@ -85,6 +89,8 @@ public class Map
 	
 	private void createLink(Vec2 pos, Entity e)
 	{
+		if (e == null)
+			return;
 		link.add(pos);
 		if (e instanceof EntityDoor)
 			link.add(e.pos.copy().add(16, 2));
@@ -116,17 +122,6 @@ public class Map
 				else if (data[0].equalsIgnoreCase("spawn"))
 				{
 					spawn = new Vec2(Float.parseFloat(data[1]), Float.parseFloat(data[2]));
-				}
-				else if (data[0].equalsIgnoreCase("ladder"))
-				{
-					if (data[1].equalsIgnoreCase("right"))
-					{
-						makeLadder(Integer.parseInt(data[2]), Integer.parseInt(data[3]), 2);
-					}
-					else
-					{
-						makeLadder(Integer.parseInt(data[2]), Integer.parseInt(data[3]), 3);
-					}
 				}
 				else if (data[0].equalsIgnoreCase("spawnSign"))
 				{
@@ -214,7 +209,7 @@ public class Map
 						{
 							e = entities.get(id);
 							Vec2 pos = new Vec2(Float.parseFloat(data[1]), Float.parseFloat(data[2]));
-							createLink(pos.copy().add(16), e);
+							createLink(pos.copy().add(16, 30), e);
 							entities.add(new EntityPlate(pos, (IActivableLink) e));
 						}
 					}
@@ -280,17 +275,6 @@ public class Map
 			return (false);
 		}
 		return (true);
-	}
-	
-	private void makeLadder(int x, int y, int id)
-	{
-		if (x < 0 || x >= data[0].length || y < 0 || y >= data.length)
-			return;
-		if (data[y][x] == 0)
-		{
-			data[y][x] = id;
-			makeLadder(x, y + 1, id);
-		}
 	}
 
 	public int getHeight()
@@ -520,16 +504,6 @@ public class Map
 			BufferedWriter write = new BufferedWriter(new FileWriter(p));
 			write.write("set " + set + "\n");
 			write.write("spawn " + spawn.x + " " + spawn.y + "\n");
-			for (int y = 0; y < data.length; y++)
-			{
-				for (int x = 0; x < data[0].length; x++)
-				{
-					if (data[y][x] == 2 && (y == 0 || (y > 0 && data[y - 1][x] != 2)))
-						write.write("ladder right " + x + " " + y + "\n");
-					if (data[y][x] == 3 && (y == 0 || (y > 0 && data[y - 1][x] != 3)))
-						write.write("ladder left " + x + " " + y + "\n");
-				}
-			}
 			for (Entity e : entitiesOrigin)
 			{
 				if (e instanceof EntitySign)
@@ -571,5 +545,67 @@ public class Map
 		meshBack.dispose();
 		meshFront.dispose();
 		meshSystem.dispose();
+	}
+
+	public void refreshMeshSystem()
+	{
+		if (meshSystem != null)
+			meshSystem.dispose();
+		link.clear();
+		for (Entity e : entitiesOrigin)
+		{
+			if (e instanceof EntityLever)
+				createLink(e.pos.copy().add(16f), (Entity)((EntityLever)e).link);
+			if (e instanceof EntityPlate)
+				createLink(e.pos.copy().add(16, 30), (Entity)((EntityPlate)e).link);
+		}
+		meshSystem = new Mesh(link.size());
+		Color4f c = new Color4f(Color4f.DARK_GRAY);
+		c.alpha = 0.5f;
+		for (int i = 0; i < link.size(); i += 2)
+		{
+			Vec2 p0 = link.get(i);
+			Vec2 p1 = link.get(i + 1);
+			meshSystem.addVertices(p0).addColor(c);
+			meshSystem.addVertices(p1).addColor(c);
+		}
+		meshSystem.buffering();
+	}
+	
+	public void addSelectEntity(Entity e)
+	{
+		if (e != null)
+		{
+				entitiesOrigin.add(e);
+		}
+	}
+	
+	public int getSelectEntity(Vec2 p)
+	{
+		int i = 0;
+		while (i < entitiesOrigin.size())
+		{
+			if (entitiesOrigin.get(i).getSelectBox().collided(p))
+				return (i);
+			i++;
+		}
+		return (-1);
+	}
+	
+	public Entity getEntity(int id)
+	{
+		if (id < 0 || id >= entitiesOrigin.size())
+			return (null);
+		return (entitiesOrigin.get(id));
+	}
+
+	public void deleteSelectEntity(int id)
+	{
+		Entity e = getEntity(id);
+		if (e != null)
+		{
+			e.dispose();
+			entitiesOrigin.remove(id);
+		}
 	}
 }

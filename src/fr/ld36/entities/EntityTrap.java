@@ -101,12 +101,13 @@ public class EntityTrap extends Entity implements IBlock, IActivableLink {
 				tex.bind();
 				for (int i = 0; i < nbLock; i++)
 				{
-					shader.setUniformMat4f("m_view", Mat4.translate(v.add(i * 18f, 0)));
+					shader.setUniformMat4f("m_view", Mat4.translate(v));
 					if (i < unlock)
 						shader.setUniform2f("anim", new Vec2(0.5f, 0));
 					else
 						shader.setUniform2f("anim", new Vec2(0, 0));
 					mesh.render(GL11.GL_QUADS);
+					v.add(18f, 0);
 				}
 			}
 		}
@@ -122,9 +123,13 @@ public class EntityTrap extends Entity implements IBlock, IActivableLink {
 	public void giveDamage(Entity src, int dmg) {}
 	public void giveDamage(int x, int y, int dmg){}
 	
-
 	public Entity copy()
 	{
 		return new EntityTrap(pos.copy(), nbLock);
+	}
+	
+	public AABB getSelectBox()
+	{
+		return (new AABB((int)pos.x, (int)pos.y, 64, 8));
 	}
 }
