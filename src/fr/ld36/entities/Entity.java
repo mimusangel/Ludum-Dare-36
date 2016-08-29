@@ -108,4 +108,9 @@ public abstract class Entity
 	public int distance(Entity e, Vec2 offSet, Vec2 offSetpam){
 		return (int) e.pos.copy().add(offSetpam).sub(this.pos.copy().add(offSet)).length();
 	}
+	
+	public AABB getSelectBox()
+	{
+		return (new AABB((int)pos.x, (int)pos.y, 32, 32));
+	}
 }
