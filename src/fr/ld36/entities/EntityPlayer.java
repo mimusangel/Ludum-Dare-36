@@ -74,8 +74,7 @@ public class EntityPlayer extends Entity {
 		money = 0;
 		inv = new Inventory(this);
 		inv.addItem(new ItemFlashlight());
-		//inv.addItem(new ItemLoupe());
-		inv.addItem(new ItemLife());
+		inv.addItem(new ItemLoupe());
 		sfxDead = Audio.list.get("rsc/sounds/dead.wav");
 		hit = Audio.list.get("rsc/sounds/hit2.wav");		
 	}
@@ -150,6 +149,10 @@ public class EntityPlayer extends Entity {
 			rotateHand -= 20 * elapse;
 			if(rotateHand < startAngle - Math.PI*2){
 				isAttacking = false;
+				if(inv.isItem(selectedSlot) && inv.getItem(selectedSlot) instanceof ItemLife){
+					inv.removeItem(selectedSlot);
+					life++;
+				}
 			}
 			if (tick % 3 == 0)
 			{
