@@ -159,7 +159,7 @@ public class EntityMummy extends Entity{
 		if(state == 0)
 		{
 			pos.add((float)(speed * (faceRight ? 1: -1) * elapse), 0f);
-			if(this.distance(p)<200 && Math.abs(pos.copy().y - p.pos.y) < 50){
+			if(this.distance(p)<200 && Math.abs(pos.copy().y - p.pos.y) < 100){
 				state = 1;
 			}
 			if(deltaX == 0 && System.currentTimeMillis() - lastFlip >= 1000){
@@ -172,7 +172,7 @@ public class EntityMummy extends Entity{
 			faceRight = p.pos.copy().x - pos.copy().x > 0;
 			
 			int distance = this.distance(p);
-			if(distance>250 || Math.abs(pos.copy().y - p.pos.y) > 50){
+			if(distance>250 || Math.abs(pos.copy().y - p.pos.y) > 100){
 				state = 0;
 			}else if(distance > 20){
 				pos.add((float)(runSpeed * (faceRight ? 1: -1) * elapse), 0f);
