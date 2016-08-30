@@ -9,7 +9,7 @@ import fr.mimus.jbasicgl.graphics.Texture;
 public class ItemLife extends Item implements IActivable{
 
 	public ItemLife(){
-		//this.handOffset(new Vec2(2,2));
+		this.handOffset = new Vec2(-8,-16);
 	}
 	
 	@Override
