@@ -229,7 +229,7 @@ public class EntityMummy extends Entity{
 
 	@Override
 	public AABB getBox() {
-		return new AABB((int) pos.x, (int) pos.y, 32, 64);
+		return new AABB((int)pos.x + 4, (int)pos.y + 16, 24, 48);
 	}
 
 	@Override
