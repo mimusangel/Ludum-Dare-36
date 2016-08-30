@@ -519,7 +519,7 @@ public class EntityPlayer extends Entity {
 		hit.play();
 		if (life <= 0)
 		{
-			LD36.getInstance().endGame(money + life * 1000, timePlay);
+			endGame();
 		}
 	}
 	
@@ -530,7 +530,7 @@ public class EntityPlayer extends Entity {
 		life -= dmg;
 		if (life <= 0)
 		{
-			LD36.getInstance().endGame(money + life * 1000, timePlay);
+			endGame();
 		}
 		else
 		{
@@ -581,5 +581,10 @@ public class EntityPlayer extends Entity {
 			isAttacking = true;
 			startAngle = rotateHand;
 		}
+	}
+
+	public void endGame()
+	{
+		LD36.getInstance().endGame(money + life * 1000, timePlay);
 	}
 }

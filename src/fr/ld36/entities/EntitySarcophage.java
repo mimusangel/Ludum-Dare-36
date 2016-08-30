@@ -26,9 +26,9 @@ public class EntitySarcophage extends Entity implements IActivable{
 		
 		mesh = new Mesh(4);
 		mesh.addVertices(0, 0).addColor(Color4f.WHITE).addTexCoord2f(0, 0);
-		mesh.addVertices(64, 0).addColor(Color4f.WHITE).addTexCoord2f(1f / 8f, 0);
-		mesh.addVertices(64, 32).addColor(Color4f.WHITE).addTexCoord2f(1f / 8f, 1);
-		mesh.addVertices(0, 32).addColor(Color4f.WHITE).addTexCoord2f(0, 1);
+		mesh.addVertices(64, 0).addColor(Color4f.WHITE).addTexCoord2f(1f, 0);
+		mesh.addVertices(64, 32).addColor(Color4f.WHITE).addTexCoord2f(1f, 1f);
+		mesh.addVertices(0, 32).addColor(Color4f.WHITE).addTexCoord2f(0, 1f);
 		mesh.buffering();
 		
 		this.texture = Res.images.get("tomb");
@@ -46,7 +46,7 @@ public class EntitySarcophage extends Entity implements IActivable{
 		}
 		if (!bossSpawn && isOpen && itemsToSpawn.size() > 0 && System.currentTimeMillis() - lastItemSpawn > itemSpawnDelay * 5000)
 		{
-			
+			game.addEntity(new EntityBoss(pos.copy().add(32, -64)));
 			bossSpawn = true;
 		}
 	}

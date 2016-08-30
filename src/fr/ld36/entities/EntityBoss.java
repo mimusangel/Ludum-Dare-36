@@ -219,6 +219,8 @@ public class EntityBoss extends Entity{
 		v.normalise();
 		this.velocity.x = -v.x * 5;
 		this.velocity.y -= 4;
+		if (life < 0)
+			LD36.getInstance().game.player.endGame();
 	}
 
 	@Override

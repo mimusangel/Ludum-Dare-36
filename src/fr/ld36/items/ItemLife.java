@@ -5,7 +5,6 @@ import fr.ld36.entities.spe.IActivable;
 import fr.ld36.render.Animation;
 import fr.ld36.utils.Res;
 import fr.mimus.jbasicgl.graphics.Texture;
-import fr.mimus.jbasicgl.maths.Vec2;
 
 public class ItemLife extends Item implements IActivable{
 
