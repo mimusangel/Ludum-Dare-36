@@ -105,8 +105,8 @@ public class LD36
 	
 	public static void main(String[] args)
 	{
-		System.setProperty("java.library.path", "lwjgl/jar");
-		System.setProperty("org.lwjgl.librarypath", new File("lwjgl/native").getAbsolutePath());
+		System.setProperty("java.library.path", "libs");
+		System.setProperty("org.lwjgl.librarypath", new File("libs/natives").getAbsolutePath());
 		
 		instance = new LD36();
 		instance.loop();
