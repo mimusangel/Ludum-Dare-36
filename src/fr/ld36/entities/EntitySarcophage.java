@@ -44,7 +44,7 @@ public class EntitySarcophage extends Entity implements IActivable{
 			game.entities.add(e);
 			itemsToSpawn.remove(0);
 		}
-		if (!bossSpawn && isOpen && itemsToSpawn.size() > 0 && System.currentTimeMillis() - lastItemSpawn > itemSpawnDelay * 5000)
+		if (!bossSpawn && isOpen && itemsToSpawn.size() <= 0)
 		{
 			game.addEntity(new EntityBoss(pos.copy().add(32, -64)));
 			bossSpawn = true;

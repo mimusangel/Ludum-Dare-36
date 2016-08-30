@@ -522,7 +522,7 @@ public class EntityPlayer extends Entity {
 		hit.play();
 		if (life <= 0)
 		{
-			endGame();
+			endGame(true);
 		}
 	}
 	
@@ -533,7 +533,7 @@ public class EntityPlayer extends Entity {
 		life -= dmg;
 		if (life <= 0)
 		{
-			endGame();
+			endGame(true);
 		}
 		else
 		{
@@ -586,8 +586,8 @@ public class EntityPlayer extends Entity {
 		}
 	}
 
-	public void endGame()
+	public void endGame(boolean go)
 	{
-		LD36.getInstance().endGame(money + life * 1000, timePlay);
+		LD36.getInstance().endGame(go, money + life * 1000, timePlay);
 	}
 }

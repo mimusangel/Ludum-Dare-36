@@ -57,7 +57,7 @@ public class EntityBoss extends Entity{
 		hand.buffering();
 		
 		Random rand = new Random();
-		this.life = 20 + rand.nextInt(11);
+		this.life = 100 + rand.nextInt(11);
 		hit = Audio.list.get("rsc/sounds/hit.wav");
 
 		test = new Mesh(1);
@@ -83,7 +83,6 @@ public class EntityBoss extends Entity{
 				anim.start();
 		}
 			
-		
 		Vec2 matPos = pos.copy();
 		Res.images.get("mummyHands").bind();
 		
@@ -213,14 +212,14 @@ public class EntityBoss extends Entity{
 		if (System.currentTimeMillis() - lifeTime < 300)
 			return ;
 		life -= dmg;
+		if (life <= 0)
+			LD36.getInstance().game.player.endGame(false);
 		lifeTime = System.currentTimeMillis();
 		hit.play();
 		Vec2 v = src.pos.copy().sub(pos);
 		v.normalise();
 		this.velocity.x = -v.x * 5;
 		this.velocity.y -= 4;
-		if (life < 0)
-			LD36.getInstance().game.player.endGame();
 	}
 
 	@Override

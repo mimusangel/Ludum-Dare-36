@@ -76,6 +76,43 @@ public class Renderer
 		shader.setUniform2f("offsetTexture", new Vec2());
 	}
 	
+	public static void drawString(Shaders shader, String txt, Vec2 pos, Color4f color, float scale)
+	{
+		font.bind();
+		float w = font.getWidth() / 10f; 
+		float h = font.getHeight() / 10f;
+		float tw = w / (float)font.getWidth(); 
+		float th = h / (float)font.getHeight();
+		shader.setUniformMat4f("m_offset", Mat4.scale(scale));
+		shader.setUniform2f("mulTexture", new Vec2(1, 1));
+		shader.setUniform4f("color", color.toVector4());
+		Vec2 cursor = new Vec2();
+		for (int i = 0; i <txt.length(); i++)
+		{
+			char c = txt.charAt(i);
+			if (c == ' ')
+			{
+				cursor.x += w;
+				continue;
+			}
+			if (c == '\n')
+			{
+				cursor.x = 0;
+				cursor.y += h;
+				continue;
+			}
+			int id = fontArray.indexOf(c);
+			if (id < 0)
+				continue;
+			Vec2 offset = new Vec2((id % 10) * tw, (id / 10) * th);
+			shader.setUniformMat4f("m_view", Mat4.translate(pos.copy().add(cursor)));
+			shader.setUniform2f("offsetTexture", offset);
+			fontMesh.render(GL11.GL_QUADS);
+			cursor.x += w;
+		}
+		shader.setUniform2f("offsetTexture", new Vec2());
+	}
+	
 	public static Vec2 metricString(String txt)
 	{
 		float w = font.getWidth() / 10f; 

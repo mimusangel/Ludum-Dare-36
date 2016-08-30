@@ -20,7 +20,7 @@ public class EntityChest extends Entity implements IActivable{
 	
 	//1 common, 2 uncommon, 3 rare, 4 epic, 5 amazing!
 	int rarity = 1;
-	boolean spawnRandom;
+	boolean spawnRandom = true;
 	
 	double lastItemSpawn;
 	float itemSpawnDelay = 0.1f;
@@ -40,25 +40,23 @@ public class EntityChest extends Entity implements IActivable{
 		};
 		Random rand = new Random(System.nanoTime());
 		this.rarity = rareArray[rand.nextInt(rareArray.length)];
-		spawnRandom = true;
 		initRandomItem();
 	}
 	
 	public EntityChest(Vec2 pos, int rarity) {
 		super(pos);
 		this.rarity = rarity;
-		spawnRandom = true;
 		initRandomItem();
 	}
 	
-	public EntityChest(Vec2 pos, int rarity, Item...items) {
+	/*public EntityChest(Vec2 pos, int rarity, Item...items) {
 		super(pos);
 		this.rarity = rarity;
 		for(Item i : items){
 			itemsToSpawn.add(i);
 		}
-		spawnRandom = false;
-	}
+		initRandomItem();
+	}*/
 	
 	private void initRandomItem()
 	{

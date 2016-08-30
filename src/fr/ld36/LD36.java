@@ -125,8 +125,10 @@ public class LD36
 	
 	int score;
 	double playTime;
-	public void endGame(int score, double playTime)
+	boolean gameover;
+	public void endGame(boolean gameover, int score, double playTime)
 	{
+		this.gameover = gameover;
 		this.score = score;
 		this.playTime = playTime;
 		game.dispose();
@@ -167,5 +169,21 @@ public class LD36
 		size.x = (float) Math.floor(size.x);
 		size.y = (float) Math.floor(size.y);
 		Renderer.drawString(hud, "Press Enter to Retry", size, Color4f.WHITE);
+		if (gameover)
+		{
+			size = Renderer.metricString("GameOver");
+			size = new Vec2(360, 132).sub(size.div(2));
+			size.x = (float) Math.floor(size.x);
+			size.y = (float) Math.floor(size.y);
+			Renderer.drawString(hud, "GameOver", size, Color4f.WHITE, 2f);
+		}
+		else
+		{
+			size = Renderer.metricString("You Win!");
+			size = new Vec2(360, 132).sub(size.div(2));
+			size.x = (float) Math.floor(size.x);
+			size.y = (float) Math.floor(size.y);
+			Renderer.drawString(hud, "You Win!", size, Color4f.WHITE, 2f);
+		}
 	}
 }

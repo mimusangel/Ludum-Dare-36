@@ -19,9 +19,6 @@ import fr.ld36.Game;
 import fr.ld36.LD36;
 import fr.ld36.entities.*;
 import fr.ld36.entities.spe.IActivableLink;
-import fr.ld36.items.Item;
-import fr.ld36.items.ItemFlashlight;
-import fr.ld36.items.ItemSword;
 import fr.ld36.utils.Res;
 import fr.mimus.jbasicgl.graphics.Color4f;
 import fr.mimus.jbasicgl.graphics.Mesh;
@@ -214,7 +211,7 @@ public class Map
 				}
 				else if (data[0].equalsIgnoreCase("spawnChest"))
 				{
-					int rarity = 1;
+					/*int rarity = 1;
 					ArrayList<Item> items = new ArrayList<Item>();
 					try{
 						if(data.length > 3) rarity = Integer.valueOf(data[3]);
@@ -226,8 +223,8 @@ public class Map
 						}
 					}
 					Item[] itemArray = new Item[items.size()];
-					items.toArray(itemArray);
-					entities.add(new EntityChest(new Vec2(Float.parseFloat(data[1]), Float.parseFloat(data[2])), rarity, itemArray));
+					items.toArray(itemArray);*/
+					entities.add(new EntityChest(new Vec2(Float.parseFloat(data[1]), Float.parseFloat(data[2]))));
 				}
 				else if (data[0].equalsIgnoreCase("spawnSarcophage"))
 					entities.add(new EntitySarcophage(new Vec2(Float.parseFloat(data[1]), Float.parseFloat(data[2]))));
