@@ -27,7 +27,7 @@ public class ItemCoin extends ItemValuable{
 
 	@Override
 	public int getValue() {
-		return 10;
+		return 1 + (int)Math.round(Math.random() * 14);
 	}
 
 	@Override

@@ -73,6 +73,7 @@ public class Renderer
 			fontMesh.render(GL11.GL_QUADS);
 			cursor.x += w;
 		}
+		shader.setUniform2f("offsetTexture", new Vec2());
 	}
 	
 	public static Vec2 metricString(String txt)
