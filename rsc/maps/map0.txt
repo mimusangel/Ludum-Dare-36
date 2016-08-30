@@ -1,8 +1,8 @@
 set rsc/maps/map0.png
 spawn 64.0 448.0
-spawnSign 96.0 480.0 "A or D for Moving"
-spawnSign 224.0 608.0 "W for Jump"
-spawnSign 808.0 768.0 "SPACE for Lift/Drop Box"
+spawnSign 96.0 480.0 "Press A or D to move"
+spawnSign 224.0 608.0 "W to jump"
+spawnSign 808.0 768.0 "SPACE to Lift/Drop a box"
 spawnBones 128.0 448.0
 spawnBox 832.0 704.0
 spawnBox 768.0 480.0
@@ -11,8 +11,8 @@ spawnBox 1728.0 896.0
 spawnDoor 1008.0 384.0 2
 spawnLever 256.0 192.0 8
 spawnLever 928.0 384.0 8
-spawnSign 960.0 384.0 "E for Use/Pickup"
-spawnSign 1072.0 288.0 "S for Down"
+spawnSign 960.0 384.0 "E to use an object or pickup an item"
+spawnSign 1072.0 288.0 "S to go down"
 spawnTrap 704.0 992.0 1
 spawnLever 1440.0 704.0 13
 spawnBox 1936.0 1408.0
@@ -130,9 +130,9 @@ spawnSign 1583.0 2851.0 "To open this room you must find the right levers and pr
 spawnChest 1952.0 3552.0
 spawnBones 1920.0 3552.0
 spawnSign 3584.0 1408.0 "42, Base 2"
-spawnSign 1184.0 288.0 "Q for drop item"
+spawnSign 1184.0 288.0 "Q to drop an item"
 spawnChest 1888.0 672.0
-spawnSign 1312.0 352.0 "1 and 2 for switch Item"
+spawnSign 1312.0 352.0 "1 and 2 or mouse wheel to switch Item"
 spawnMummy 833.0 1870.0
 spawnMummy 2515.0 1880.0
 spawnMummy 1197.0 2963.0
@@ -148,7 +148,7 @@ spawnMummy 3507.0 820.0
 spawnMummy 3686.0 821.0
 spawnBones 3551.0 814.0
 spawnChest 832.0 1600.0
-spawnSign 512.0 1184.0 "Mouse Left Click for Attack"
+spawnSign 512.0 1184.0 "Left mouse to attack or recover life with heart"
 spawnSarcophage 1632.0 2752.0
 spawnChest 1504.0 2752.0
 spawnChest 1440.0 2720.0
