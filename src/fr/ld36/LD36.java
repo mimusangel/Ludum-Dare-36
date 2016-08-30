@@ -162,10 +162,10 @@ public class LD36
 		size.x = (float) Math.floor(size.x);
 		size.y = (float) Math.floor(size.y);
 		Renderer.drawString(hud, time + "s", size, Color4f.WHITE);
-		size = Renderer.metricString("Press Enter for Retry");
+		size = Renderer.metricString("Press Enter to Retry");
 		size = new Vec2(360, 232).sub(size.div(2));
 		size.x = (float) Math.floor(size.x);
 		size.y = (float) Math.floor(size.y);
-		Renderer.drawString(hud, "Press Enter for Retry", size, Color4f.WHITE);
+		Renderer.drawString(hud, "Press Enter to Retry", size, Color4f.WHITE);
 	}
 }

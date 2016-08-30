@@ -18,7 +18,7 @@ import fr.mimus.jbasicgl.maths.Mat4;
 import fr.mimus.jbasicgl.maths.Vec2;
 import fr.mimus.jbasicgl.maths.Vec3;
 
-public class EntityMummy extends Entity{
+public class EntityBoss extends Entity{
 
 	private Animation anim;
 	private Animation animIdle;
@@ -26,8 +26,8 @@ public class EntityMummy extends Entity{
 	//0 idle, 1 chasse player
 	int state = 0;
 	
-	float speed = 15;
-	float runSpeed = 25;
+	float speed = 35;
+	float runSpeed = 45;
 	boolean faceRight = false;
 	
 	float lastX;
@@ -39,15 +39,15 @@ public class EntityMummy extends Entity{
 	float targetAngle;
 	boolean isAttacking;
 	
-	float attackDelay = 1.5f;
+	float attackDelay = 1.2f;
 	float attackDelayCounter;
 
 	Audio hit;
 	Mesh test;
-	public EntityMummy(Vec2 pos) {
+	public EntityBoss(Vec2 pos) {
 		super(pos);
-		anim = new Animation(9, 1, 32, 64, Res.images.get("momie"), 1, 8, 0.15f, true, 1);
-		animIdle = new Animation(9, 1, 32, 64, Res.images.get("momie"), 0, 0, 0.15f, true, 1);
+		anim = new Animation(9, 1, 32, 64, Res.images.get("pharaon"), 1, 8, 0.15f, true, 1);
+		animIdle = new Animation(9, 1, 32, 64, Res.images.get("pharaon"), 0, 0, 0.15f, true, 1);
 		
 		hand = new Mesh(4);
 		hand.addVertices(0, 0).addColor(Color4f.WHITE).addTexCoord2f(0, 0);
@@ -57,7 +57,7 @@ public class EntityMummy extends Entity{
 		hand.buffering();
 		
 		Random rand = new Random();
-		this.life = 5 + rand.nextInt(11);
+		this.life = 20 + rand.nextInt(11);
 		hit = Audio.list.get("rsc/sounds/hit.wav");
 
 		test = new Mesh(1);
@@ -159,7 +159,7 @@ public class EntityMummy extends Entity{
 		if(state == 0)
 		{
 			pos.add((float)(speed * (faceRight ? 1: -1) * elapse), 0f);
-			if(this.distance(p)<200 && Math.abs(pos.copy().y - p.pos.y) < 50){
+			if(this.distance(p)<1000){
 				state = 1;
 			}
 			if(deltaX == 0 && System.currentTimeMillis() - lastFlip >= 1000){
@@ -172,9 +172,7 @@ public class EntityMummy extends Entity{
 			faceRight = p.pos.copy().x - pos.copy().x > 0;
 			
 			int distance = this.distance(p);
-			if(distance>250 || Math.abs(pos.copy().y - p.pos.y) > 50){
-				state = 0;
-			}else if(distance > 20){
+			if(distance > 12){
 				pos.add((float)(runSpeed * (faceRight ? 1: -1) * elapse), 0f);
 			}
 			if(distance < 30){
@@ -234,7 +232,7 @@ public class EntityMummy extends Entity{
 
 	@Override
 	public Entity copy() {
-		return new EntityMummy(pos.copy());
+		return new EntityBoss(pos.copy());
 	}
 
 }

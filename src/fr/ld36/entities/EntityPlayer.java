@@ -74,9 +74,10 @@ public class EntityPlayer extends Entity {
 		money = 0;
 		inv = new Inventory(this);
 		inv.addItem(new ItemFlashlight());
-		inv.addItem(new ItemLoupe());
+		//inv.addItem(new ItemLoupe());
+		inv.addItem(new ItemLife());
 		sfxDead = Audio.list.get("rsc/sounds/dead.wav");
-		hit = Audio.list.get("rsc/sounds/hit2.wav");
+		hit = Audio.list.get("rsc/sounds/hit2.wav");		
 	}
 
 	public void createEntity()
