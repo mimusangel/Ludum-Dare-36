@@ -175,7 +175,7 @@ public class LD36
 			size = new Vec2(360, 132).sub(size.div(2));
 			size.x = (float) Math.floor(size.x);
 			size.y = (float) Math.floor(size.y);
-			Renderer.drawString(hud, "GameOver", size, Color4f.WHITE, 2f);
+			Renderer.drawString(hud, "GameOver", size, Color4f.WHITE);
 		}
 		else
 		{
@@ -183,7 +183,7 @@ public class LD36
 			size = new Vec2(360, 132).sub(size.div(2));
 			size.x = (float) Math.floor(size.x);
 			size.y = (float) Math.floor(size.y);
-			Renderer.drawString(hud, "You Win!", size, Color4f.WHITE, 2f);
+			Renderer.drawString(hud, "You Win!", size, Color4f.WHITE);
 		}
 	}
 }
