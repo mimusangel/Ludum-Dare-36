@@ -7,8 +7,6 @@ import org.lwjgl.opengl.GL11;
 import fr.ld36.AABB;
 import fr.ld36.Game;
 import fr.ld36.LD36;
-import fr.ld36.items.Item;
-import fr.ld36.items.Weapon;
 import fr.ld36.render.Animation;
 import fr.ld36.utils.Audio;
 import fr.ld36.utils.Res;
